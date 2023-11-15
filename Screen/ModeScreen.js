@@ -1,13 +1,62 @@
 import React from 'react';
-import { Text, View, StyleSheet, } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import ModeItem from '../Components/ModeItem';
+import Header from '../Components/Header';
 
 
-function ModeScreen() {
+const ModeScreen=({navigation}) => {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFEBD7' }}>
-        <Text>Page des modes</Text>
+
+      <View style={styles.ViewMain} >
+        <Header titre={"Mode"}/>
+        <View style={styles.ViewBody}>
+          <View style={styles.ViewScrollContainer}>
+            <ScrollView style={styles.Scroll}>
+              <View style={styles.ContainerMode}>
+                <ModeItem titre = "CLASSIQUE" navigation={navigation} 
+                description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
+                <ModeItem titre = "Mission ou pas mission" 
+                description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
+                <ModeItem titre = "PERSONNALISE" 
+                description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
+                <ModeItem titre = "A L'AVEUGLE" 
+                description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
+                <ModeItem titre = "Foule en folie" 
+                description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
+
+              </View>
+            
+
+            </ScrollView>
+          </View>
+          
+          
+        </View>
+
       </View>
+      
+      
     );
 }
+
+const styles = StyleSheet.create ({
+  ViewMain: {
+    flex: 1, 
+    backgroundColor: '#FFEBD7',
+  },
+  ViewBody: {
+    flex: 5, 
+    justifyContent:'center',
+  },
+  ContainerMode: {
+   alignItems:'center',
+   marginBottom:50,
+   
+  },
+  Scroll:{
+    
+  }
+  
+});
 
 export default ModeScreen;

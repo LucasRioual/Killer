@@ -4,7 +4,7 @@ import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 're
 
 
 
-const MainMenu =  ({ navigation }) => {
+const MainMenu =  (props) => {
   const [inputValue, setInputValue] = useState('');
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
@@ -22,7 +22,7 @@ const MainMenu =  ({ navigation }) => {
       startShake();
     }
     else{
-      navigation.navigate("Mode");
+      props.navigation.navigate("Mode");
       
     }
   };  
@@ -40,10 +40,10 @@ const MainMenu =  ({ navigation }) => {
   return (
     <View>
       <Animated.View style = {{ transform: [{translateX: shakeAnim}] }}>
-        <TextInput style={styles.input} placeholder="Prénom + Nom" onChangeText={(text) => setInputValue(text)}/>
+        <TextInput style={styles.input} placeholder="Ton prénom" onChangeText={(text) => setInputValue(text)}/>
       </Animated.View>   
-      <MainBouton titre="Créer une partie" onPress={Create}  />
-      <MainBouton titre="Rejoindre une partie" onPress={Join}/>
+      <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
+      <MainBouton titre="Rejoindre une partie" onPress={Join} color = {props.color}/>
     </View>
   );
 }
@@ -52,7 +52,7 @@ const MainMenu =  ({ navigation }) => {
 
 const MainBouton = props => {
   return (
-    <TouchableOpacity style={styles.button} onPress={props.onPress} activeOpacity={0.5}>
+    <TouchableOpacity style={[styles.button, { backgroundColor: props.color }]} onPress={props.onPress} activeOpacity={0.5}>
       <Text style={styles.buttonText}>{props.titre}</Text>
     </TouchableOpacity>
   );
@@ -60,8 +60,6 @@ const MainBouton = props => {
 
 const styles = StyleSheet.create ({
   button: {
-    backgroundColor: '#264653',
-    
     borderRadius: 50,
     width: 300,
     height: 60,

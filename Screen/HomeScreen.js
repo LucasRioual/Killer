@@ -4,8 +4,18 @@ import MainMenu from '../Components/MainMenu';
 import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
 import PopUp from '../Components/PopUpRegle';
+import { useSelector, useDispatch } from 'react-redux'
+import { dark, light } from '../Store/Reducer/colorSlice'
 
 const HomeScreen = ({navigation}) => {
+
+  const backColor = useSelector((state) => state.color.backColor);
+  const MainColor = useSelector((state) => state.color.mainColor);
+  const txtColor = useSelector((state) => state.color.txtColor);
+  const titreColor = useSelector((state) => state.color.titreColor);
+  const svgData = useSelector((state) => state.color.svgData);
+  const dispatch = useDispatch();
+
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const openPopUp = () => {
     setPopUpVisible(true);
@@ -13,21 +23,31 @@ const HomeScreen = ({navigation}) => {
   const closePopUp = () => {
     setPopUpVisible(false);
   };  
+
+  const changeColor = () =>{
+    if(backColor == '#FFEBD7'){ //Light
+      dispatch(dark());
+      console.log("ok");
+    }
+    else{
+      dispatch(light());
+    }
+  }
   
   return (
     
-    <View style={styles.ViewMain}>
+    <View style={[styles.ViewMain, { backgroundColor: backColor }]}>
       <View style={styles.View1}>
-      <ImageNuit/>
+      <ImageNuit onClick = {changeColor} fill = {txtColor} d = {svgData}/>
       </View>
       <View style={styles.View2}>
-        <Text style={styles.Titre}>KILLER</Text>
+        <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
       </View>
       <View style={styles.View3}>
-        <MainMenu navigation={navigation}/>
+        <MainMenu navigation={navigation} color = {MainColor}/>
       </View>
       <View style={styles.View4}>
-        <Footer clickRegle = {openPopUp}/>
+        <Footer clickRegle = {openPopUp} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
       <PopUp visible={isPopUpVisible} exit={closePopUp}/>          
     </View>
@@ -39,11 +59,10 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   ViewMain: {
     flex: 1, 
-    backgroundColor: '#FFEBD7',
+    
     
   },
   Titre: {
-    color: '#F0122D',
     fontSize: 100,
     fontFamily: 'LuckiestGuy',
     textAlign: 'center', 
