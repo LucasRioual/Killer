@@ -1,29 +1,112 @@
 //Khaoula 
-import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, TextInput} from 'react-native';
+import Header from '../Components/Header';
 
 
 
 const JoinScreen=() => {
+  // useState est un Hook qui permet d'ajouter l'état local React à notre fonction composant
+  // gameCode pour stocker le code de la partie entré par l'utilisateur
+  // isNonDrinker pour stocker si l'utilisateur est non-buveur ou pas
+  const [gameCode, setGameCode] = useState('');
+  const [isNonDrinker, setIsNonDrinker] = useState(false);
+
+  // Fonction pour gérer la soumission du formulaire
+  const handleJoinGame = () => {
+    // Ici, vous traiteriez normalement la logique de rejoindre le jeu
+    console.log('Game Code:', gameCode);
+    console.log('Is Non-Drinker:', isNonDrinker);
+    // Naviguer vers l'écran de jeu ou afficher une erreur, etc.
+  };
     return (
 
       <View style={styles.ViewMain} >
-        
-          
-        
+        <Header titre={"Rejoindre la partie"}/>
+        <View style={styles.ViewBody}>
+          {/* Champ de saisie pour le code de la partie */}
+          <TextInput
+            style={styles.input}
+            onChangeText={setGameCode} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
+            value={gameCode} // Affiche la valeur actuelle de gameCode
+            placeholder="Code de la partie" // Texte d'indication dans le champ de saisie
+            keyboardType="numeric" // Type de clavier pour les nombres
+          />
+
+          {/* Interrupteur pour l'option non-buveur */}
+          <View style={styles.switchContainer}>
+            <Text>Non-buveur ?</Text>
+            <Switch
+              value={isNonDrinker} // Affiche si l'interrupteur est activé ou non
+              onValueChange={setIsNonDrinker} // Change isNonDrinker dans l'état lorsque l'interrupteur est activé/désactivé
+            />
+          </View>
+
+          {/* Bouton pour soumettre le formulaire et rejoindre le jeu */}
+          <TouchableOpacity style={styles.button} onPress={handleJoinGame}>
+            <Text style={styles.buttonText}>GO</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+          
+ 
       
       
     );
 }
 
-const styles = StyleSheet.create ({
+
+
+// Styles pour les composants
+const styles = StyleSheet.create({
   ViewMain: {
-    flex: 1, 
-    backgroundColor: '#FFEBD7',
-  }
-  
+    // Conteneur principal de l'écran
+    flex: 1,
+    backgroundColor: '#FFEBD7', // Couleur de fond
+  },
+  ViewBody: {
+    flex: 5, 
+    paddingVertical:40,
+    paddingHorizontal:10,
+    alignItems:'center',
+  },
+  input: {
+    // Style pour le champ de saisie
+    height: 40,
+    width: '80%',
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    backgroundColor: '#fff', // Couleur de fond du champ de saisie
+    borderRadius: 5,
+  },
+  switchContainer: {
+    // Style pour le conteneur de l'interrupteur
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor:'#F0122D',
+    borderRadius: 50,
+    paddingHorizontal:40,
+    paddingVertical:10,
+    justifyContent: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+	    width: 0,
+	    height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonText: {
+    // Style pour le texte du bouton
+    color: '#fff', // Couleur du texte
+  },
 });
+
+
 
 export default JoinScreen;
