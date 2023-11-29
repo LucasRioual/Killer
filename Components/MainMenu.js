@@ -32,7 +32,7 @@ const MainMenu =  (props) => {
       startShake();
     }
     else{
-      console.log("C'est bon");
+      props.navigation.navigate("Join");
     }
   };  
 

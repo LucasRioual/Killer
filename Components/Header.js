@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: 'LuckiestGuy',
     color: '#F0122D'
+    
 ,    
   },
 });

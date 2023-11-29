@@ -1,24 +1,32 @@
 //Khaoula 
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, TextInput} from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, TextInput,  Switch} from 'react-native';
 import Header from '../Components/Header';
 
 
 
-const JoinScreen=() => {
+const JoinScreen=({navigation}) => {
   // useState est un Hook qui permet d'ajouter l'état local React à notre fonction composant
   // gameCode pour stocker le code de la partie entré par l'utilisateur
   // isNonDrinker pour stocker si l'utilisateur est non-buveur ou pas
+  const handleJoinGame = () => {
+    // Ici, vous traiteriez normalement la logique de rejoindre le jeu
+      console.log('Game Code:', gameCode);
+      console.log('Is Non-Drinker:', isNonDrinker);
+      };
+
   const [gameCode, setGameCode] = useState('');
   const [isNonDrinker, setIsNonDrinker] = useState(false);
 
   // Fonction pour gérer la soumission du formulaire
-  const handleJoinGame = () => {
-    // Ici, vous traiteriez normalement la logique de rejoindre le jeu
-    console.log('Game Code:', gameCode);
-    console.log('Is Non-Drinker:', isNonDrinker);
+  
+  const handleToggleSwitch = (newValue) => {
+        setIsNonDrinker(newValue); // Met à jour l'état avec la nouvelle valeur
+        console.log("Is Non-Drinker:", newValue); // Affiche la nouvelle valeur dans la console
+      };
+    // Cette fonction est appelée chaque fois que le Switch est activé/désactivé
+  const toggleSwitch = () => setIsSwitchEnabled(previousState => !previousState);
     // Naviguer vers l'écran de jeu ou afficher une erreur, etc.
-  };
     return (
 
       <View style={styles.ViewMain} >
@@ -35,11 +43,13 @@ const JoinScreen=() => {
 
           {/* Interrupteur pour l'option non-buveur */}
           <View style={styles.switchContainer}>
-            <Text>Non-buveur ?</Text>
+            <Text style={styles.TextTitre}>Non-buveur ?</Text>
             <Switch
-              value={isNonDrinker} // Affiche si l'interrupteur est activé ou non
-              onValueChange={setIsNonDrinker} // Change isNonDrinker dans l'état lorsque l'interrupteur est activé/désactivé
-            />
+                trackColor={{ false: 'red', true: 'green' }}
+                thumbColor={isNonDrinker? 'green' : 'red'}
+                onValueChange={handleToggleSwitch} // Appelle handleToggleSwitch chaque fois que le Switch est basculé
+                value={isNonDrinker} // Utilise l'état pour déterminer si le Switch est activé ou non
+              />
           </View>
 
           {/* Bouton pour soumettre le formulaire et rejoindre le jeu */}
@@ -61,30 +71,37 @@ const JoinScreen=() => {
 const styles = StyleSheet.create({
   ViewMain: {
     // Conteneur principal de l'écran
-    flex: 1,
-    backgroundColor: '#FFEBD7', // Couleur de fond
+    flex: 2,
+    backgroundColor: '#FFEBD7', 
   },
   ViewBody: {
     flex: 5, 
     paddingVertical:40,
     paddingHorizontal:10,
+    marginTop: 100,
     alignItems:'center',
   },
   input: {
     // Style pour le champ de saisie
-    height: 40,
-    width: '80%',
+    height: 50,
+    width: '70%',
     margin: 12,
     borderWidth: 1,
     padding: 10,
     backgroundColor: '#fff', // Couleur de fond du champ de saisie
-    borderRadius: 5,
+    borderRadius: 30,
   },
   switchContainer: {
     // Style pour le conteneur de l'interrupteur
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    
+
+  },
+  TextTitre: {
+    fontSize: 30,
+    fontFamily: 'Sen',
   },
   button: {
     backgroundColor:'#F0122D',
@@ -102,8 +119,11 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    // Style pour le texte du bouton
-    color: '#fff', // Couleur du texte
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 35,
+    fontFamily: 'LuckiestGuy',
+    
   },
 });
 
