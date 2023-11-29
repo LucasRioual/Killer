@@ -27,6 +27,8 @@ const JoinScreen=({navigation}) => {
     // Cette fonction est appelée chaque fois que le Switch est activé/désactivé
   const toggleSwitch = () => setIsSwitchEnabled(previousState => !previousState);
     // Naviguer vers l'écran de jeu ou afficher une erreur, etc.
+
+    
     return (
 
       <View style={styles.ViewMain} >

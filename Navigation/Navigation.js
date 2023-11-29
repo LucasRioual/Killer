@@ -5,7 +5,7 @@ import HomeScreen from '../Screen/HomeScreen';
 import ModeScreen from '../Screen/ModeScreen';
 import SalonScreen from '../Screen/SalonScreen';
 import JoinScreen from '../Screen/JoinScreen';
-import ParametreScreen from '../Screen/ParametreScreen';
+import SettingsScreen from '../Screen/SettingsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -19,7 +19,7 @@ const Navigation = () => {
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
         <Stack.Screen name="Join" component={JoinScreen} />
-        <Stack.Screen name="Parametre" component={ParametreScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
