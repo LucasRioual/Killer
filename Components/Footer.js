@@ -13,7 +13,7 @@ const Footer = (props) => {
       startShake();
     }
     else{
-      props.navigation.navigate("Parametre");
+      props.navigation.navigate("Settings");
       
     }
   };  
