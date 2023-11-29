@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import Header from '../Components/Header';
+import { Picker } from '@react-native-picker/picker';
 
 const GameSettingsScreen = () => {
-  const [gameTimeLimited, setGameTimeLimited] = useState(false);
+  const [gameDuration, setGameDuration] = useState('no'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
   const [maxPlayers, setMaxPlayers] = useState('ILLIMITÉ');
   const [joinMidGame, setJoinMidGame] = useState(true);
   const [includeAlcoholicDares, setIncludeAlcoholicDares] = useState(true);
@@ -29,14 +30,20 @@ const GameSettingsScreen = () => {
           <Text style={styles.optionText}>{maxPlayers}</Text>
         </View>
 
-        <View style={styles.settingRow}>
+        {/* Sélecteur de la durée de la partie */}
+        <View style={styles.pickerContainer}>
           <Text style={styles.settingText}>TEMPS DE LA PARTIE</Text>
-          <Switch
-            trackColor={{ false: 'red', true: 'green' }}
-            thumbColor={gameTimeLimited ? 'green' : 'red'}
-            onValueChange={setGameTimeLimited}
-            value={gameTimeLimited}
-          />
+          <Picker
+            selectedValue={gameDuration}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              setGameDuration(itemValue)
+            }>
+            <Picker.Item label="No Limit" value="no" />
+            <Picker.Item label="15 MIN" value="15min" />
+            <Picker.Item label="30 MIN" value="30min" />
+            <Picker.Item label="60 MIN" value="60min" />
+          </Picker>
         </View>
 
         <View style={styles.settingRow}>
@@ -82,6 +89,19 @@ const styles = StyleSheet.create({
     marginTop: 100,
     alignItems:'center',
   },
+  pickerContainer: {
+    backgroundColor: 'transparent', 
+    width: '100%', 
+    alignItems: 'center', // Centrer le contenu (label + picker)
+    marginBottom: 20, 
+  },
+  picker: {
+    width: '80%', 
+    color: 'white', 
+    backgroundColor: '#2c3e50',
+    marginVertical: 10, 
+  },
+  
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

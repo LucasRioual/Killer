@@ -24,6 +24,7 @@ const SalonScreen = ()=> {
       <View style={styles.ViewMain} >
         <Header titre={"Salon"}/>
         <View style={styles.ViewBody}>
+          
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>J4KTF5</Text>
             <View style={styles.ViewPlayer}>
@@ -46,11 +47,8 @@ const SalonScreen = ()=> {
 
             
         </View>
-        
-
       </View>
-      
-      
+     
     );
 }
 
