@@ -79,7 +79,7 @@ const HomeScreen = ({navigation}) => {
   }
 
   const getSurname = (userId) => {
-      fetch(`http://192.168.0.11:3000/api/users/${userId}`)
+      fetch(`http://192.168.137.1:3000/api/users/${userId}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

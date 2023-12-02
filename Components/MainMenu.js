@@ -37,7 +37,7 @@ const MainMenu =  (props) => {
 
  const createUser = () => {
   
-  fetch('http://192.168.0.11:3000/api/users', {
+  fetch('http://192.168.137.1:3000/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,8 +63,13 @@ const MainMenu =  (props) => {
  }
 
  const changeSurnameAPI = () => {
-  fetch(`http://192.168.0.11:3000/api/users/surname/${userId}`, {
-      method: 'POST',
+  if (userSurname === undefined || userSurname === null) {
+    console.error('Le champ "surname" doit être défini avant de faire la requête.');
+    return;
+  }
+  
+  fetch(`http://192.168.137.1:3000/api/users/${userId}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         // Ajoutez d'autres en-têtes si nécessaire
