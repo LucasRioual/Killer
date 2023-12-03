@@ -1,13 +1,15 @@
 import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyId, modifySurname } from '../Store/Reducer/userSlice'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {  modifySurname } from '../Store/Reducer/userSlice'
+import {useUserAPI} from '../Hooks/hooks'
 
 
 
 
 const MainMenu =  (props) => {
+
+  const {changeSurnameAPI, createUser} = useUserAPI();
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
@@ -26,70 +28,6 @@ const MainMenu =  (props) => {
     ]).start();
  }
 
- const saveUserId = async (userToSave) => {
-  try {
-    await AsyncStorage.setItem('userId', userToSave);
-    console.log('Identifiant sauvegardé avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
-  }
-};
-
- const createUser = () => {
-  
-  fetch('http://192.168.137.1:3000/api/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Ajoutez d'autres en-têtes si nécessaire
-      },
-      body: JSON.stringify({
-        surname: userSurname,
-      }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Réponse de l\'API :', data.userId);
-      //Sauvegarde id dans asyncStorage
-      dispatch(modifyId(data.userId));
-      saveUserId(data.userId);
-
-
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la requête POST :', error);
-    });
-
- }
-
- const changeSurnameAPI = () => {
-  if (userSurname === undefined || userSurname === null) {
-    console.error('Le champ "surname" doit être défini avant de faire la requête.');
-    return;
-  }
-  
-  fetch(`http://192.168.137.1:3000/api/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        // Ajoutez d'autres en-têtes si nécessaire
-      },
-      body: JSON.stringify({
-        surname: userSurname,
-      }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Réponse de l\'API :', data);
-     
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la requête POST :', error);
-    });
-
- }
-
- 
 
   const Create = () => {
     if (userSurname == ""){
@@ -118,10 +56,7 @@ const MainMenu =  (props) => {
     }
   };  
 
-  useEffect(() => {
-    console.log(userSurname)
-    
-  }, [userSurname]);
+  
 
  
   return (

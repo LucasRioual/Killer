@@ -6,8 +6,8 @@ import Footer from '../Components/Footer';
 import PopUp from '../Components/PopUpRegle';
 import { useSelector, useDispatch } from 'react-redux'
 import { dark, light } from '../Store/Reducer/colorSlice'
-import { modifyId, modifySurname } from '../Store/Reducer/userSlice'
-
+import { modifyId} from '../Store/Reducer/userSlice'
+import {useUserAPI} from '../Hooks/hooks'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /* //...
@@ -54,6 +54,8 @@ const HomeScreen = ({navigation}) => {
   const txtColor = useSelector((state) => state.color.txtColor);
   const titreColor = useSelector((state) => state.color.titreColor);
   const svgData = useSelector((state) => state.color.svgData);
+
+  const {getSurname} = useUserAPI();
  
 
 
@@ -78,22 +80,6 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
-  const getSurname = (userId) => {
-      fetch(`http://192.168.137.1:3000/api/users/${userId}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log('Réponse de l\'API :', data);
-      dispatch(modifySurname(data.surname));
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la requête GET :', error);
-    });
-  }
 
   const loadUserId = async () => {
     try {

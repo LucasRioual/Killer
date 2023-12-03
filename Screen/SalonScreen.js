@@ -1,31 +1,109 @@
-import React from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import UserData from '../Data/UserData.json'
+import { useSelector, useDispatch } from 'react-redux'
+import {  modifySurname } from '../Store/Reducer/userSlice'
+import { io } from "socket.io-client";
 
 
-const ListPlayer = () =>{
-    return (
-        <View style={styles.PlayerContainer}>
-          {UserData.map((user, index) => (
-            <PlayerName key={index} label={user.userName} />
-          ))}
-        </View>
-      );
 
-}
 
 const SalonScreen = ()=> {
+  const userId = useSelector((state) => state.user.userId);
+  const userSurname = useSelector((state) => state.user.surname);
+  const dispatch = useDispatch();
+  const [gameCode, setGameCode] = useState(null);
+  const [listPlayer, setListPlayer] = useState([]);
 
-    console.log(UserData[0].userName);
+
+  const startSocket = (code) => {
+    return new Promise((resolve, reject) => {
+      const socket = io('http://192.168.137.1:3000');
+  
+      // Écouter l'événement 'connect'
+      socket.on('connect', () => {
+        console.log('Connecté au serveur WebSocket');
+        socket.emit('sendCode', code);
+        resolve(socket); // Résoudre la promesse une fois que la connexion est établie
+      });
+  
+      socket.on('sendListPlayer', (updatedListPlayer) => {
+        console.log('Nouvelle liste de joueurs reçue :', userSurname, updatedListPlayer);
+        setListPlayer(updatedListPlayer);
+      });
+  
+      // Notez que vous n'avez pas besoin d'appeler addPlayer ici
+    });
+  };
+
+  const addPlayer = async(code) => {
+
+    const response = await fetch(`http://192.168.137.1:3000/api/game/${code}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userId, surname: userSurname }),
+      });
+      const data = await response.json();
+      console.log(data)
+        
+      };
+    
+
+  const createGame = async () => {
+    try {
+
+      const response = await fetch('http://192.168.137.1:3000/api/game', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hostId: userId, surname: userSurname }),
+      });
+  
+  
+      const data = await response.json();
+      setGameCode(data.code);
+      await startSocket(data.code);
+      await addPlayer(data.code);
+
+  
+    } catch (error) {
+      console.error("Erreur lors de la création de partie:", error);
+      
+    }
+  };
+
+    useEffect(() => {
+      createGame();
+      
+    }, []);
+
+
+    const ListPlayer = () =>{
+      return (
+          <View style={styles.PlayerContainer}>
+            {listPlayer.map((user, index) => (
+              <PlayerName key={index} label={user.surname} />
+            ))}
+          </View>
+        );
+  
+  }
+
+
+    
+  
     return (
 
       <View style={styles.ViewMain} >
         <Header titre={"Salon"}/>
         <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
-            <Text style={styles.TextCode}>J4KTF5</Text>
+            <Text style={styles.TextCode}>{gameCode}</Text>
             <View style={styles.ViewPlayer}>
                 <ScrollView persistentScrollbar={true}>
                     
