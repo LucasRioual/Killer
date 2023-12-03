@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Switch, StyleSheet,  Modal } from 'react-native';
 import Header from '../Components/Header';
 import { Picker } from '@react-native-picker/picker';
 
-const GameSettingsScreen = () => {
-  const [gameDuration, setGameDuration] = useState('no'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
-  const [maxPlayers, setMaxPlayers] = useState('ILLIMITÉ');
+const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
+  const [selectedTime, setSelectedTime] = useState('no_limit'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
+  const [selectedParticipants, setSelectedParticipants] = useState('unlimited');
   const [joinMidGame, setJoinMidGame] = useState(true);
   const [includeAlcoholicDares, setIncludeAlcoholicDares] = useState(true);
 
@@ -25,29 +25,51 @@ const GameSettingsScreen = () => {
         <Text style={styles.TextTitre}>Soirée</Text>
 
         {/* Options de paramétrage du jeu */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingText}>NBR DE JOUEURS MAX</Text>
-          <Text style={styles.optionText}>{maxPlayers}</Text>
+        
+        {/* Nombre de joueurs */}
+        <View style={styles.pickerContainer}>
+        <Text style={styles.settingText}>Nbre max de joueurs</Text>
+         <Modal
+            animationType="slide"
+            transparent={true}
+            visible={visible}
+            onRequestClose={onCancel}
+          >
+            <View style={styles.modalView}>
+              <Picker
+                selectedValue={selectedParticipants}
+                onValueChange={(itemValue, itemIndex) => onSelect(itemValue)}
+              >
+                {options.map((option, index) => (
+                  <Picker.Item key={index} label={option.label} value={option.value} />
+                ))}
+              </Picker>
+              <TouchableOpacity onPress={onCancel}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
         </View>
+      
 
         {/* Sélecteur de la durée de la partie */}
         <View style={styles.pickerContainer}>
-          <Text style={styles.settingText}>TEMPS DE LA PARTIE</Text>
-          <Picker
-            selectedValue={gameDuration}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) =>
-              setGameDuration(itemValue)
-            }>
-            <Picker.Item label="No Limit" value="no" />
-            <Picker.Item label="15 MIN" value="15min" />
-            <Picker.Item label="30 MIN" value="30min" />
-            <Picker.Item label="60 MIN" value="60min" />
-          </Picker>
+          <Text style={styles.settingText}>Temps de la partie</Text>
+            <Picker
+              selectedValue={selectedTime}
+              style={styles.picker}
+              onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
+            >
+              <Picker.Item label="No Limit" value="no_limit" />
+              <Picker.Item label="15 Min" value="15" />
+              <Picker.Item label="30 Min" value="30" />
+              <Picker.Item label="60 Min" value="60" />
+            </Picker>
         </View>
-
+  
+        
         <View style={styles.settingRow}>
-          <Text style={styles.settingText}>REJOINDRE EN PLEIN PARTIE</Text>
+          <Text style={styles.settingText}>Rejoindre en plein partie</Text>
           <Switch
             trackColor={{ false: 'red', true: 'green' }}
             thumbColor={joinMidGame ? 'green' : 'red'}
@@ -57,7 +79,7 @@ const GameSettingsScreen = () => {
         </View>
 
         <View style={styles.settingRow}>
-          <Text style={styles.settingText}>INCLURE DES GAGES ALCOOLIQUES</Text>
+          <Text style={styles.settingText}>Inclure des gages alcooliques</Text>
           <Switch
             trackColor={{ false: 'red', true: 'green' }}
             thumbColor={includeAlcoholicDares ? 'green' : 'red'}
@@ -89,17 +111,48 @@ const styles = StyleSheet.create({
     marginTop: 100,
     alignItems:'center',
   },
+  TextTitre: {
+    fontSize: 30,
+    fontFamily: 'Sen',
+    fontWeight: 'bold',
+    marginTop: -80,
+    marginBottom: 50,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+
+  closeButtonText: {
+    color: 'blue',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20
+  },
   pickerContainer: {
     backgroundColor: 'transparent', 
-    width: '100%', 
-    alignItems: 'center', // Centrer le contenu (label + picker)
-    marginBottom: 20, 
+    //width: '100%', 
+    //alignItems: 'center', // Centrer le contenu (label + picker)
+    //marginBottom: 20, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
   },
   picker: {
-    width: '80%', 
-    color: 'white', 
-    backgroundColor: '#2c3e50',
-    marginVertical: 10, 
+    height: 40,
+    width: 140,
   },
   
   settingRow: {
@@ -112,10 +165,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 18,
   },
-  TextTitre: {
-    fontSize: 30,
-    fontFamily: 'Sen',
-  },
+ 
   optionText: {
     color: 'red',
     fontSize: 18,
