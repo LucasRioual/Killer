@@ -1,6 +1,6 @@
 import React, { Component, useRef, useState,  }  from 'react';
-
 import {StyleSheet, View, Text, TouchableOpacity, inputValue} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Svg, { Path } from 'react-native-svg';
 
 
@@ -8,7 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 
 const Footer = (props) => {
   const [inputValue, setInputValue] = useState('');
- 
+  const navigation = useNavigation();
   const Settings = () => {
     if (inputValue == ""){
       props.navigation.navigate("Settings");
