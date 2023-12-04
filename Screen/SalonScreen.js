@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import UserData from '../Data/UserData.json'
@@ -17,7 +18,10 @@ const ListPlayer = () =>{
 }
 
 const SalonScreen = ()=> {
-
+  const navigation = useNavigation();
+  const Cible = () => {
+    navigation.navigate("Cible");
+  };
     console.log(UserData[0].userName);
     return (
 
@@ -39,7 +43,7 @@ const SalonScreen = ()=> {
             
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}  activeOpacity={0.5}>
-                    <Text style={styles.buttonText}>Lancer</Text>
+                    <MainBouton titre="LANCER" onPress={Cible} color = {props.color}/>
                 </TouchableOpacity>
 
             </View>
@@ -52,6 +56,13 @@ const SalonScreen = ()=> {
     );
 }
 
+const MainBouton = props => {
+  return (
+    <TouchableOpacity style={[styles.button]} onPress={props.onPress} activeOpacity={0.5}>
+      <Text style={styles.buttonText}>{props.titre}</Text>
+    </TouchableOpacity>
+  );
+};
 const styles = StyleSheet.create ({
   ViewMain: {
     flex: 1, 
