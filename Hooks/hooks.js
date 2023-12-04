@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useUserAPI = () => {
 
+  const apiUrl = 'http://192.168.0.11:3000';
+
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
   const dispatch = useDispatch();
@@ -22,7 +24,7 @@ export const useUserAPI = () => {
 
   const getSurname = useCallback(async(userId) => {
     try {
-      const response = await fetch(`http://192.168.43.130:3000/api/users/${userId}`);
+      const response = await fetch(`${apiUrl}/api/users/${userId}`);
       const data = await response.json();
       dispatch(modifySurname(data.surname));
       
@@ -34,7 +36,7 @@ export const useUserAPI = () => {
 
 const createUser = useCallback(async() => {
 
-  const response = await fetch('http://192.168.43.130:3000/api/users', {
+  const response = await fetch(`${apiUrl}/api/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +57,8 @@ const createUser = useCallback(async() => {
 
 const changeSurnameAPI = useCallback(async() => {
   try{
-    await fetch(`http://192.168.43.130:3000/api/users/${userId}`, {
+    
+    await fetch(`${apiUrl}/api/users/${userId}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
@@ -70,7 +73,7 @@ const changeSurnameAPI = useCallback(async() => {
     console.log('Erreur lors du changement de surname', error);
   }
 
-},[]);
+},[userId]);
 
 return{getSurname, changeSurnameAPI, createUser};
 

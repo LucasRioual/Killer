@@ -44,7 +44,7 @@ const JoinScreen=({navigation}) => {
           {/* Champ de saisie pour le code de la partie */}
           <TextInput
             style={styles.input}
-            onChangeText={() => {dispatch(modifyCode)}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
+            onChangeText={(text) => {dispatch(modifyCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
             value={gameCode} // Affiche la valeur actuelle de gameCode
             placeholder="Code de la partie" // Texte d'indication dans le champ de saisie
              // Type de clavier pour les nombres

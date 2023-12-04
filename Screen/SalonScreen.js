@@ -6,6 +6,8 @@ import UserData from '../Data/UserData.json'
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode } from '../Store/Reducer/gameSlice'
 import { io } from "socket.io-client";
+import PopUp from '../Components/PopUpRegle';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -18,10 +20,18 @@ const SalonScreen = ()=> {
   const dispatch = useDispatch();
   const [listPlayer, setListPlayer] = useState([]);
 
+  const [isPopUpVisible, setPopUpVisible] = useState(false);
+  const openPopUp = () => {
+    setPopUpVisible(true);
+  };
+  const closePopUp = () => {
+    setPopUpVisible(false);
+  };  
+
 
   const startSocket = (code) => {
     return new Promise((resolve, reject) => {
-      const socket = io('http://192.168.43.130:3000');
+      const socket = io('http://192.168.0.11:3000');
   
       // Écouter l'événement 'connect'
       socket.on('connect', () => {
@@ -41,7 +51,7 @@ const SalonScreen = ()=> {
 
   const addPlayer = async(code) => {
 
-    const response = await fetch(`http://192.168.43.130:3000/api/game/${code}`, {
+    const response = await fetch(`http://192.168.0.11:3000/api/game/${code}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +67,7 @@ const SalonScreen = ()=> {
   const createGame = async () => {
     try {
 
-      const response = await fetch('http://192.168.43.130:3000/api/game', {
+      const response = await fetch('http://192.168.0.11:3000/api/game', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,6 +79,7 @@ const SalonScreen = ()=> {
       const data = await response.json();
       dispatch(modifyCode(data.code));
       await startSocket(data.code);
+      console.log('start socket');
       await addPlayer(data.code);
 
   
@@ -78,17 +89,35 @@ const SalonScreen = ()=> {
     }
   };
 
+  const joinApi = async (code) => {
+    await startSocket(code);    
+    await addPlayer(code);
+
+  }
+
     useEffect(() => {
       if(hostFlag){
         createGame();
       }
       else{
-        startSocket(gameCode);
-        addPlayer(gameCode);
+        joinApi(gameCode);
       }
       
       
     }, []);
+
+    useFocusEffect(
+      useCallback(() => {
+        // Lorsque l'écran est en focus, définissez le hostFlag sur false
+        
+  
+        // Fonction de nettoyage lorsque l'écran perd le focus (si nécessaire)
+        return () => {
+          setPopUpVisible(true);
+          // Mettez ici le nettoyage ou des actions supplémentaires si nécessaire
+        };
+      }, [])
+    );
 
 
     const ListPlayer = () =>{
@@ -132,6 +161,7 @@ const SalonScreen = ()=> {
 
             
         </View>
+        <PopUp visible={isPopUpVisible} exit={closePopUp}/>
         
 
       </View>
