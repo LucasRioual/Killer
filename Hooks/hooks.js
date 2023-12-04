@@ -22,7 +22,7 @@ export const useUserAPI = () => {
 
   const getSurname = useCallback(async(userId) => {
     try {
-      const response = await fetch(`http://192.168.137.1:3000/api/users/${userId}`);
+      const response = await fetch(`http://192.168.43.130:3000/api/users/${userId}`);
       const data = await response.json();
       dispatch(modifySurname(data.surname));
       
@@ -34,7 +34,7 @@ export const useUserAPI = () => {
 
 const createUser = useCallback(async() => {
 
-  const response = await fetch('http://192.168.137.1:3000/api/users', {
+  const response = await fetch('http://192.168.43.130:3000/api/users', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const createUser = useCallback(async() => {
 
 const changeSurnameAPI = useCallback(async() => {
   try{
-    await fetch(`http://192.168.137.1:3000/api/users/${userId}`, {
+    await fetch(`http://192.168.43.130:3000/api/users/${userId}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
@@ -81,6 +81,28 @@ export const useGame = () => {
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
   const dispatch = useDispatch();
+
+  const createGame = async () => {
+    try {
+
+      const response = await fetch('http://192.168.43.130:3000/api/game', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hostId: userId, surname: userSurname }),
+      });
+  
+  
+      const data = await response.json();
+      console.log(data);
+      setGameCode(data.code);
+  
+    } catch (error) {
+      console.error("Erreur lors de la création de partie:", error);
+      
+    }
+  };
 
   
 

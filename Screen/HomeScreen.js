@@ -1,4 +1,4 @@
-import React, {  useEffect, useState,  } from 'react';
+import React, {  useEffect, useState, useCallback } from 'react';
 import { Text, View, StyleSheet, } from 'react-native';
 import MainMenu from '../Components/MainMenu';
 import ImageNuit from '../Components/ImageNuit';
@@ -6,9 +6,10 @@ import Footer from '../Components/Footer';
 import PopUp from '../Components/PopUpRegle';
 import { useSelector, useDispatch } from 'react-redux'
 import { dark, light } from '../Store/Reducer/colorSlice'
-import { modifyId} from '../Store/Reducer/userSlice'
+import { modifyId, setHostFalse} from '../Store/Reducer/userSlice'
 import {useUserAPI} from '../Hooks/hooks'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 /* //...
 
@@ -112,6 +113,18 @@ const HomeScreen = ({navigation}) => {
     //saveUserId('');
     
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Lorsque l'écran est en focus, définissez le hostFlag sur false
+      dispatch(setHostFalse());
+
+      // Fonction de nettoyage lorsque l'écran perd le focus (si nécessaire)
+      return () => {
+        // Mettez ici le nettoyage ou des actions supplémentaires si nécessaire
+      };
+    }, [])
+  );
   
   return (
     

@@ -1,7 +1,7 @@
 import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
-import {  modifySurname } from '../Store/Reducer/userSlice'
+import {  modifySurname, setHostTrue } from '../Store/Reducer/userSlice'
 import {useUserAPI} from '../Hooks/hooks'
 
 
@@ -35,13 +35,13 @@ const MainMenu =  (props) => {
     }
     else{
       if(!userId){
-        console.log('test');
         createUser();
       }
       else{
         console.log(userId);
         changeSurnameAPI();
       }
+      dispatch(setHostTrue());
       props.navigation.navigate("Mode");
       
     }
@@ -52,7 +52,15 @@ const MainMenu =  (props) => {
       startShake();
     }
     else{
+      if(!userId){
+        createUser();
+      }
+      else{
+        console.log(userId);
+        changeSurnameAPI();
+      }
       props.navigation.navigate("Join");
+      
     }
   };  
 

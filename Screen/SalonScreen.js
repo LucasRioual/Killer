@@ -4,7 +4,7 @@ import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import UserData from '../Data/UserData.json'
 import { useSelector, useDispatch } from 'react-redux'
-import {  modifySurname } from '../Store/Reducer/userSlice'
+import { modifyCode } from '../Store/Reducer/gameSlice'
 import { io } from "socket.io-client";
 
 
@@ -13,14 +13,15 @@ import { io } from "socket.io-client";
 const SalonScreen = ()=> {
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
+  const hostFlag = useSelector((state) => state.user.hostFlag);
+  const gameCode = useSelector((state) => state.game.gameCode);
   const dispatch = useDispatch();
-  const [gameCode, setGameCode] = useState(null);
   const [listPlayer, setListPlayer] = useState([]);
 
 
   const startSocket = (code) => {
     return new Promise((resolve, reject) => {
-      const socket = io('http://192.168.137.1:3000');
+      const socket = io('http://192.168.43.130:3000');
   
       // Écouter l'événement 'connect'
       socket.on('connect', () => {
@@ -40,7 +41,7 @@ const SalonScreen = ()=> {
 
   const addPlayer = async(code) => {
 
-    const response = await fetch(`http://192.168.137.1:3000/api/game/${code}`, {
+    const response = await fetch(`http://192.168.43.130:3000/api/game/${code}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +57,7 @@ const SalonScreen = ()=> {
   const createGame = async () => {
     try {
 
-      const response = await fetch('http://192.168.137.1:3000/api/game', {
+      const response = await fetch('http://192.168.43.130:3000/api/game', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +67,7 @@ const SalonScreen = ()=> {
   
   
       const data = await response.json();
-      setGameCode(data.code);
+      dispatch(modifyCode(data.code));
       await startSocket(data.code);
       await addPlayer(data.code);
 
@@ -78,7 +79,14 @@ const SalonScreen = ()=> {
   };
 
     useEffect(() => {
-      createGame();
+      if(hostFlag){
+        createGame();
+      }
+      else{
+        startSocket(gameCode);
+        addPlayer(gameCode);
+      }
+      
       
     }, []);
 
