@@ -29,26 +29,16 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
         {/* Nombre de joueurs */}
         <View style={styles.pickerContainer}>
         <Text style={styles.settingText}>Nbre max de joueurs</Text>
-         <Modal
-            animationType="slide"
-            transparent={true}
-            visible={visible}
-            onRequestClose={onCancel}
-          >
-            <View style={styles.modalView}>
-              <Picker
-                selectedValue={selectedParticipants}
-                onValueChange={(itemValue, itemIndex) => onSelect(itemValue)}
-              >
-                {options.map((option, index) => (
-                  <Picker.Item key={index} label={option.label} value={option.value} />
-                ))}
-              </Picker>
-              <TouchableOpacity onPress={onCancel}>
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
+        <Picker
+              selectedValue={selectedParticipants}
+              style={styles.picker}
+              onValueChange={(itemValue, itemIndex) => setSelectedParticipants(itemValue)}
+            >
+              <Picker.Item label="Unlimited" value="unlimited" />
+              <Picker.Item label="10 Players" value="10" />
+              <Picker.Item label="20 Players" value="20" />
+              <Picker.Item label="30 Players" value="30" />
+            </Picker>
         </View>
       
 
