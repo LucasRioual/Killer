@@ -42,8 +42,8 @@ const SalonScreen = ()=> {
             </View>
             
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}  activeOpacity={0.5}>
-                    <MainBouton titre="LANCER" onPress={Cible} color = {props.color}/>
+                <TouchableOpacity style={styles.button} onPress={Cible} activeOpacity={0.5}>
+                <Text style={styles.buttonText}>Lancer</Text>
                 </TouchableOpacity>
 
             </View>
@@ -56,13 +56,7 @@ const SalonScreen = ()=> {
     );
 }
 
-const MainBouton = props => {
-  return (
-    <TouchableOpacity style={[styles.button]} onPress={props.onPress} activeOpacity={0.5}>
-      <Text style={styles.buttonText}>{props.titre}</Text>
-    </TouchableOpacity>
-  );
-};
+
 const styles = StyleSheet.create ({
   ViewMain: {
     flex: 1, 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, StyleSheet,  Modal } from 'react-native';
 import Header from '../Components/Header';
+import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 
 const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
@@ -9,11 +10,11 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   const [joinMidGame, setJoinMidGame] = useState(true);
   const [includeAlcoholicDares, setIncludeAlcoholicDares] = useState(true);
 
-  // Ajoutez ici la logique pour le lancement du jeu
-  const handleStartGame = () => {
-    console.log('Lancement du jeu avec les paramètres actuels');
-    // Ici, vous pouvez gérer la navigation ou initialiser le jeu
+  const navigation = useNavigation();
+  const Create = () => {
+    navigation.navigate("Salon");
   };
+   
 
   return (
     <View style={styles.ViewMain}>
@@ -79,13 +80,21 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
         </View>
 
         {/* Bouton pour lancer le jeu */}
-        <TouchableOpacity style={styles.button} onPress={handleStartGame}>
+        <TouchableOpacity style={styles.button} onPress={Create}>
           <Text style={styles.buttonText}>LANCER</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+const MainBouton = props => {
+  return (
+    <TouchableOpacity style={[styles.button]} onPress={props.onPress} activeOpacity={0.5}>
+      <Text style={styles.buttonText}>{props.titre}</Text>
+    </TouchableOpacity>
+  );
+};
+
 
 // Styles
 const styles = StyleSheet.create({

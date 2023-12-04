@@ -9,7 +9,7 @@ const ModeItem = (props) => {
 
   const onPress = () => {
   
-      props.navigation.navigate("Salon");
+      props.navigation.navigate("Settings");
       
   
   };  
