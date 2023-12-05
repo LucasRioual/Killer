@@ -1,11 +1,22 @@
-import React, { Component, useRef, useState,  } from 'react';
+import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux'
+import {  modifySurname, setHostTrue } from '../Store/Reducer/userSlice'
+import {useUserAPI} from '../Hooks/hooks'
 
 
 
 
 const MainMenu =  (props) => {
-  const [inputValue, setInputValue] = useState('');
+
+  const {changeSurnameAPI, createUser} = useUserAPI();
+
+  const userId = useSelector((state) => state.user.userId);
+  const userSurname = useSelector((state) => state.user.surname);
+  const dispatch = useDispatch();
+  
+
+  //const [inputValue, setInputValue] = useState('');
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
   startShake = () => {
@@ -17,30 +28,49 @@ const MainMenu =  (props) => {
     ]).start();
  }
 
+
   const Create = () => {
-    if (inputValue == ""){
+    if (userSurname == ""){
       startShake();
     }
     else{
+      if(!userId){
+        createUser();
+      }
+      else{
+        console.log(userId);
+        changeSurnameAPI();
+      }
+      dispatch(setHostTrue());
       props.navigation.navigate("Mode");
       
     }
   };  
 
   const Join = () => {
-    if (inputValue == ""){
+    if (userSurname == ""){
       startShake();
     }
     else{
+      if(!userId){
+        createUser();
+      }
+      else{
+        console.log(userId);
+        changeSurnameAPI();
+      }
       props.navigation.navigate("Join");
+      
     }
   };  
+
+  
 
  
   return (
     <View>
       <Animated.View style = {{ transform: [{translateX: shakeAnim}] }}>
-        <TextInput style={styles.input} placeholder="Ton prénom" onChangeText={(text) => setInputValue(text)}/>
+        <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => dispatch(modifySurname(text))}/>
       </Animated.View>   
       <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
       <MainBouton titre="Rejoindre une partie" onPress={Join} color = {props.color}/>

@@ -2,20 +2,27 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView, TextInput,  Switch} from 'react-native';
 import Header from '../Components/Header';
+import { useSelector, useDispatch } from 'react-redux'
+import { modifyCode } from '../Store/Reducer/gameSlice'
 
 
 
 const JoinScreen=({navigation}) => {
-  // useState est un Hook qui permet d'ajouter l'état local React à notre fonction composant
-  // gameCode pour stocker le code de la partie entré par l'utilisateur
-  // isNonDrinker pour stocker si l'utilisateur est non-buveur ou pas
+  const gameCode = useSelector((state) => state.game.gameCode);
+
+  const dispatch = useDispatch();
+  
   const handleJoinGame = () => {
-    // Ici, vous traiteriez normalement la logique de rejoindre le jeu
-      console.log('Game Code:', gameCode);
-      console.log('Is Non-Drinker:', isNonDrinker);
+    if(!gameCode){
+      console.log('Il n a pas de code');
+    }
+    else{
+      navigation.navigate('Salon');
+    }
+      
+      
       };
 
-  const [gameCode, setGameCode] = useState('');
   const [isNonDrinker, setIsNonDrinker] = useState(false);
 
   // Fonction pour gérer la soumission du formulaire
@@ -37,10 +44,10 @@ const JoinScreen=({navigation}) => {
           {/* Champ de saisie pour le code de la partie */}
           <TextInput
             style={styles.input}
-            onChangeText={setGameCode} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
+            onChangeText={(text) => {dispatch(modifyCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
             value={gameCode} // Affiche la valeur actuelle de gameCode
             placeholder="Code de la partie" // Texte d'indication dans le champ de saisie
-            keyboardType="numeric" // Type de clavier pour les nombres
+             // Type de clavier pour les nombres
           />
 
           {/* Interrupteur pour l'option non-buveur */}
