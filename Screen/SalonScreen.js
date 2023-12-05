@@ -1,18 +1,19 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import UserData from '../Data/UserData.json'
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode } from '../Store/Reducer/gameSlice'
 import { io } from "socket.io-client";
-import PopUp from '../Components/PopUpRegle';
 import { useFocusEffect } from '@react-navigation/native';
 
 
 
 
 const SalonScreen = ()=> {
+
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
   const hostFlag = useSelector((state) => state.user.hostFlag);
@@ -106,18 +107,8 @@ const SalonScreen = ()=> {
       
     }, []);
 
-    useFocusEffect(
-      useCallback(() => {
-        // Lorsque l'écran est en focus, définissez le hostFlag sur false
-        
-  
-        // Fonction de nettoyage lorsque l'écran perd le focus (si nécessaire)
-        return () => {
-          setPopUpVisible(true);
-          // Mettez ici le nettoyage ou des actions supplémentaires si nécessaire
-        };
-      }, [])
-    );
+    
+   
 
 
     const ListPlayer = () =>{
@@ -134,11 +125,19 @@ const SalonScreen = ()=> {
 
     
   
+
+  const navigation = useNavigation();
+  const Cible = () => {
+    navigation.navigate("Cible");
+  };
+    console.log(UserData[0].userName);
+
     return (
 
       <View style={styles.ViewMain} >
         <Header titre={"Salon"}/>
         <View style={styles.ViewBody}>
+          
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
             <View style={styles.ViewPlayer}>
@@ -152,8 +151,8 @@ const SalonScreen = ()=> {
             </View>
             
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}  activeOpacity={0.5}>
-                    <Text style={styles.buttonText}>Lancer</Text>
+                <TouchableOpacity style={styles.button} onPress={Cible} activeOpacity={0.5}>
+                <Text style={styles.buttonText}>Lancer</Text>
                 </TouchableOpacity>
 
             </View>
@@ -161,14 +160,11 @@ const SalonScreen = ()=> {
 
             
         </View>
-        <PopUp visible={isPopUpVisible} exit={closePopUp}/>
-        
-
       </View>
-      
-      
+     
     );
 }
+
 
 const styles = StyleSheet.create ({
   ViewMain: {
