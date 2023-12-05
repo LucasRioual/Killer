@@ -30,7 +30,7 @@ const MainMenu =  (props) => {
 
 
   const Create = () => {
-    if (userSurname == ""){
+    if (!userSurname){
       startShake();
     }
     else{
@@ -48,7 +48,7 @@ const MainMenu =  (props) => {
   };  
 
   const Join = () => {
-    if (userSurname == ""){
+    if (!userSurname){
       startShake();
     }
     else{

@@ -60,7 +60,14 @@ const SalonScreen = ()=> {
         body: JSON.stringify({ userId: userId, surname: userSurname }),
       });
       const data = await response.json();
-      console.log(data)
+      if (response.ok) {
+        // Si la requête a réussi, faire ce que vous avez à faire après l'ajout du joueur
+        console.log(data);
+      } else {
+        // Si la requête a échoué, afficher une popup avec le message d'erreur
+        alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
+        console.error("Erreur :", data.error);
+      }
         
       };
     
@@ -78,6 +85,7 @@ const SalonScreen = ()=> {
   
   
       const data = await response.json();
+      
       dispatch(modifyCode(data.code));
       await startSocket(data.code);
       console.log('start socket');
@@ -101,6 +109,7 @@ const SalonScreen = ()=> {
         createGame();
       }
       else{
+        console.log('join');
         joinApi(gameCode);
       }
       
@@ -130,7 +139,6 @@ const SalonScreen = ()=> {
   const Cible = () => {
     navigation.navigate("Cible");
   };
-    console.log(UserData[0].userName);
 
     return (
 

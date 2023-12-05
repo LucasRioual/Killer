@@ -15,7 +15,7 @@ const JoinScreen=({navigation}) => {
   const handleJoinGame = () => {
     if(!gameCode){
       console.log('Il n a pas de code');
-    }
+      }
     else{
       navigation.navigate('Salon');
     }
@@ -24,6 +24,8 @@ const JoinScreen=({navigation}) => {
       };
 
   const [isNonDrinker, setIsNonDrinker] = useState(false);
+
+  
 
   // Fonction pour gérer la soumission du formulaire
   
@@ -47,7 +49,7 @@ const JoinScreen=({navigation}) => {
             onChangeText={(text) => {dispatch(modifyCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
             value={gameCode} // Affiche la valeur actuelle de gameCode
             placeholder="Code de la partie" // Texte d'indication dans le champ de saisie
-             // Type de clavier pour les nombres
+            // Type de clavier pour les nombres
           />
 
           {/* Interrupteur pour l'option non-buveur */}
