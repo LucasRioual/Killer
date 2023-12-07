@@ -1,7 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { modifyId, modifySurname } from '../Store/Reducer/userSlice'
+import { modifyCode, setListPlayer} from '../Store/Reducer/gameSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io } from "socket.io-client";
 
 
 export const useUserAPI = () => {
@@ -34,7 +36,7 @@ export const useUserAPI = () => {
     }
   },[]);
 
-const createUser = useCallback(async() => {
+const createUser = async() => {
 
   const response = await fetch(`${apiUrl}/api/users`, {
       method: "POST",
@@ -52,7 +54,7 @@ const createUser = useCallback(async() => {
     dispatch(modifyId(data.userId));
     saveUserId(data.userId);
     
-  }, []);
+  };
   
 
 const changeSurnameAPI = useCallback(async() => {
@@ -79,16 +81,88 @@ return{getSurname, changeSurnameAPI, createUser};
 
 }
 
-export const useGame = () => {
+export const useGame = ({navigation}) => {
+
+  const apiUrl = 'http://192.168.0.11:3000';
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
+  const listPlayer = useSelector((state) => state.game.listPlayer);
   const dispatch = useDispatch();
+
+  
+
+  const startSocket = (code) => {
+    return new Promise((resolve, reject) => {
+      const socket = io(`${apiUrl}`);
+  
+      // Écouter l'événement 'connect'
+      socket.on('connect', () => {
+        console.log('Connecté au serveur WebSocket');
+        socket.emit('sendCode', code);
+        resolve(socket); // Résoudre la promesse une fois que la connexion est établie
+      });
+  
+      socket.on('sendListPlayer', (updatedListPlayer) => {
+        console.log('Nouvelle liste de joueurs reçue :', userSurname, updatedListPlayer);
+        dispatch(setListPlayer(updatedListPlayer));
+      });
+      socket.on('sendTarget', (updatedListPlayer) => {
+        console.log('Nouvelle cible :', updatedListPlayer);
+        dispatch(setListPlayer(updatedListPlayer)); 
+        console.log('listPlayerWithTarget : ', listPlayer);  
+        navigation.navigate('Cible');
+        
+      });
+  
+      
+    });
+  };
+
+  const sendSocket = (channel, data, code) => {
+    io.to(code).emit(channel, data);
+  }
+
+  const startGame = async(code) => {
+    const response = await fetch(`${apiUrl}/api/game/${code}/start`);
+    const data = await response.json();
+    if (response.ok) {
+      // Si la requête a réussi, faire ce que vous avez à faire après l'ajout du joueur
+      console.log(data);
+    } else {
+      // Si la requête a échoué, afficher une popup avec le message d'erreur
+      alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
+      console.error("Erreur :", data.error);
+    }
+  };
+
+  const addPlayer = async(code) => {
+
+    const response = await fetch(`${apiUrl}/api/game/${code}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userId, surname: userSurname }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Si la requête a réussi, faire ce que vous avez à faire après l'ajout du joueur
+        console.log(data);
+      } else {
+        // Si la requête a échoué, afficher une popup avec le message d'erreur
+        alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
+        console.error("Erreur :", data.error);
+      }
+        
+    };
+
+    
 
   const createGame = async () => {
     try {
 
-      const response = await fetch('http://192.168.43.130:3000/api/game', {
+      const response = await fetch(`${apiUrl}/api/game`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,14 +172,20 @@ export const useGame = () => {
   
   
       const data = await response.json();
-      console.log(data);
-      setGameCode(data.code);
+      
+      dispatch(modifyCode(data.code));
+      await startSocket(data.code);
+      console.log('start socket');
+      await addPlayer(data.code);
+
   
     } catch (error) {
       console.error("Erreur lors de la création de partie:", error);
       
     }
   };
+
+  return{createGame, addPlayer, startSocket, sendSocket, startGame};
 
   
 

@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
+import {useGame} from '../Hooks/hooks'
+import { useSelector, useDispatch } from 'react-redux'
 
-const ActionScreen = () => {
-  // Vous auriez ici la logique pour définir la cible et l'action, ou les recevoir via props.
+const ActionScreen = ({navigation}) => {
+  const listPlayer = useSelector((state) => state.game.listPlayer);
+  const userId = useSelector((state) => state.user.userId);
+  const userSurname = useSelector((state) => state.user.surname);
+  const [target, setTarget] = useState(''); // A remplacer par le target de l'utilisateur
+
+  const getTarget = () => {
+    console.log('listPlayer : ', listPlayer);
+    for (let i = 0; i < listPlayer.length; i++) {
+      if (listPlayer[i].userId === userId) {
+        return listPlayer[i].target;
+      }
+    }
+  }
+
+  useEffect(() => {
+    setTarget(getTarget());
+  },[listPlayer]);
+
   
   const handlePressKill = () => {
-    // Logique déclenchée lors de l'appui sur le bouton KILL
+    
     console.log('Kill action pressed');
   };
 
@@ -18,7 +37,7 @@ const ActionScreen = () => {
       <View style={styles.ViewBody}>
         {/* Cible */}
         <View style={styles.targetContainer}>
-          <Text style={styles.TextTitre}>Khaoula</Text>
+          <Text style={styles.TextTitre}>{target}</Text>
         </View>
         
         {/* Action */}
