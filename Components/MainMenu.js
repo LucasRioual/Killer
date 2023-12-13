@@ -7,6 +7,7 @@ import {useUserAPI} from '../Hooks/hooks'
 
 
 
+
 const MainMenu =  (props) => {
 
   const {changeSurnameAPI, createUser} = useUserAPI();
@@ -47,22 +48,6 @@ const MainMenu =  (props) => {
     }
   };  
 
-  const Join = () => {
-    if (!userSurname){
-      startShake();
-    }
-    else{
-      if(!userId){
-        createUser();
-      }
-      else{
-        console.log(userId);
-        changeSurnameAPI();
-      }
-      props.navigation.navigate("Join");
-      
-    }
-  };  
 
   
 
@@ -73,7 +58,9 @@ const MainMenu =  (props) => {
         <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => dispatch(modifySurname(text))}/>
       </Animated.View>   
       <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
-      <MainBouton titre="Rejoindre une partie" onPress={Join} color = {props.color}/>
+      <MainBouton titre="Rejoindre une partie" onPress = {props.clickJoin} color = {props.color}/>
+
+
     </View>
   );
 }

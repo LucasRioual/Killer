@@ -4,6 +4,7 @@ import MainMenu from '../Components/MainMenu';
 import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
 import PopUp from '../Components/PopUpRegle';
+import PopUpJoin from '../Components/PopUpJoin';
 import { useSelector, useDispatch } from 'react-redux'
 import { dark, light } from '../Store/Reducer/colorSlice'
 import { modifyId, setHostFalse} from '../Store/Reducer/userSlice'
@@ -63,12 +64,20 @@ const HomeScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
 
+  const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const openPopUp = () => {
     setPopUpVisible(true);
   };
   const closePopUp = () => {
     setPopUpVisible(false);
+  };  
+  //PopUp pour rejoindre une partie
+  const openPopUpJoin = () => {
+    setIsPopUpJoinVisible(true);
+  };
+  const closePopUpJoin = () => {
+    setIsPopUpJoinVisible(false);
   };  
 
   const changeColor = () =>{
@@ -136,12 +145,14 @@ const HomeScreen = ({navigation}) => {
         <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
       </View>
       <View style={styles.View3}>
-        <MainMenu navigation={navigation} color = {MainColor}/>
+        <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor}/>
       </View>
+      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/>   
       <View style={styles.View4}>
         <Footer clickRegle = {openPopUp} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
-      <PopUp visible={isPopUpVisible} exit={closePopUp}/>          
+      <PopUp visible={isPopUpVisible} exit={closePopUp}/>   
+             
     </View>
     
     

@@ -7,6 +7,7 @@ import { modifyCode } from '../Store/Reducer/gameSlice'
 
 
 
+
 const JoinScreen=({navigation}) => {
   const gameCode = useSelector((state) => state.game.gameCode);
 
@@ -19,8 +20,7 @@ const JoinScreen=({navigation}) => {
     else{
       navigation.navigate('Salon');
     }
-      
-      
+  
       };
 
   const [isNonDrinker, setIsNonDrinker] = useState(false);

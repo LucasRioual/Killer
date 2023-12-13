@@ -8,9 +8,6 @@ import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity,} from 'rea
 const PopUp = props => {
 
 
-
-
-
   return (
     <Modal visible={props.visible} transparent onRequestClose={props.exit}>
       <TouchableOpacity style= {styles.View} onPress={props.exit} activeOpacity={1} >
@@ -40,15 +37,9 @@ const PopUp = props => {
               </TouchableOpacity>
 
             </TouchableOpacity>
-          
-          
-
-          </ScrollView>
-          
          
-          
-          
-          
+          </ScrollView>
+       
         </View>
       </TouchableOpacity>
     </Modal>
