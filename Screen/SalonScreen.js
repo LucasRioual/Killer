@@ -109,7 +109,8 @@ const SalonScreen = ({navigation})=> {
 const styles = StyleSheet.create ({
   ViewMain: {
     flex: 1, 
-    backgroundColor: '#FFEBD7',
+    backgroundColor: '#061624',
+
   },
   ViewBody: {
     flex: 5, 
@@ -125,6 +126,7 @@ const styles = StyleSheet.create ({
   TextTitre: {
     fontSize: 30,
     fontFamily: 'Sen',
+    color: 'white',
   },
   ViewPlayer: {
     marginTop:20,

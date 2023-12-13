@@ -42,7 +42,7 @@ const ModeScreen=({navigation}) => {
 const styles = StyleSheet.create ({
   ViewMain: {
     flex: 1, 
-    backgroundColor: '#FFEBD7',
+    backgroundColor: '#061624',
   },
   ViewBody: {
     flex: 5, 

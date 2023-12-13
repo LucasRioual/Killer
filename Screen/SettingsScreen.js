@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   ViewMain: {
     // Conteneur principal de l'écran
     flex: 2,
-    backgroundColor: '#FFEBD7', 
+    backgroundColor: '#061624', 
   },
   ViewBody: {
     flex: 5, 
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   picker: {
+    color: 'red',
     height: 40,
     width: 140,
   },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   settingText: {
-    color: 'black',
+    color: 'white',
     fontSize: 18,
   },
  

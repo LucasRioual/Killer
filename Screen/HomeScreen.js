@@ -147,7 +147,7 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View3}>
         <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor}/>
       </View>
-      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/>   
+      <PopUpJoin visible={isPopUpVisible} exit={closePopUpJoin}/>   
       <View style={styles.View4}>
         <Footer clickRegle = {openPopUp} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
