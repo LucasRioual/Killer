@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, } from 'react-native';
 import MainMenu from '../Components/MainMenu';
 import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
-import PopUp from '../Components/PopUpRegle';
+import PopUpRegle from '../Components/PopUpRegle';
 import PopUpJoin from '../Components/PopUpJoin';
 import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
@@ -67,12 +67,12 @@ const HomeScreen = ({navigation}) => {
 
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
   const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
-  const [isPopUpVisible, setPopUpVisible] = useState(false);
-  const openPopUp = () => {
-    setPopUpVisible(true);
+  const [isPopUpRegleVisible, setPopUpRegleVisible] = useState(false);
+  const openPopUpRegle = () => {
+    setPopUpRegleVisible(true);
   };
-  const closePopUp = () => {
-    setPopUpVisible(false);
+  const closePopUpRegle = () => {
+    setPopUpRegleVisible(false);
   };  
   //PopUp pour rejoindre une partie
   const openPopUpJoin = () => {
@@ -156,11 +156,13 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View3}>
         <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor}/>
       </View>
-      <PopUpJoin visible={isPopUpVisible} exit={closePopUpJoin}/>   
+      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 
+
       <View style={styles.View4}>
-        <Footer clickRegle = {openPopUp} color = {MainColor} txtcolor = {txtColor}/>
+        <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
-      <PopUp visible={isPopUpVisible} exit={closePopUp}/>  
+      <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
+      <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>  
      
       
              
@@ -204,6 +206,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',   
   },
+ 
   
 });
 

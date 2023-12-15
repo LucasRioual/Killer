@@ -23,16 +23,6 @@ const SalonScreen = ({navigation})=> {
   
   const {startSocket, addPlayer, createGame, startGame} = useGame({navigation});
 
-  const [isPopUpVisible, setPopUpVisible] = useState(false);
-  const openPopUp = () => {
-    setPopUpVisible(true);
-  };
-  const closePopUp = () => {
-    setPopUpVisible(false);
-  };  
-
-
-  
 
   const joinApi = async (code) => {
     await startSocket(code);    

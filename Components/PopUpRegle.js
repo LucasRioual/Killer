@@ -5,7 +5,7 @@ import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity,} from 'rea
 
 
 
-const PopUp = props => {
+const PopUpRegle = props => {
 
 
   return (
@@ -117,4 +117,4 @@ const styles = StyleSheet.create({
 
 
 
-export default PopUp;
+export default PopUpRegle;

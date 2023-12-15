@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
-import {useGame} from '../Hooks/hooks'
-import { useSelector, useDispatch } from 'react-redux'
+import {useGame} from '../Hooks/hooks';
+import { useSelector, useDispatch } from 'react-redux';
+import Modal from 'react-native-modal';
 
 const ActionScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);

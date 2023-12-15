@@ -9,9 +9,7 @@ const PopUpSettings = props => {
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [language, setLanguage] = useState('fr'); // Exemple de langue par défaut : français
-
-  const toggleSwitch = () => setNotificationsEnabled(previousState => !previousState);
-
+  const [Notifications, setNotifications] = useState(true);
 
   return (
     <Modal visible={props.visible} transparent onRequestClose={props.exit}>
@@ -22,16 +20,16 @@ const PopUpSettings = props => {
             <TouchableOpacity activeOpacity={1}>
               <Text style={styles.Titre}>Paramètres Généraux</Text>
               <View style={styles.settingRow}>
-                <Text style={styles.settingText}>Notifications</Text>
+                <Text style={styles.TextTitre}>Notifications</Text>
                 <Switch
                   trackColor={{ false: "red", true: "green" }}
-                  thumbColor={notificationsEnabled ? "green" : "red"}
-                  onValueChange={toggleSwitch}
-                  value={notificationsEnabled}
+                  thumbColor={Notifications ? "green" : "red"}
+                  onValueChange={setNotifications}
+                  value={Notifications}
                 />
               </View>
               <View style={styles.settingRow}>
-                <Text style={styles.settingText}>Langue</Text>
+                <Text style={styles.TextTitre}>Langue</Text>
                 <Picker
                   selectedValue={language}
                   style={styles.pickerStyle}
@@ -96,6 +94,10 @@ const styles = StyleSheet.create({
     
     
   },
+  TextTitre: {
+    fontSize: 22,
+    fontFamily: 'Sen',
+  },
   TextContainer: {
     marginTop: 10,
    
@@ -105,12 +107,11 @@ const styles = StyleSheet.create({
     width: 150,
     // color: "#fff", Pour Android
   },
-  SousTitre: {
-    fontFamily: 'Sen',
-    fontSize: 16,
-    textAlign: 'justify',
-    
-    
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#F0122D',
