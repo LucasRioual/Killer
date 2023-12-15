@@ -5,10 +5,11 @@ import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
 import PopUp from '../Components/PopUpRegle';
 import PopUpJoin from '../Components/PopUpJoin';
-import { useSelector, useDispatch } from 'react-redux'
-import { dark, light } from '../Store/Reducer/colorSlice'
-import { modifyId, setHostFalse} from '../Store/Reducer/userSlice'
-import {useUserAPI} from '../Hooks/hooks'
+import PopUpSettings from '../Components/PopUpSettings';
+import { useSelector, useDispatch } from 'react-redux';
+import { dark, light } from '../Store/Reducer/colorSlice';
+import { modifyId, setHostFalse} from '../Store/Reducer/userSlice';
+import {useUserAPI} from '../Hooks/hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -65,6 +66,7 @@ const HomeScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
+  const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const openPopUp = () => {
     setPopUpVisible(true);
@@ -79,6 +81,13 @@ const HomeScreen = ({navigation}) => {
   const closePopUpJoin = () => {
     setIsPopUpJoinVisible(false);
   };  
+  //PopUp pour les paramètres de l'app
+  const openPopUpSettings = () => {
+    setIsPopUpSettingsVisible(true);
+  };
+  const closePopUpSettings = () => {
+    setIsPopUpSettingsVisible(false);
+  }; 
 
   const changeColor = () =>{
     if(backColor == '#FFEBD7'){ //Light
@@ -151,7 +160,9 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View4}>
         <Footer clickRegle = {openPopUp} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
-      <PopUp visible={isPopUpVisible} exit={closePopUp}/>   
+      <PopUp visible={isPopUpVisible} exit={closePopUp}/>  
+     
+      
              
     </View>
     
