@@ -68,6 +68,7 @@ const HomeScreen = ({navigation}) => {
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
   const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
   const [isPopUpRegleVisible, setPopUpRegleVisible] = useState(false);
+  
   const openPopUpRegle = () => {
     setPopUpRegleVisible(true);
   };
@@ -99,6 +100,7 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
+ 
 
   const loadUserId = async () => {
     try {
@@ -150,6 +152,7 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View1}>
       <ImageNuit onClick = {changeColor} fill = {txtColor} d = {svgData}/>
       </View>
+     
       <View style={styles.View2}>
         <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
       </View>
@@ -188,7 +191,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-         
   },
   View2: {
     flex: 2,

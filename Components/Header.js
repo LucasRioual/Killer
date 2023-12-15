@@ -21,11 +21,10 @@ const Header = (props) => {
 
 const styles = StyleSheet.create({
   View: {
-    flex: 1,
+    paddingTop: 10,
     flexDirection: 'row',
     justifyContent:'center',
-    
-    
+
   },
   ViewBorder: {
 
