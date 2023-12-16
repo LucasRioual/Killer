@@ -5,7 +5,7 @@ import { View, Text, Modal, StyleSheet, TouchableOpacity,} from 'react-native';
 
 
 
-const PopUpKilled = props => {
+const PopUpKilled = (props) => {
   
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [option, setOption] = useState('non'); // 'oui' ou 'non'
@@ -35,10 +35,8 @@ const PopUpKilled = props => {
     <Modal
         animationType="slide"
         transparent={true}
-        visible={isConfirmModalVisible}
-        onRequestClose={() => {
-          setIsConfirmModalVisible(false);
-        }}
+        visible={props.visible}
+        onRequestClose={props.exit}
       >
       <TouchableOpacity style= {styles.View} onPress={props.exit} activeOpacity={1} >
 
@@ -46,7 +44,7 @@ const PopUpKilled = props => {
           <TouchableOpacity activeOpacity={1}>
             <Text style={styles.Titre}>Confirmation du Kill</Text>
             <View style={styles.TextContainer}>
-              <Text style={styles.TextTitre}>Tu confirmes t'as mort ?</Text>
+              <Text style={styles.TextTitre}>Tu confirmes ta mort ?</Text>
             </View>
             <View style={styles. switchContainer}>
                 <TouchableOpacity style={styles.button} onPress={confirmKill}>

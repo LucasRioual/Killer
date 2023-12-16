@@ -13,41 +13,6 @@ import {useUserAPI} from '../Hooks/hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
-/* //...
-
-// Supposons que vous avez obtenu un userId que vous souhaitez sauvegarder
-
-
-// Enregistrez l'identifiant dans AsyncStorage
-const saveUserId = async () => {
-  try {
-    await AsyncStorage.setItem('userId', userId);
-    console.log('Identifiant sauvegardé avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
-  }
-};
-
-// Chargez l'identifiant depuis AsyncStorage
-const loadUserId = async () => {
-  try {
-    const storedUserId = await AsyncStorage.getItem('userId');
-    if (storedUserId !== null) {
-      console.log('Identifiant chargé avec succès :', storedUserId);
-      // Faites quelque chose avec l'identifiant chargé
-    } else {
-      console.log('Aucun identifiant trouvé dans le stockage.');
-    }
-  } catch (error) {
-    console.error('Erreur lors du chargement de l\'identifiant :', error);
-  }
-};
-
-//...
-
-// Appel aux fonctions de sauvegarde et de chargement
-saveUserId();
-loadUserId(); */
 
 
 const HomeScreen = ({navigation}) => {
@@ -162,9 +127,8 @@ const HomeScreen = ({navigation}) => {
         <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
       <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
-      <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>  
-     
-      
+      <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>     
+      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/>  
              
     </View>
     

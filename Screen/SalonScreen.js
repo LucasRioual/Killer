@@ -62,7 +62,7 @@ const SalonScreen = ({navigation})=> {
     return (
 
       <View style={styles.ViewMain} >
-        <Header titre={"Salon"}/>
+        <Header titre={"Salon"} navigation= {navigation}/>
         <View style={styles.ViewBody}>
           
             <Text style={styles.TextTitre}>Code de la partie :</Text>

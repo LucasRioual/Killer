@@ -18,8 +18,8 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
 
   return (
     <View style={styles.ViewMain}>
-      {/* En-tête */}
-      <Header titre={"Paramètres de la partie"}/>
+      
+      <Header titre="Paramètres de la partie" navigation= {navigation}/>
 
       <View style={styles.ViewBody}>
 
@@ -100,22 +100,19 @@ const MainBouton = props => {
 const styles = StyleSheet.create({
   ViewMain: {
     // Conteneur principal de l'écran
-    flex: 2,
+    flex: 1,
     backgroundColor: '#061624', 
   },
   ViewBody: {
     flex: 5, 
-    paddingVertical:40,
-    paddingHorizontal:10,
-    marginTop: 100,
+    
     alignItems:'center',
   },
   TextTitre: {
     fontSize: 30,
     fontFamily: 'Sen',
     fontWeight: 'bold',
-    marginTop: -80,
-    marginBottom: 50,
+    
   },
   modalView: {
     margin: 20,

@@ -4,25 +4,26 @@ import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import {useGame} from '../Hooks/hooks';
 import { useSelector, useDispatch } from 'react-redux';
-import Modal from 'react-native-modal';
+
 
 const ActionScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
-  const [target, setTarget] = useState(''); // A remplacer par le target de l'utilisateur
+  const [targetAndMission, setTargetAndMission] = useState([]); // A remplacer par le target de l'utilisateur
 
-  const getTarget = () => {
+  const getTargetAndMission = () => {
     console.log('listPlayer : ', listPlayer);
     for (let i = 0; i < listPlayer.length; i++) {
       if (listPlayer[i].userId === userId) {
-        return listPlayer[i].target;
+        return [listPlayer[i].target,listPlayer[i].mission];
       }
     }
   }
 
   useEffect(() => {
-    setTarget(getTarget());
+    console.log(getTargetAndMission());
+    setTargetAndMission(getTargetAndMission());
   },[listPlayer]);
 
   
@@ -38,12 +39,12 @@ const ActionScreen = ({navigation}) => {
       <View style={styles.ViewBody}>
         {/* Cible */}
         <View style={styles.targetContainer}>
-          <Text style={styles.TextTitre}>{target}</Text>
+          <Text style={styles.TextTitre}>{targetAndMission[0]}</Text>
         </View>
         
         {/* Action */}
         <View style={styles.actionContainer}>
-          <Text style={styles.TextTitre}>Khaoula doit te proposer de boire dans son verre</Text>
+          <Text style={styles.TextTitre}>{targetAndMission[1]}</Text>
         </View>
         
         {/* Bouton KILL */}

@@ -5,10 +5,14 @@ import Header from '../Components/Header';
 
 
 const ModeScreen=({navigation}) => {
+
+ 
+
+
     return (
 
       <View style={styles.ViewMain} >
-        <Header titre={"Mode"}/>
+        <Header titre={"Modes"} navigation= {navigation} />
         <View style={styles.ViewBody}>
           <View style={styles.ViewScrollContainer}>
             <ScrollView style={styles.Scroll}>

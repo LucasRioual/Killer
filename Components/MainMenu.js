@@ -28,7 +28,7 @@ const MainMenu =  (props) => {
       Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
     ]).start();
  }
-
+ 
 
   const Create = () => {
     if (!userSurname){
@@ -48,6 +48,23 @@ const MainMenu =  (props) => {
     }
   };  
 
+  const Join = () => {
+    if (!userSurname){
+      startShake();
+    }
+    else{
+      if(!userId){
+        createUser();
+      }
+      else{
+        console.log(userId);
+        changeSurnameAPI();
+      }
+      props.clickJoin();
+      
+    }
+  };  
+
 
   
 
@@ -58,7 +75,7 @@ const MainMenu =  (props) => {
         <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => dispatch(modifySurname(text))}/>
       </Animated.View>   
       <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
-      <MainBouton titre="Rejoindre une partie" onPress = {props.clickJoin} color = {props.color}/>
+      <MainBouton titre="Rejoindre une partie" onPress = {Join} color = {props.color}/>
 
 
     </View>
