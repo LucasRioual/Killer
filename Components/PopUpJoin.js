@@ -1,28 +1,90 @@
 // PopUp.js
-import React, { useRef, useState } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch} from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated} from 'react-native';
 import { useSelector, useDispatch} from 'react-redux';
 import { modifyCode } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
+import { useGame } from '../Hooks/hooks';
 
 
 
 
-const PopUpJoin = props => {
+const PopUpJoin = (props) => {
 
   const gameCode = useSelector((state) => state.game.gameCode);
+  const userSurname = useSelector((state) => state.user.surname);
   const [isNonDrinker, setIsNonDrinker] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // Message d'erreur à afficher
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const handleJoinGame = () => {
-    if(!gameCode){
-      console.log('Il n a pas de code');
+
+  const animRef = useRef(new Animated.Value(0)).current;
+   
+  const {startSocket, addPlayer} = useGame({navigation});
+ 
+  
+
+  const joinApi = async (code) => {
+    await startSocket(code);    
+    await addPlayer(code);
+
+  }
+  const apiUrl = 'http://192.168.0.11:3000';
+ 
+
+ /*  startShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -20, duration: 70, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
+    ]).start();
+ } */
+  
+  
+
+  const testGameCode = async (code) => {
+    const response = await fetch(`${apiUrl}/api/game/${code}`);
+    const data = await response.json();
+    if(response.ok){
+      console.log(data);
+      const listPlayer = data.listPlayer;
+      for (let i = 0; i < listPlayer.length; i++) {
+        if(listPlayer[i].surname == userSurname){
+          props.setMessageError('Ton nom est déjà pris');
+          props.shakeAnim(props.animRef);
+          props.exit();
+          return;
+        }
       }
-    else{
+      await joinApi(code);
       navigation.navigate('Salon');
     }
+    else{
+      props.shakeAnim(animRef);
+      setErrorMessage(data.error);
+    }
+      
+
+  }
+
+  
+
+
+  const handleJoinGame = () => {
+    if(!gameCode){
+      props.shakeAnim(animRef);
+      setErrorMessage('Rentre un code tête de noeud');
+      }
+    else if(gameCode.length != 6){
+      props.shakeAnim(animRef);
+      setErrorMessage('Le code doit faire 6 caractères');
+    }
+    else{
+      testGameCode(gameCode);
+    }
    };
-   // Fonction pour gérer la soumission du formulaire
+   
       
     const handleToggleSwitch = (newValue) => {
       setIsNonDrinker(newValue); // Met à jour l'état avec la nouvelle valeur
@@ -30,50 +92,49 @@ const PopUpJoin = props => {
     };
     // Cette fonction est appelée chaque fois que le Switch est activé/désactivé
     const toggleSwitch = () => setIsSwitchEnabled(previousState => !previousState);
-    // Naviguer vers l'écran de jeu ou afficher une erreur, etc.
+    
 
+    
 
-
+  useEffect(() => {
+    setErrorMessage('');
+  }, []);
 
   return (
     <Modal visible={props.visible} transparent onRequestClose={props.exit}>
       <TouchableOpacity style= {styles.View} onPress={props.exit} activeOpacity={1} >
-
-        <View style={styles.Container}>                                    
-          <ScrollView style={styles.Scroll}>
-            <TouchableOpacity activeOpacity={1}>
-              <Text style={styles.Titre}>Rejoindre une partie</Text>
-              <View style={styles.TextContainer}>
-                {/* Champ de saisie pour le code de la partie */}
+        <View style={styles.Container} >                                    
+            <TouchableOpacity  activeOpacity={1}>
+              <Text style={styles.Titre}>Rejoindre</Text>
+              <Animated.View style = {{ transform: [{translateX: animRef}] }}>
                 <TextInput
                   style={styles.input}
                   onChangeText={(text) => {dispatch(modifyCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
                   value={gameCode} // Affiche la valeur actuelle de gameCode
-                  placeholder="Code de la partie" // Texte d'indication dans le champ de saisie
-                  // Type de clavier pour les nombres
+                  placeholder="CODE" // Texte d'indication dans le champ de saisie
+                  autoCapitalize="characters"
+                  autoFocus={true}
                 />
-
-                {/* Interrupteur pour l'option non-buveur */}
-                <View style={styles.switchContainer}>
-                  <Text style={styles.TextTitre}>Non-buveur ?</Text>
-                  <Switch
-                      trackColor={{ false: 'red', true: 'green' }}
-                      thumbColor={isNonDrinker? 'green' : 'red'}
-                      onValueChange={handleToggleSwitch} // Appelle handleToggleSwitch chaque fois que le Switch est basculé
-                      value={isNonDrinker} // Utilise l'état pour déterminer si le Switch est activé ou non
-                    />
-                </View>
-
-                {/* Bouton pour soumettre le formulaire et rejoindre le jeu */}
-                <TouchableOpacity style={styles.button} onPress={handleJoinGame}>
-                  <Text style={styles.buttonText}>GO</Text>
-                </TouchableOpacity>
-
+              </Animated.View>
+              
+              <Text style={styles.TextErreur}>{errorMessage}</Text>
+              <View style={styles.switchContainer}>
+                <Text style={styles.TextTitre}>Non-buveur :</Text>
+                <Switch
+                    trackColor={{ false: 'red', true: 'green' }}
+                    thumbColor={isNonDrinker? 'green' : 'red'}
+                    onValueChange={handleToggleSwitch} 
+                    value={isNonDrinker}
+                  />
               </View>
+              <TouchableOpacity style={styles.button} onPress={handleJoinGame}>
+                <Text style={styles.buttonText}>GO</Text>
+              </TouchableOpacity>
+
+             
                    
 
-            </TouchableOpacity>
-          </ScrollView>       
+            </TouchableOpacity>      
         </View>
       </TouchableOpacity>
     </Modal>
@@ -88,62 +149,64 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     
-  },
-  Scroll: {
-    padding: 20,
   },
   Container: {
     backgroundColor: '#FFF',
-    width: 350,
-    height: 400,
+    paddingHorizontal: 60,
     borderRadius: 15,  
+    padding: 20,
+    
   },
   
   Titre: {
     fontFamily: 'LuckiestGuy',
-    fontSize: 30,
+    fontSize: 40,
     textAlign: 'center',
-    color: '#F0122D'
-    
-  },
-  TextContainer: {
-    marginTop: 20,
-    height: 300,
-
+    color: '#F0122D',
+    marginBottom: 5,
     
   },
 
   input: {
-    // Style pour le champ de saisie
+    
+    marginVertical: 5,
     height: 50,
-    //width: '80%',
-    margin: 25,
+    width: 150,
     borderWidth: 1,
-    padding: 10,
-    paddingHorizontal:40,
-    paddingVertical:10,
     backgroundColor: '#fff', // Couleur de fond du champ de saisie
-    borderRadius: 30,
+    borderRadius: 10,
+    textAlign: 'center',
+    fontSize: 25,
+    alignSelf: 'center',
+    
+  },
+  TextErreur: {
+    color: '#F0122D',
+    textAlign: 'center',
+    fontSize: 12,
+    fontFamily: 'Sen',
+    fontWeight: 'bold',
   },
   switchContainer: {
     // Style pour le conteneur de l'interrupteur
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginVertical: 5,
   },
   TextTitre: {
     fontSize: 22,
     fontFamily: 'Sen',
   },
   button: {
+    marginTop: 5,
     backgroundColor:'#F0122D',
     borderRadius: 50,
-    paddingHorizontal:40,
-    paddingVertical:10,
-    justifyContent: 'center',
+    paddingVertical:5,
+    alignSelf: 'center',
+    width: 150,
     shadowColor: "#000",
     shadowOffset: {
 	    width: 0,

@@ -5,14 +5,14 @@ import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode } from '../Store/Reducer/gameSlice'
+import listData from '../Data/UserData.json'
 
 import {useGame} from '../Hooks/hooks'
 
 
-
-
-
 const SalonScreen = ({navigation})=> {
+
+
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
@@ -22,7 +22,8 @@ const SalonScreen = ({navigation})=> {
   const dispatch = useDispatch();
   
   const {startSocket, addPlayer, createGame, startGame} = useGame({navigation});
-
+ 
+  
 
   const joinApi = async (code) => {
     await startSocket(code);    
@@ -36,8 +37,9 @@ const SalonScreen = ({navigation})=> {
       }
       else{
         console.log('join');
-        joinApi(gameCode);
+        //joinApi(gameCode);
       }
+
       
     }, []);
 
@@ -50,8 +52,19 @@ const SalonScreen = ({navigation})=> {
             ))}
           </View>
         );
-  
-  }
+    } 
+
+/*   const ListPlayer = () =>{
+    return (
+      <View style={styles.PlayerContainer}>
+        {listData.map((user, index) => (
+          <PlayerName key={index} label={user.userName} />
+        ))}
+    </View>
+      );
+
+}  */
+
 
   const onClickStart = () =>{
     startGame(gameCode);
@@ -64,18 +77,23 @@ const SalonScreen = ({navigation})=> {
       <View style={styles.ViewMain} >
         <Header titre={"Salon"} navigation= {navigation}/>
         <View style={styles.ViewBody}>
-          
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
-            <View style={styles.ViewPlayer}>
-                <ScrollView persistentScrollbar={true}>
-                    
+            <View style={styles.MainContainer}>
+              <View style={styles.ViewPlayer}>
+                
+                <Text style={styles.TextTitreJoueur}>Joueurs</Text>
+                <ScrollView persistentScrollbar={true}>         
                     <ListPlayer/>
-                   
+                    
                 </ScrollView>
                 
-                
+              </View>
+              <Text style={styles.TextWait}>En attente de joueurs ...</Text>
             </View>
+
+            
+            
             
             <View style={styles.buttonContainer}>
 
@@ -104,33 +122,58 @@ const styles = StyleSheet.create ({
   },
   ViewBody: {
     flex: 5, 
-    paddingVertical:40,
-    paddingHorizontal:10,
+    paddingTop:20,
+    paddingBottom: 30,
     alignItems:'center',
   },
   TextCode: {
     fontFamily: 'LuckiestGuy',
-    fontSize: 60,
+    fontSize: 58,
     color:'#F0122D',
+    
   },
   TextTitre: {
-    fontSize: 30,
+    fontSize: 24,
     fontFamily: 'Sen',
     color: 'white',
+    
+  },
+  MainContainer: {
+    marginTop:10,
+    flex:4,
+    width:'80%',
+    
+
   },
   ViewPlayer: {
-    marginTop:20,
+    flex:1,
+    backgroundColor: 'white',
     borderRadius:20,
-    flex:4,
-    justifyContent: 'center',
-  },
-  PlayerContainer: {
     
+    
+    
+  },
+  TextWait: {
+    fontSize: 12,
+    fontFamily: 'Sen',
+    color: 'white',
+    marginTop:4,
+    
+    
+  },
+  TextTitreJoueur: {
+    fontSize: 28,
+    fontFamily: 'LuckiestGuy',
+    color: 'black', 
+    textAlign:'center',
+    marginVertical:5
+  },
+
+
+  PlayerContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent:'center',
-    
-
   },
   button: {
     backgroundColor:'#F0122D',
@@ -150,6 +193,7 @@ const styles = StyleSheet.create ({
   buttonContainer:{
     flex:1,
     justifyContent:'flex-end',
+    
     
   },
   buttonText: {

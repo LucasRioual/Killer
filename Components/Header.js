@@ -35,6 +35,7 @@ const Header = (props) => {
 
 const styles = StyleSheet.create({
   View: {
+
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     
    
-    
   },
   ViewBorder: {
     borderBottomColor: '#F0122D',

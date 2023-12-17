@@ -93,24 +93,21 @@ export const useGame = ({navigation}) => {
   
 
   const startSocket = (code) => {
+
     return new Promise((resolve, reject) => {
       const socket = io(`${apiUrl}`);
   
       // Écouter l'événement 'connect'
       socket.on('connect', () => {
-        console.log('Connecté au serveur WebSocket');
         socket.emit('sendCode', code);
-        resolve(socket); // Résoudre la promesse une fois que la connexion est établie
+        resolve(socket); 
       });
   
       socket.on('sendListPlayer', (updatedListPlayer) => {
-        console.log('Nouvelle liste de joueurs reçue :', userSurname, updatedListPlayer);
         dispatch(setListPlayer(updatedListPlayer));
       });
       socket.on('sendTarget', (updatedListPlayer) => {
-        console.log('Nouvelle cible :', updatedListPlayer);
-        dispatch(setListPlayer(updatedListPlayer)); 
-        console.log('listPlayerWithTarget : ', listPlayer);  
+        dispatch(setListPlayer(updatedListPlayer));  
         navigation.navigate('Cible');
         
       });
@@ -127,13 +124,16 @@ export const useGame = ({navigation}) => {
     const response = await fetch(`${apiUrl}/api/game/${code}/start`);
     const data = await response.json();
     if (response.ok) {
-      // Si la requête a réussi, faire ce que vous avez à faire après l'ajout du joueur
-      console.log(data);
     } else {
       // Si la requête a échoué, afficher une popup avec le message d'erreur
       alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
-      console.error("Erreur :", data.error);
     }
+  };
+
+  const getGame = async(code) => {
+    const response = await fetch(`${apiUrl}/api/game/${code}`);
+    const data = await response.json();
+    return data;
   };
 
   const addPlayer = async(code) => {
@@ -147,12 +147,9 @@ export const useGame = ({navigation}) => {
       });
       const data = await response.json();
       if (response.ok) {
-        // Si la requête a réussi, faire ce que vous avez à faire après l'ajout du joueur
-        console.log(data);
       } else {
         // Si la requête a échoué, afficher une popup avec le message d'erreur
         alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
-        console.error("Erreur :", data.error);
       }
         
     };
@@ -175,17 +172,15 @@ export const useGame = ({navigation}) => {
       
       dispatch(modifyCode(data.code));
       await startSocket(data.code);
-      console.log('start socket');
       await addPlayer(data.code);
 
   
     } catch (error) {
-      console.error("Erreur lors de la création de partie:", error);
       
     }
   };
 
-  return{createGame, addPlayer, startSocket, sendSocket, startGame};
+  return{createGame, getGame, addPlayer, startSocket, sendSocket, startGame};
 
   
 

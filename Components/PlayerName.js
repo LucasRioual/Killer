@@ -21,13 +21,13 @@ const PlayerName = (props) =>{
       NameContainer: {
         marginHorizontal:4,
         marginVertical:10,
-        paddingHorizontal:15,
-        paddingVertical:10,
-        backgroundColor:'#264653',
-        borderRadius: 50,
+        paddingHorizontal:12,
+        paddingVertical:7,
+        backgroundColor: '#061624',
+        borderRadius: 5,
       },
       Name: {
-        fontSize: 20,
+        fontSize: 18,
         fontFamily: 'Sen',
         color: 'white',
       },

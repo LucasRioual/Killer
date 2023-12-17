@@ -7,13 +7,13 @@ import { View, Text, Modal, StyleSheet, TouchableOpacity,} from 'react-native';
 
 const PopUpKilled = (props) => {
   
-  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  //const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [option, setOption] = useState('non'); // 'oui' ou 'non'
 
-  const handlePressKilled = () => {
+  /* const handlePressKilled = () => {
     // Afficher le modal de confirmation lorsque l'utilisateur appuie sur 'Kill'
     setIsConfirmModalVisible(true);
-  };
+  }; */
 
   const confirmKill = () => {
     // Logique pour confirmer le "Kill"

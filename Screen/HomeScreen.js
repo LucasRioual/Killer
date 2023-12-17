@@ -1,5 +1,5 @@
-import React, {  useEffect, useState, useCallback } from 'react';
-import { Text, View, StyleSheet, } from 'react-native';
+import React, {  useEffect, useState, useCallback, useRef } from 'react';
+import { Text, View, StyleSheet, Animated } from 'react-native';
 import MainMenu from '../Components/MainMenu';
 import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
@@ -22,6 +22,8 @@ const HomeScreen = ({navigation}) => {
   const txtColor = useSelector((state) => state.color.txtColor);
   const titreColor = useSelector((state) => state.color.titreColor);
   const svgData = useSelector((state) => state.color.svgData);
+  const shakeAnimJoin = useRef(new Animated.Value(0)).current;
+  const shakeAnimSurname = useRef(new Animated.Value(0)).current;
 
   const {getSurname} = useUserAPI();
  
@@ -33,6 +35,8 @@ const HomeScreen = ({navigation}) => {
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
   const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
   const [isPopUpRegleVisible, setPopUpRegleVisible] = useState(false);
+  const [messageError, setMessageError] = useState(''); 
+  
   const openPopUpRegle = () => {
     setPopUpRegleVisible(true);
   };
@@ -64,6 +68,7 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
+ 
 
   const loadUserId = async () => {
     try {
@@ -81,6 +86,20 @@ const HomeScreen = ({navigation}) => {
       console.error('Erreur lors du chargement de l\'identifiant :', error);
     }
   };
+
+  startShake = (animRef) => {
+    Animated.sequence([
+      Animated.timing(animRef, { toValue: 20, duration: 70, useNativeDriver: true }),
+      Animated.timing(animRef, { toValue: -20, duration: 70, useNativeDriver: true }),
+      Animated.timing(animRef, { toValue: 20, duration: 70, useNativeDriver: true }),
+      Animated.timing(animRef, { toValue: 0, duration: 70, useNativeDriver: true })
+    ]).start();
+ }
+
+ /*  const displaySurnameError = (message) => {
+    setMessageError(message);
+    startShake(shakeAnimSurname);
+  } */
 
   const saveUserId = async (userToSave) => {
     try {
@@ -101,11 +120,6 @@ const HomeScreen = ({navigation}) => {
     useCallback(() => {
       // Lorsque l'écran est en focus, définissez le hostFlag sur false
       dispatch(setHostFalse());
-
-      // Fonction de nettoyage lorsque l'écran perd le focus (si nécessaire)
-      return () => {
-        // Mettez ici le nettoyage ou des actions supplémentaires si nécessaire
-      };
     }, [])
   );
   
@@ -115,11 +129,14 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View1}>
       <ImageNuit onClick = {changeColor} fill = {txtColor} d = {svgData}/>
       </View>
+     
       <View style={styles.View2}>
         <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
       </View>
       <View style={styles.View3}>
-        <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor}/>
+        
+        
+        <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor} labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
       </View>
       <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 
 
@@ -128,7 +145,7 @@ const HomeScreen = ({navigation}) => {
       </View> 
       <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
       <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>     
-      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/>  
+      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin} setMessageError = {setMessageError} animRef={shakeAnimSurname} shakeAnim = {startShake}/>  
              
     </View>
     
@@ -152,7 +169,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-         
   },
   View2: {
     flex: 2,
@@ -163,6 +179,7 @@ const styles = StyleSheet.create({
     flex: 4,
     justifyContent: 'center',
     alignItems: 'center',
+    
 
   },
   View4: {

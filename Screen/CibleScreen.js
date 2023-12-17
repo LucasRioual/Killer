@@ -4,9 +4,12 @@ import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import {useGame} from '../Hooks/hooks';
 import { useSelector, useDispatch } from 'react-redux';
+import PopUpKilled from '../Components/PopUpKilled';
+import HeaderMenu from '../Components/HeaderMenu';
 
 
-const ActionScreen = ({navigation}) => {
+
+const CibleScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
@@ -32,8 +35,24 @@ const ActionScreen = ({navigation}) => {
     console.log('Kill action pressed');
   };
 
+  //menu
+   //ajout du menu
+  
+  
+   const retourMenu = () => {
+    navigation.goBack(); // Ou toute autre logique pour le retour au menu
+  };
+  
+
+
   return (
     <View style={styles.ViewMain}>
+
+ 
+      <View style={styles.View1}>
+        <HeaderMenu onClick={retourMenu} fill={styles.txtColor} />
+      </View>
+
       <StatusBar barStyle="light-content" />
       <Header titre={"Cible"}/>
       <View style={styles.ViewBody}>
@@ -54,6 +73,7 @@ const ActionScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
+      {/* <PopUpKilled/> */}
     </View>
   );
 };
@@ -63,6 +83,12 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: '#061624',
   },
+  View1: {
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+
+  },
+  txtColor: "white",
   ViewBody: {
     flex: 5, 
     paddingVertical:40,
@@ -126,4 +152,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ActionScreen;
+export default CibleScreen;

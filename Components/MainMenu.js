@@ -18,7 +18,7 @@ const MainMenu =  (props) => {
   
 
   //const [inputValue, setInputValue] = useState('');
-  const shakeAnim = useRef(new Animated.Value(0)).current;
+  /* const shakeAnim = useRef(new Animated.Value(0)).current;
 
   startShake = () => {
     Animated.sequence([
@@ -27,19 +27,18 @@ const MainMenu =  (props) => {
       Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
       Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
     ]).start();
- }
+ } */
  
 
   const Create = () => {
     if (!userSurname){
-      startShake();
+      props.shakeAnim(props.animRef);
     }
     else{
       if(!userId){
         createUser();
       }
       else{
-        console.log(userId);
         changeSurnameAPI();
       }
       dispatch(setHostTrue());
@@ -50,14 +49,14 @@ const MainMenu =  (props) => {
 
   const Join = () => {
     if (!userSurname){
-      startShake();
+      props.shakeAnim(props.animRef);
     }
     else{
       if(!userId){
         createUser();
       }
       else{
-        console.log(userId);
+       
         changeSurnameAPI();
       }
       props.clickJoin();
@@ -65,15 +64,25 @@ const MainMenu =  (props) => {
     }
   };  
 
+  const onSurnameChange = (text) => {
+    dispatch(modifySurname(text));
+    props.setMessageError('');
+  }
+
 
   
 
  
   return (
     <View>
-      <Animated.View style = {{ transform: [{translateX: shakeAnim}] }}>
-        <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => dispatch(modifySurname(text))}/>
-      </Animated.View>   
+      <View style = {styles.inputContainer}>
+        <Text style = {styles.txtError}>{props.labelError}</Text>
+        <Animated.View style = {{ transform: [{translateX: props.animRef}] }}>
+          <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => onSurnameChange(text)}/>
+        </Animated.View> 
+
+      </View>
+        
       <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
       <MainBouton titre="Rejoindre une partie" onPress = {Join} color = {props.color}/>
 
@@ -114,6 +123,16 @@ const styles = StyleSheet.create ({
     fontSize: 25,
     
   },
+  txtError: {
+    color: '#F0122D',
+    marginLeft:20,
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  inputContainer: {
+    
+    margin: 20,
+  },
   input: {
     borderRadius: 50, 
     borderWidth: 1,    
@@ -123,7 +142,7 @@ const styles = StyleSheet.create ({
     height: 60,
     fontSize: 25,
     textAlign: 'center',
-    margin: 20,
+    
   },
 });
 

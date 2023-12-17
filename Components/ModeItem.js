@@ -40,7 +40,7 @@ const ModeItem = (props) => {
 const styles = StyleSheet.create ({
     button: {
       flexDirection: 'row',
-      backgroundColor:'#264653',
+      backgroundColor:'#FFF',
       borderRadius: 20,
       width: 350,
       height: 150,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create ({
       paddingRight:0,
     },
     imgContainer: {
-      backgroundColor: '#FFEBD7',
+      backgroundColor: '#061624',
       aspectRatio:1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -77,6 +77,7 @@ const styles = StyleSheet.create ({
     rightContainer: {
       flex: 1,
       padding: 10,
+      paddingLeft: 20,
       
       
       
@@ -94,10 +95,10 @@ const styles = StyleSheet.create ({
     },
     description: {
       
-      textAlign: 'justify',
-      fontSize: 12,
+      textAlign: 'left',
+      fontSize: 13,
       fontFamily: 'Sen',
-      color: "#FFF",
+      color: "#000",
     },
     txtContainer: {
       flex:5,  

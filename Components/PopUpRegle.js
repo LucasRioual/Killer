@@ -29,7 +29,7 @@ const PopUpRegle = props => {
                   <Text style={{ fontWeight: 'bold', color: '#F0122D'  }}>• Classique : </Text>
                   partie du Killer classique avec toutes les règles présentées plus haut.{"\n"}{"\n"}
                   <Text style={{ fontWeight: 'bold', color: '#F0122D' }}>• Mission ou pas mission : </Text>
-                  Le but est de réaliser une mission sans que les autres sans aperçoive.
+                  Le but est de réaliser une mission sans que les autres s'en aperçoivent.
                 </Text>
               </View>
               <TouchableOpacity style={styles.button} onPress={props.exit} activeOpacity={0.5}>
@@ -67,12 +67,6 @@ const styles = StyleSheet.create({
     height: 400,
     borderRadius: 15,
     
-  },
-  ImageBackground: {
-    backgroundColor:'#F0122D',
-    width: 31,
-    height: 31,
-    borderRadius: 5,
   },
   Titre: {
     fontFamily: 'LuckiestGuy',
