@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode } from '../Store/Reducer/gameSlice'
 import listData from '../Data/UserData.json'
+import PopUpConfirm from '../Components/PopUpConfirm';
 
 import {useGame} from '../Hooks/hooks'
 
@@ -20,28 +20,55 @@ const SalonScreen = ({navigation})=> {
   const gameCode = useSelector((state) => state.game.gameCode);
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const dispatch = useDispatch();
+  const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
+  const navigationEventRef = useRef(null);
   
-  const {startSocket, addPlayer, createGame, startGame} = useGame({navigation});
+  const {removeGame, removePlayer, createGame, startGame} = useGame({navigation});
  
-  
 
-  const joinApi = async (code) => {
-    await startSocket(code);    
-    await addPlayer(code);
 
-  }
+  const handleConfirmation = async () => {
 
-    useEffect(() => {
-      if(hostFlag){
-        createGame();
-      }
-      else{
-        console.log('join');
-        //joinApi(gameCode);
-      }
+    setIsPopUpConfirmationVisible(false);
+    if(hostFlag){
+      removeGame(gameCode);
 
-      
-    }, []);
+    }
+    else{
+      removePlayer(gameCode);
+    }
+    
+
+
+    if(navigationEventRef.current){
+      navigation.dispatch(navigationEventRef.current.data.action);
+    }
+    
+  };
+
+  const handleCancel = () => {
+    setIsPopUpConfirmationVisible(false);
+    
+  };
+
+ 
+
+
+
+
+  useEffect(() => {
+    if(hostFlag){
+      createGame();
+    }  
+    
+    navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+      navigationEventRef.current = e;
+      setIsPopUpConfirmationVisible(true);
+    });
+       
+
+  }, []);
 
 
     const ListPlayer = () =>{
@@ -54,16 +81,6 @@ const SalonScreen = ({navigation})=> {
         );
     } 
 
-/*   const ListPlayer = () =>{
-    return (
-      <View style={styles.PlayerContainer}>
-        {listData.map((user, index) => (
-          <PlayerName key={index} label={user.userName} />
-        ))}
-    </View>
-      );
-
-}  */
 
 
   const onClickStart = () =>{
@@ -75,7 +92,7 @@ const SalonScreen = ({navigation})=> {
     return (
 
       <View style={styles.ViewMain} >
-        <Header titre={"Salon"} navigation= {navigation}/>
+        <Header titre={"Salon"} navigation= {navigation} visible = {false}/>
         <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
@@ -108,6 +125,7 @@ const SalonScreen = ({navigation})=> {
 
             
         </View>
+        <PopUpConfirm isHost= {hostFlag} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       </View>
      
     );

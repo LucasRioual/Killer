@@ -36,6 +36,7 @@ const MainMenu =  (props) => {
     }
     else{
       if(!userId){
+        console.log('createUser');  
         createUser();
       }
       else{

@@ -1,6 +1,7 @@
 import React from 'react';
 import SvgRetour from '../assets/svg/SvgRetour';
-import {StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import Svg, {Path, Rect} from "react-native-svg"
 
 
 
@@ -18,13 +19,18 @@ const Header = (props) => {
   
   return (
     <View style={styles.View}>
-      <View style={styles.ViewBorder}></View>
+      <View style={[styles.ViewBorder, {borderBottomWidth: props.visible ? 0:3}]}></View>
       <TouchableOpacity style={styles.Svg} onPress={() => props.navigation.goBack()} >
         <SvgRetour/>
       </TouchableOpacity>
       <View style = {styles.ViewTitre}>
         <Text style={[styles.Titre, { fontSize: dynamicFontSize }]}>{props.titre}</Text>
       </View>
+      <TouchableOpacity style={[styles.SvgMenu, { display: props.visible ? 'flex' : 'none' }]}  onPress={props.onClick}>
+        <Svg width="48" height="48" viewBox="0 0 24 24">
+          <Path fill={'white'} d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+        </Svg>
+    </TouchableOpacity>
       
      
       
@@ -55,9 +61,18 @@ const styles = StyleSheet.create({
     
    
   },
+  SvgMenu: {
+    position: 'absolute',
+    right: 30,
+    top: 20,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+   
+  },
   ViewBorder: {
     borderBottomColor: '#F0122D',
-    borderBottomWidth: 3,
     position: 'absolute',
     bottom: 0,
     width: '80%',

@@ -20,44 +20,30 @@ const PopUpJoin = (props) => {
 
   const animRef = useRef(new Animated.Value(0)).current;
    
-  const {startSocket, addPlayer} = useGame({navigation});
+  const {startSocket} = useGame({navigation});
  
-  
 
-  const joinApi = async (code) => {
-    await startSocket(code);    
-    await addPlayer(code);
-
-  }
   const apiUrl = 'http://192.168.0.11:3000';
  
-
- /*  startShake = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
-    ]).start();
- } */
   
   
 
   const testGameCode = async (code) => {
+    
     const response = await fetch(`${apiUrl}/api/game/${code}`);
     const data = await response.json();
     if(response.ok){
-      console.log(data);
       const listPlayer = data.listPlayer;
       for (let i = 0; i < listPlayer.length; i++) {
         if(listPlayer[i].surname == userSurname){
           props.setMessageError('Ton nom est déjà pris');
           props.shakeAnim(props.animRef);
+          setErrorMessage('');
           props.exit();
           return;
         }
       }
-      await joinApi(code);
+      startSocket(code);
       navigation.navigate('Salon');
     }
     else{
@@ -166,6 +152,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#F0122D',
     marginBottom: 5,
+   
     
   },
 
@@ -195,6 +182,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 5,
+    
   },
   TextTitre: {
     fontSize: 22,

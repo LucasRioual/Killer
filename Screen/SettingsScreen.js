@@ -19,7 +19,7 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   return (
     <View style={styles.ViewMain}>
       
-      <Header titre="Classique" navigation= {navigation}/>
+      <Header titre="Classique" navigation= {navigation} visible = {false} />
 
       <View style={styles.ViewBody}>
 

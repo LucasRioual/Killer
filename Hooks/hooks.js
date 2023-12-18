@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { modifyId, modifySurname } from '../Store/Reducer/userSlice'
 import { modifyCode, setListPlayer} from '../Store/Reducer/gameSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { io } from "socket.io-client";
+import socket from '../socket';
 
 
 export const useUserAPI = () => {
@@ -24,17 +24,18 @@ export const useUserAPI = () => {
   };
 
 
-  const getSurname = useCallback(async(userId) => {
+  const getSurname = async(userId) => {
     try {
       const response = await fetch(`${apiUrl}/api/users/${userId}`);
       const data = await response.json();
+      console.log('Le surnom a été récupéré : ',data.surname);
       dispatch(modifySurname(data.surname));
       
     }
     catch(error){
       console.log('Erreur lors de la récupération de surnom',error);
     }
-  },[]);
+  };
 
 const createUser = async() => {
 
@@ -57,8 +58,9 @@ const createUser = async() => {
   };
   
 
-const changeSurnameAPI = useCallback(async() => {
+const changeSurnameAPI = async() => {
   try{
+   
     
     await fetch(`${apiUrl}/api/users/${userId}`, {
       method: 'PUT',
@@ -75,7 +77,7 @@ const changeSurnameAPI = useCallback(async() => {
     console.log('Erreur lors du changement de surname', error);
   }
 
-},[userId]);
+}
 
 return{getSurname, changeSurnameAPI, createUser};
 
@@ -87,22 +89,14 @@ export const useGame = ({navigation}) => {
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
-  const listPlayer = useSelector((state) => state.game.listPlayer);
   const dispatch = useDispatch();
+  const socketRef = useRef(null);
 
   
 
   const startSocket = (code) => {
 
-    return new Promise((resolve, reject) => {
-      const socket = io(`${apiUrl}`);
-  
-      // Écouter l'événement 'connect'
-      socket.on('connect', () => {
-        socket.emit('sendCode', code);
-        resolve(socket); 
-      });
-  
+    
       socket.on('sendListPlayer', (updatedListPlayer) => {
         dispatch(setListPlayer(updatedListPlayer));
       });
@@ -111,16 +105,25 @@ export const useGame = ({navigation}) => {
         navigation.navigate('Cible');
         
       });
+      socket.on('endGame', () => {
+        navigation.goBack();
+      });
+
+
+      const dataToSend = {userId: userId, surname: userSurname, code: code};
+      socket.emit('connectRoom', dataToSend); 
+      
+        
+      
   
       
-    });
+    
+    
   };
 
-  const sendSocket = (channel, data, code) => {
-    io.to(code).emit(channel, data);
-  }
 
   const startGame = async(code) => {
+
     const response = await fetch(`${apiUrl}/api/game/${code}/start`);
     const data = await response.json();
     if (response.ok) {
@@ -136,7 +139,7 @@ export const useGame = ({navigation}) => {
     return data;
   };
 
-  const addPlayer = async(code) => {
+  /* const addPlayer = async(code) => {
 
     const response = await fetch(`${apiUrl}/api/game/${code}`, {
         method: "POST",
@@ -152,10 +155,20 @@ export const useGame = ({navigation}) => {
         alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
       }
         
-    };
+    }; */
+
+    const removePlayer = async (code) => {
+
+      const dataToSend = {userId: userId, code: code};
+      socket.emit('removePlayer', dataToSend);
+          
+      };
+
+  const removeGame = async (code) => {
+    socket.emit('removeGame', code);
+  }
 
     
-
   const createGame = async () => {
     try {
 
@@ -171,8 +184,7 @@ export const useGame = ({navigation}) => {
       const data = await response.json();
       
       dispatch(modifyCode(data.code));
-      await startSocket(data.code);
-      await addPlayer(data.code);
+      startSocket(data.code);
 
   
     } catch (error) {
@@ -180,9 +192,7 @@ export const useGame = ({navigation}) => {
     }
   };
 
-  return{createGame, getGame, addPlayer, startSocket, sendSocket, startGame};
-
-  
+  return{createGame, getGame, removePlayer, startSocket, startGame, removeGame};
 
 }
 

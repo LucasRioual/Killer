@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
-import {useGame} from '../Hooks/hooks';
 import { useSelector, useDispatch } from 'react-redux';
 import PopUpKilled from '../Components/PopUpKilled';
 import HeaderMenu from '../Components/HeaderMenu';
+
 
 
 
@@ -25,7 +25,6 @@ const CibleScreen = ({navigation}) => {
   }
 
   useEffect(() => {
-    console.log(getTargetAndMission());
     setTargetAndMission(getTargetAndMission());
   },[listPlayer]);
 
@@ -35,10 +34,6 @@ const CibleScreen = ({navigation}) => {
     console.log('Kill action pressed');
   };
 
-  //menu
-   //ajout du menu
-  
-  
    const retourMenu = () => {
     navigation.goBack(); // Ou toute autre logique pour le retour au menu
   };
@@ -47,34 +42,61 @@ const CibleScreen = ({navigation}) => {
 
   return (
     <View style={styles.ViewMain}>
+      <Header titre={""} navigation= {navigation} visible = {true} />
+      <View style={styles.ViewBody}>
+        <View style={styles.mainContainer}>
+          <Text style={styles.TextTitre}>Cible</Text>
+          <View style={styles.targetContainer}>
+            <Text style={styles.TextTarget}>{targetAndMission[0]}</Text>
 
- 
-      <View style={styles.View1}>
-        <HeaderMenu onClick={retourMenu} fill={styles.txtColor} />
+          </View>
+
+        </View>
+        <View style={styles.mainContainer}>
+          <Text style={styles.TextTitre}>Mission</Text>
+          <View style={styles.targetContainer}>
+            <Text style={styles.TextMission}>{targetAndMission[1]}</Text>
+
+          </View>
+
+        </View>
+        <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handlePressKill}>
+            <Text style={styles.buttonText}>KILL</Text>
+          </TouchableOpacity>
+
+        </View>
+        
       </View>
+    
+      
 
-      <StatusBar barStyle="light-content" />
+      {/* <View style={styles.View1}>
+        <HeaderMenu onClick={retourMenu} fill={styles.txtColor} />
+      </View> */}
+
+      {/* <StatusBar barStyle="light-content" />
       <Header titre={"Cible"}/>
       <View style={styles.ViewBody}>
-        {/* Cible */}
+        
         <View style={styles.targetContainer}>
           <Text style={styles.TextTitre}>{targetAndMission[0]}</Text>
         </View>
         
-        {/* Action */}
+        
         <View style={styles.actionContainer}>
           <Text style={styles.TextTitre}>{targetAndMission[1]}</Text>
         </View>
         
-        {/* Bouton KILL */}
+        
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handlePressKill}>
             <Text style={styles.buttonText}>KILL</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      {/* <PopUpKilled/> */}
-    </View>
+      </View> */}
+      
+   </View>
   );
 };
 
@@ -88,12 +110,20 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
 
   },
-  txtColor: "white",
+  
   ViewBody: {
     flex: 5, 
-    paddingVertical:40,
-    paddingHorizontal:10,
+    
     alignItems:'center',
+    
+    
+  },
+  mainContainer: {
+    marginTop: 0,
+    marginBottom: 40,
+    
+    alignItems:'center',
+
   },
   
   menuButton: {
@@ -103,16 +133,30 @@ const styles = StyleSheet.create({
     top: 10,
   },
   TextTitre: {
-    fontSize: 30,
-    fontFamily: 'Sen',
+    fontSize: 46,
+    fontFamily: 'LuckiestGuy',
     color: 'white',
   },
   targetContainer: {
-    marginBottom: 20,
-    padding: 10,
-    borderColor: 'red', // Couleur de la bordure de la cible
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    borderColor: '#F0122D',
     borderWidth: 2,
     borderRadius: 10,
+    maxWidth:'80%'
+  },
+  TextTarget: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 35,
+    fontFamily: 'Sen',
+  },
+  TextMission: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 25,
+    fontFamily: 'Sen',
   },
  
   actionContainer: {
@@ -140,13 +184,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer:{
     flex:1,
-    //justifyContent:'flex-end',
+    justifyContent: 'center',
     
   },
   buttonText: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 35,
+    fontSize: 42,
     fontFamily: 'LuckiestGuy',
     
   },

@@ -14,7 +14,7 @@ const HeaderMenu = (props)  => {
 const styles = StyleSheet.create({
     View: {
         padding: 20,
-        paddingBottom: 0,
+        backgroundColor: 'blue',
 
     },
   });
