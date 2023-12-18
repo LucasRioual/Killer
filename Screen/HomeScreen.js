@@ -8,10 +8,10 @@ import PopUpJoin from '../Components/PopUpJoin';
 import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
 import { dark, light } from '../Store/Reducer/colorSlice';
-import { modifyId, setHostFalse} from '../Store/Reducer/userSlice';
-import {useUserAPI} from '../Hooks/hooks';
+import { modifyId, modifySurname, setHostFalse} from '../Store/Reducer/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import {getSurname} from '../Hooks/hooks';
 
 
 
@@ -25,7 +25,7 @@ const HomeScreen = ({navigation}) => {
   const shakeAnimJoin = useRef(new Animated.Value(0)).current;
   const shakeAnimSurname = useRef(new Animated.Value(0)).current;
 
-  const {getSurname} = useUserAPI();
+ 
  
 
 
@@ -75,10 +75,9 @@ const HomeScreen = ({navigation}) => {
       const storedUserId = await AsyncStorage.getItem('userId');
       if (storedUserId !== null) {
         console.log('Identifiant chargé avec succès :', storedUserId);
-        
         dispatch(modifyId(storedUserId));
-        getSurname(storedUserId);
-
+        const surname = await getSurname(storedUserId);
+        dispatch(modifySurname(surname));
       } else {
         console.log('Aucun identifiant trouvé dans le stockage.');
       }

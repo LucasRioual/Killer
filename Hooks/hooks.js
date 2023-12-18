@@ -1,35 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { modifyId, modifySurname } from '../Store/Reducer/userSlice'
-import { modifyCode, setListPlayer} from '../Store/Reducer/gameSlice'
-import { useSelector, useDispatch } from 'react-redux'
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import socket from '../socket';
+//import socket from '../socket';
+import socket from '../Socket/socketManager';
 
 
-export const useUserAPI = () => {
-
-  const apiUrl = 'http://192.168.0.11:3000';
-
-  const userId = useSelector((state) => state.user.userId);
-  const userSurname = useSelector((state) => state.user.surname);
-  const dispatch = useDispatch();
-
-  const saveUserId = async (userToSave) => {
-    try {
-      await AsyncStorage.setItem('userId', userToSave);
-      console.log('Identifiant sauvegardé avec succès.');
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
-    }
-  };
+const apiUrl = 'http://192.168.0.11:3000';
 
 
-  const getSurname = async(userId) => {
+const saveUserId = async (userToSave) => {
+  try {
+    await AsyncStorage.setItem('userId', userToSave);
+    console.log('Identifiant sauvegardé avec succès.');
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
+  }
+};
+
+
+
+const getSurname = async(userId) => {
     try {
       const response = await fetch(`${apiUrl}/api/users/${userId}`);
       const data = await response.json();
       console.log('Le surnom a été récupéré : ',data.surname);
-      dispatch(modifySurname(data.surname));
+      //dispatch(modifySurname(data.surname));
+      return data.surname;
       
     }
     catch(error){
@@ -37,7 +32,7 @@ export const useUserAPI = () => {
     }
   };
 
-const createUser = async() => {
+  const createUser = async(userSurname) => {
 
   const response = await fetch(`${apiUrl}/api/users`, {
       method: "POST",
@@ -50,18 +45,19 @@ const createUser = async() => {
     if (!response.ok) {
       throw new Error("Erreur lors de la création d'utilisateurs");
     }
-    
-    //Sauvegarde id dans asyncStorage
-    dispatch(modifyId(data.userId));
+
     saveUserId(data.userId);
+    return data.userId;
+    //dispatch(modifyId(data.userId));
+    
     
   };
   
 
-const changeSurnameAPI = async() => {
+
+  const changeSurnameAPI = async(userId, userSurname) => {
   try{
    
-    
     await fetch(`${apiUrl}/api/users/${userId}`, {
       method: 'PUT',
       headers: {
@@ -79,47 +75,14 @@ const changeSurnameAPI = async() => {
 
 }
 
-return{getSurname, changeSurnameAPI, createUser};
-
-}
-
-export const useGame = ({navigation}) => {
-
-  const apiUrl = 'http://192.168.0.11:3000';
-
-  const userId = useSelector((state) => state.user.userId);
-  const userSurname = useSelector((state) => state.user.surname);
-  const dispatch = useDispatch();
-  const socketRef = useRef(null);
-
-  
-
-  const startSocket = (code) => {
-
-    
-      socket.on('sendListPlayer', (updatedListPlayer) => {
-        dispatch(setListPlayer(updatedListPlayer));
-      });
-      socket.on('sendTarget', (updatedListPlayer) => {
-        dispatch(setListPlayer(updatedListPlayer));  
-        navigation.navigate('Cible');
-        
-      });
-      socket.on('endGame', () => {
-        navigation.goBack();
-      });
 
 
+const connectToRoom = (code) => {
       const dataToSend = {userId: userId, surname: userSurname, code: code};
       socket.emit('connectRoom', dataToSend); 
-      
-        
-      
-  
-      
-    
-    
+
   };
+
 
 
   const startGame = async(code) => {
@@ -133,43 +96,28 @@ export const useGame = ({navigation}) => {
     }
   };
 
+
   const getGame = async(code) => {
     const response = await fetch(`${apiUrl}/api/game/${code}`);
     const data = await response.json();
     return data;
   };
 
-  /* const addPlayer = async(code) => {
 
-    const response = await fetch(`${apiUrl}/api/game/${code}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: userId, surname: userSurname }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-      } else {
-        // Si la requête a échoué, afficher une popup avec le message d'erreur
-        alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
-      }
-        
-    }; */
-
-    const removePlayer = async (code) => {
-
-      const dataToSend = {userId: userId, code: code};
+  
+  const removePlayer = async (dataToSend) => {
+      //const dataToSend = {userId: userId, code: code};
       socket.emit('removePlayer', dataToSend);
           
       };
 
-  const removeGame = async (code) => {
+    const removeGame = async (code) => {
     socket.emit('removeGame', code);
   }
 
     
-  const createGame = async () => {
+
+  const createGame = async (userId, userSurname) => {
     try {
 
       const response = await fetch(`${apiUrl}/api/game`, {
@@ -179,27 +127,22 @@ export const useGame = ({navigation}) => {
         },
         body: JSON.stringify({ hostId: userId, surname: userSurname }),
       });
-  
-  
       const data = await response.json();
+      const dataToSend = {userId: userId, surname: userSurname, code: data.code};
       
-      dispatch(modifyCode(data.code));
-      startSocket(data.code);
-
-  
+      socket.emit('connectRoom', dataToSend);
+      
+      return data.code;
     } catch (error) {
       
     }
   };
 
-  return{createGame, getGame, removePlayer, startSocket, startGame, removeGame};
-
-}
 
 
 
 
-
+export {saveUserId, getSurname, createUser, changeSurnameAPI, startGame, getGame, removePlayer, removeGame, createGame};
 
 
 

@@ -6,6 +6,7 @@ import ModeScreen from '../Screen/ModeScreen';
 import SalonScreen from '../Screen/SalonScreen';
 import SettingsScreen from '../Screen/SettingsScreen';
 import CibleScreen from '../Screen/CibleScreen';
+import SocketHandler from '../Socket/socket'
 
 
 const Stack = createNativeStackNavigator();

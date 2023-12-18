@@ -8,17 +8,6 @@ import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput,
 
 const PopUpConfirm = (props) => {
 
-  const [message, setMessage] = useState(''); 
-
-  useEffect(() => {
-    if(props.isHost){
-      setMessage('Es-tu sûr de vouloir arrêter la partie ?');
-
-    }
-    else{
-      setMessage('Es-tu sûr de vouloir quitter la partie ?');
-    }
-  }, [props.message]);
 
   
 
@@ -27,7 +16,7 @@ const PopUpConfirm = (props) => {
       <TouchableOpacity style= {styles.View} onPress={props.exit} activeOpacity={1} >
         <View style={styles.Container} >                                    
             <TouchableOpacity  activeOpacity={1}>
-              <Text style={styles.Titre}>{message}</Text>
+              <Text style={styles.Titre}>{props.message}</Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={[styles.button,{backgroundColor:'#061624'}]} onPress={props.exit} activeOpacity={0.5}>
                   <Text style={styles.buttonText}>ANNULER</Text>
@@ -95,6 +84,7 @@ const styles = StyleSheet.create({
       color: 'white',
       textAlign: 'center',
       fontSize: 18,
+     
       
     },
   

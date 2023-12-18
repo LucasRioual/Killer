@@ -4,7 +4,8 @@ import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput,
 import { useSelector, useDispatch} from 'react-redux';
 import { modifyCode } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
-import { useGame } from '../Hooks/hooks';
+import socket from '../Socket/socketManager';
+
 
 
 
@@ -13,6 +14,7 @@ const PopUpJoin = (props) => {
 
   const gameCode = useSelector((state) => state.game.gameCode);
   const userSurname = useSelector((state) => state.user.surname);
+  const userId = useSelector((state) => state.user.userId);
   const [isNonDrinker, setIsNonDrinker] = useState(false);
   const [errorMessage, setErrorMessage] = useState(''); // Message d'erreur à afficher
   const navigation = useNavigation();
@@ -20,14 +22,12 @@ const PopUpJoin = (props) => {
 
   const animRef = useRef(new Animated.Value(0)).current;
    
-  const {startSocket} = useGame({navigation});
+  //const {startSocket} = useGame({navigation});
  
 
   const apiUrl = 'http://192.168.0.11:3000';
  
   
-  
-
   const testGameCode = async (code) => {
     
     const response = await fetch(`${apiUrl}/api/game/${code}`);
@@ -43,7 +43,8 @@ const PopUpJoin = (props) => {
           return;
         }
       }
-      startSocket(code);
+      const dataToSend = {userId: userId, surname: userSurname, code: code};
+      socket.emit('connectRoom', dataToSend);
       navigation.navigate('Salon');
     }
     else{

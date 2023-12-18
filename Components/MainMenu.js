@@ -2,7 +2,7 @@ import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
 import {  modifySurname, setHostTrue } from '../Store/Reducer/userSlice'
-import {useUserAPI} from '../Hooks/hooks'
+import { createUser, changeSurnameAPI } from '../Hooks/hooks';
 
 
 
@@ -10,7 +10,7 @@ import {useUserAPI} from '../Hooks/hooks'
 
 const MainMenu =  (props) => {
 
-  const {changeSurnameAPI, createUser} = useUserAPI();
+  //const {changeSurnameAPI, createUser} = useUserAPI();
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
@@ -28,19 +28,22 @@ const MainMenu =  (props) => {
       Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
     ]).start();
  } */
+
+
  
 
-  const Create = () => {
+  const Create = async () => {
     if (!userSurname){
       props.shakeAnim(props.animRef);
     }
     else{
       if(!userId){
         console.log('createUser');  
-        createUser();
+        const id = await createUser(userSurname);
+        dispatch(modifyId(id));
       }
       else{
-        changeSurnameAPI();
+        changeSurnameAPI(userId, userSurname);
       }
       dispatch(setHostTrue());
       props.navigation.navigate("Mode");
@@ -48,17 +51,17 @@ const MainMenu =  (props) => {
     }
   };  
 
-  const Join = () => {
+  const Join = async () => {
     if (!userSurname){
       props.shakeAnim(props.animRef);
     }
     else{
       if(!userId){
-        createUser();
+        const id = await createUser(userSurname);
+        dispatch(modifyId(id));
       }
       else{
-       
-        changeSurnameAPI();
+        changeSurnameAPI(userId, userSurname);
       }
       props.clickJoin();
       

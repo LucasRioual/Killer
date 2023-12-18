@@ -3,11 +3,13 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyCode } from '../Store/Reducer/gameSlice'
+import { modifyCode, setGameStarted} from '../Store/Reducer/gameSlice'
 import listData from '../Data/UserData.json'
 import PopUpConfirm from '../Components/PopUpConfirm';
+import { createGame, startGame} from '../Hooks/hooks'
+import socket from '../Socket/socketManager';
+import { useFocusEffect } from '@react-navigation/native';
 
-import {useGame} from '../Hooks/hooks'
 
 
 const SalonScreen = ({navigation})=> {
@@ -19,31 +21,29 @@ const SalonScreen = ({navigation})=> {
   const hostFlag = useSelector((state) => state.user.hostFlag);
   const gameCode = useSelector((state) => state.game.gameCode);
   const listPlayer = useSelector((state) => state.game.listPlayer);
+  const isGameStarted = useSelector((state) => state.game.isGameStarted);
   const dispatch = useDispatch();
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
   const navigationEventRef = useRef(null);
+  const [messagePopUp, setMessagePopUp] = useState(''); 
+
+
   
-  const {removeGame, removePlayer, createGame, startGame} = useGame({navigation});
  
 
 
   const handleConfirmation = async () => {
-
     setIsPopUpConfirmationVisible(false);
     if(hostFlag){
-      removeGame(gameCode);
-
+      socket.emit('removeGame', gameCode);
     }
     else{
-      removePlayer(gameCode);
+      const dataToSend = {userId: userId, code: gameCode};
+      socket.emit('removePlayer', dataToSend);
     }
-    
-
-
     if(navigationEventRef.current){
       navigation.dispatch(navigationEventRef.current.data.action);
     }
-    
   };
 
   const handleCancel = () => {
@@ -51,17 +51,45 @@ const SalonScreen = ({navigation})=> {
     
   };
 
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(setGameStarted(false));
+      console.log('useFocusEffect');
+
+      
+    }, [])
+  );
+
+
  
 
 
 
 
-  useEffect(() => {
-    if(hostFlag){
-      createGame();
-    }  
+  useEffect( () => {
     
+
+    if(hostFlag){
+      setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
+
+    }
+    else{
+      setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
+    }
+    async function createGameAndCode(){
+      const responseCode =  await createGame(userId, userSurname);
+      console.log('responseCode : ', responseCode);
+      dispatch(modifyCode(responseCode));
+    }
+    if(hostFlag){
+      createGameAndCode();
+    }  
     navigation.addListener('beforeRemove', (e) => {
+      /* if(isHostStopGame){
+        return;
+      } */
       e.preventDefault();
       navigationEventRef.current = e;
       setIsPopUpConfirmationVisible(true);
@@ -69,6 +97,14 @@ const SalonScreen = ({navigation})=> {
        
 
   }, []);
+
+  useEffect( () => {
+
+    console.log('isGameStarted : ', isGameStarted);
+    if(isGameStarted){
+      navigation.navigate('Cible');
+    }
+  }, [isGameStarted]);
 
 
     const ListPlayer = () =>{
@@ -84,9 +120,9 @@ const SalonScreen = ({navigation})=> {
 
 
   const onClickStart = () =>{
+    console.log('onClickStart', isGameStarted);
     startGame(gameCode);
-    navigation.navigate('Cible'); 
-
+    
   }
 
     return (
@@ -125,7 +161,7 @@ const SalonScreen = ({navigation})=> {
 
             
         </View>
-        <PopUpConfirm isHost= {hostFlag} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
+        <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       </View>
      
     );

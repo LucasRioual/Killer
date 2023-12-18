@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import Navigation from './Navigation/Navigation';
 import store from './Store/store'
 import { Provider } from 'react-redux'
+import SocketHandler from './Socket/socket'
 
 
 
@@ -23,6 +24,7 @@ const App = () => {
 
   return (
     <Provider store={store}>
+      <SocketHandler/>
       <Navigation/>
     </Provider>
   );

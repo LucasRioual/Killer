@@ -5,6 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import PopUpKilled from '../Components/PopUpKilled';
 import HeaderMenu from '../Components/HeaderMenu';
+import { setKilledBy } from '../Store/Reducer/gameSlice';
+import PopUpConfirm from '../Components/PopUpConfirm';
+import socket from '../Socket/socketManager';
 
 
 
@@ -13,7 +16,14 @@ const CibleScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
-  const [targetAndMission, setTargetAndMission] = useState([]); // A remplacer par le target de l'utilisateur
+  const killedBy = useSelector((state) => state.game.killedBy);
+  const dispatch = useDispatch();
+  const [targetAndMission, setTargetAndMission] = useState([]);
+  const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
+  const [isPopUpKilledConfirmationVisible, setIsPopUpKilledConfirmationVisible] = useState(false);
+  const [messagePopUp, setMessagePopUp] = useState('');
+
+  const [messagePopUpKilled, setMessagePopUpKilled] = useState('');
 
   const getTargetAndMission = () => {
     console.log('listPlayer : ', listPlayer);
@@ -25,18 +35,56 @@ const CibleScreen = ({navigation}) => {
   }
 
   useEffect(() => {
-    setTargetAndMission(getTargetAndMission());
+
+    const targetAndMission = getTargetAndMission();
+    setTargetAndMission(targetAndMission);
+    setMessagePopUp('Confirmes-tu le meurtre de ' + targetAndMission[0] + ' ?')
   },[listPlayer]);
+
+
+  useEffect(() => {
+    if (killedBy !== null) {
+      setMessagePopUpKilled('Tu as été tué par ' + killedBy + ' ?');
+      setIsPopUpKilledConfirmationVisible(true);
+    }
+  }, [killedBy]);
 
   
   const handlePressKill = () => {
-    
+    setIsPopUpConfirmationVisible(true);
     console.log('Kill action pressed');
   };
 
-   const retourMenu = () => {
-    navigation.goBack(); // Ou toute autre logique pour le retour au menu
+  const getSocketId = (target) => {
+    for (let i = 0; i < listPlayer.length; i++) {
+      if (listPlayer[i].surname === target) {
+        return listPlayer[i].socketId;
+      }
+    }
+  }
+
+  const handleConfirmationKilled = () => {
+    console.log('Tu est mort');
+    setIsPopUpKilledConfirmationVisible(false);
+
   };
+
+  const handleCancelKilled = () => {
+    dispatch(setKilledBy(null));
+    setIsPopUpKilledConfirmationVisible(false);
+  };
+
+
+  const handleConfirmation = () => {
+    const socketTarget = getSocketId(targetAndMission[0]);
+    socket.emit("confirmKill", socketTarget, userSurname);
+    setIsPopUpConfirmationVisible(false);
+  }
+
+  const handleCancel = () => {
+    setIsPopUpConfirmationVisible(false);
+
+  }
   
 
 
@@ -68,6 +116,8 @@ const CibleScreen = ({navigation}) => {
         </View>
         
       </View>
+      <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
+      <PopUpConfirm message={messagePopUpKilled} visible={isPopUpKilledConfirmationVisible} exit={handleCancelKilled} confirm= {handleConfirmationKilled} />
     
       
 
