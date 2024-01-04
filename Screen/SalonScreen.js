@@ -69,8 +69,6 @@ const SalonScreen = ({navigation})=> {
 
 
   useEffect( () => {
-    
-
     if(hostFlag){
       setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
 
@@ -78,14 +76,7 @@ const SalonScreen = ({navigation})=> {
     else{
       setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
     }
-    async function createGameAndCode(){
-      const responseCode =  await createGame(userId, userSurname);
-      console.log('responseCode : ', responseCode);
-      dispatch(modifyCode(responseCode));
-    }
-    if(hostFlag){
-      createGameAndCode();
-    }  
+     
     navigation.addListener('beforeRemove', (e) => {
       /* if(isHostStopGame){
         return;

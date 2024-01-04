@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useFonts } from 'expo-font';
 import Navigation from './Navigation/Navigation';
 import store from './Store/store'
 import { Provider } from 'react-redux'
 import SocketHandler from './Socket/socket'
+
 
 
 
@@ -20,6 +21,8 @@ const App = () => {
   if (!fontsLoaded && !fontError) {
     return null;
   }
+
+  
 
 
   return (

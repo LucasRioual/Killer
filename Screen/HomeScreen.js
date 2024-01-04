@@ -133,8 +133,6 @@ const HomeScreen = ({navigation}) => {
         <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
       </View>
       <View style={styles.View3}>
-        
-        
         <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor} labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
       </View>
       <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 

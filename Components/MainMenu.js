@@ -1,7 +1,7 @@
 import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
-import {  modifySurname, setHostTrue } from '../Store/Reducer/userSlice'
+import {  modifySurname, setHostTrue, modifyId} from '../Store/Reducer/userSlice'
 import { createUser, changeSurnameAPI } from '../Hooks/hooks';
 
 

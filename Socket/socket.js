@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { setListPlayer, setGameStarted, setKilledBy } from '../Store/Reducer/gameSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
+//import * as Notifications from 'expo-notifications';
 
 
 
@@ -40,8 +41,17 @@ const SocketHandler = () => {
     socket.on('sendConfirmKill', (tueurSurname) => {
       console.log('Tu es mort par ' + tueurSurname);
       dispatch(setKilledBy(tueurSurname));
+      /* Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Tu es mort malheureux !",
+          body: "Tu as été tué par " + tueurSurname + " !",
+        },
+        trigger: null,
+      }); */
 
     });
+
+    
 
   }, []);
 

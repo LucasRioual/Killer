@@ -3,15 +3,26 @@ import { View, Text, TouchableOpacity, Switch, StyleSheet,  Modal } from 'react-
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { createGame} from '../Hooks/hooks'
+import { useSelector, useDispatch } from 'react-redux'
+import { modifyCode} from '../Store/Reducer/gameSlice'
 
 const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   const [selectedTime, setSelectedTime] = useState('no_limit'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
   const [selectedParticipants, setSelectedParticipants] = useState('unlimited');
   const [joinMidGame, setJoinMidGame] = useState(true);
   const [includeAlcoholicDares, setIncludeAlcoholicDares] = useState(true);
+  const userId = useSelector((state) => state.user.userId);
+  const userSurname = useSelector((state) => state.user.surname);
+  const dispatch = useDispatch();
 
   const navigation = useNavigation();
-  const Create = () => {
+  
+  const Create = async () => {
+    
+    const responseCode =  await createGame(userId, userSurname);
+    console.log('responseCode : ', responseCode);
+    dispatch(modifyCode(responseCode));
     navigation.navigate("Salon");
   };
    

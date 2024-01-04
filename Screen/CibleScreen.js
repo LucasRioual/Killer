@@ -16,6 +16,7 @@ const CibleScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
+  const gameCode = useSelector((state) => state.game.gameCode);
   const killedBy = useSelector((state) => state.game.killedBy);
   const dispatch = useDispatch();
   const [targetAndMission, setTargetAndMission] = useState([]);
@@ -65,7 +66,11 @@ const CibleScreen = ({navigation}) => {
 
   const handleConfirmationKilled = () => {
     console.log('Tu est mort');
+    const socketKiller = getSocketId(killedBy);
+    console.log('gameCode : ', gameCode);
+    socket.emit("killed", gameCode, socketKiller, targetAndMission[0], targetAndMission[1]);
     setIsPopUpKilledConfirmationVisible(false);
+    navigation.navigate('EndGame');
 
   };
 

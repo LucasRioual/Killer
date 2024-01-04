@@ -20,7 +20,7 @@ const Header = (props) => {
   return (
     <View style={styles.View}>
       <View style={[styles.ViewBorder, {borderBottomWidth: props.visible ? 0:3}]}></View>
-      <TouchableOpacity style={styles.Svg} onPress={() => props.navigation.goBack()} >
+      <TouchableOpacity style={[styles.Svg, {display: props.visible ? 'none' : 'flex'}]} onPress={() => props.navigation.goBack()} >
         <SvgRetour/>
       </TouchableOpacity>
       <View style = {styles.ViewTitre}>

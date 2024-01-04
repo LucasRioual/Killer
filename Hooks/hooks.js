@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import socket from '../Socket/socketManager';
 
 
-const apiUrl = 'http://192.168.0.11:3000';
+const apiUrl = 'http://192.168.1.93:3000';
 
 
 const saveUserId = async (userToSave) => {
@@ -77,11 +77,11 @@ const getSurname = async(userId) => {
 
 
 
-const connectToRoom = (code) => {
+/* const connectToRoom = (code) => {
       const dataToSend = {userId: userId, surname: userSurname, code: code};
       socket.emit('connectRoom', dataToSend); 
 
-  };
+  }; */
 
 
 
