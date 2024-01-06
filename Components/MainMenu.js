@@ -14,6 +14,7 @@ const MainMenu =  (props) => {
 
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
+  
   const dispatch = useDispatch();
   
 

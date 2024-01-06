@@ -15,12 +15,13 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
   const dispatch = useDispatch();
+  const expoToken = useSelector((state) => state.user.expoToken);
 
   const navigation = useNavigation();
   
   const Create = async () => {
     
-    const responseCode =  await createGame(userId, userSurname);
+    const responseCode =  await createGame(userId, userSurname, expoToken);
     console.log('responseCode : ', responseCode);
     dispatch(modifyCode(responseCode));
     navigation.navigate("Salon");

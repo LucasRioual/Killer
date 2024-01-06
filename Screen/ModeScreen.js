@@ -19,13 +19,13 @@ const ModeScreen=({navigation}) => {
               <View style={styles.ContainerMode}>
                 <ModeItem titre = "CLASSIQUE" navigation={navigation} 
                 description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
-                <ModeItem titre = "Mission ou pas mission" 
+                <ModeItem titre = "Mission ou pas mission" navigation={navigation}
                 description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
-                <ModeItem titre = "PERSONNALISE" 
+                <ModeItem titre = "PERSONNALISE" navigation={navigation}
                 description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
-                <ModeItem titre = "A L'AVEUGLE" 
+                <ModeItem titre = "A L'AVEUGLE" navigation={navigation}
                 description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
-                <ModeItem titre = "Foule en folie" 
+                <ModeItem titre = "Foule en folie" navigation={navigation}
                 description= "Le mode classique du jeu du Killer. Vous devrez éliminer les autres participants en réalisant des missions."/>
 
               </View>

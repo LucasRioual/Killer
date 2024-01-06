@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Killer",
-    "slug": "Killer",
+    "slug": "killer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,24 @@
       "assets/fonts/"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lrioual.killer"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.lrioual.killer"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dd739689-a08f-4c7a-873c-10c48f8c171f"
+      }
+    },
+    "owner": "lrioual"
   }
 }

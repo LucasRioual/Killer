@@ -9,6 +9,7 @@ export const gameSlice = createSlice({
     listPlayer: [],
     isGameStarted : false,
     killedBy: null,
+    isConfirmKill: null,
     },
   reducers: {
     modifyCode: (state, actions) => {
@@ -22,12 +23,14 @@ export const gameSlice = createSlice({
       },
     setKilledBy: (state, actions) => {
       state.killedBy = actions.payload
-      }
-   
+      },
+    setConfirmKill: (state, actions) => {
+      state.isConfirmKill = actions.payload
+      },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { modifyCode, setListPlayer, setGameStarted, setKilledBy} = gameSlice.actions;
+export const { modifyCode, setListPlayer, setGameStarted, setKilledBy, setConfirmKill} = gameSlice.actions;
 
 export default gameSlice.reducer;

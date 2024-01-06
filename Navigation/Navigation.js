@@ -7,16 +7,19 @@ import SalonScreen from '../Screen/SalonScreen';
 import SettingsScreen from '../Screen/SettingsScreen';
 import CibleScreen from '../Screen/CibleScreen';
 import EndGameScreen from '../Screen/EndGameScreen';
-/* import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants'; */
+ import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { useSelector, useDispatch } from 'react-redux';
+import { setExpoToken } from '../Store/Reducer/userSlice';
 
 
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const dispatch = useDispatch();
 
-  /* async function registerForPushNotificationsAsync() {
+  async function registerForPushNotificationsAsync() {
     let token;
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -31,16 +34,18 @@ const Navigation = () => {
         return;
     }
     token = await Notifications.getExpoPushTokenAsync({
-      projectId: "113592525761",
+      projectId: Constants.expoConfig.extra.eas.projectId,
     });
     console.log(token);
+    dispatch(setExpoToken(token.data));
+
 
     return token.data;
   }
 
   useEffect(() => {
     registerForPushNotificationsAsync();
-  }, []); */
+  }, []);
 
   return (
     <NavigationContainer>

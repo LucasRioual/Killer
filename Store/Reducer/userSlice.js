@@ -8,6 +8,8 @@ export const userSlice = createSlice({
     userId: null,
     surname: null,
     hostFlag: false,
+    expoToken: null,
+
     },
   reducers: {
     modifyId: (state, actions) => {
@@ -22,10 +24,13 @@ export const userSlice = createSlice({
       setHostTrue: (state) => {
         state.hostFlag = true;
       },
+      setExpoToken: (state, actions) => {
+        state.expoToken = actions.payload
+      },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { modifyId, modifySurname, setHostFalse, setHostTrue } = userSlice.actions;
+export const { modifyId, modifySurname, setHostFalse, setHostTrue, setExpoToken } = userSlice.actions;
 
 export default userSlice.reducer;

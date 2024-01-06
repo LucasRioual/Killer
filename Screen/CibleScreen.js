@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import PopUpKilled from '../Components/PopUpKilled';
-import HeaderMenu from '../Components/HeaderMenu';
-import { setKilledBy } from '../Store/Reducer/gameSlice';
+import { setKilledBy, setConfirmKill } from '../Store/Reducer/gameSlice';
 import PopUpConfirm from '../Components/PopUpConfirm';
 import socket from '../Socket/socketManager';
+import PopUpDisplayKill from '../Components/PopUpDisplayKill';
+
 
 
 
@@ -18,13 +18,16 @@ const CibleScreen = ({navigation}) => {
   const userSurname = useSelector((state) => state.user.surname);
   const gameCode = useSelector((state) => state.game.gameCode);
   const killedBy = useSelector((state) => state.game.killedBy);
+  const isConfirmKill = useSelector((state) => state.game.isConfirmKill);
   const dispatch = useDispatch();
   const [targetAndMission, setTargetAndMission] = useState([]);
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
   const [isPopUpKilledConfirmationVisible, setIsPopUpKilledConfirmationVisible] = useState(false);
   const [messagePopUp, setMessagePopUp] = useState('');
+  const [isPopUpDisplayKill, setIsPopUpDisplayKill] = useState(false);
 
   const [messagePopUpKilled, setMessagePopUpKilled] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const getTargetAndMission = () => {
     console.log('listPlayer : ', listPlayer);
@@ -50,16 +53,33 @@ const CibleScreen = ({navigation}) => {
     }
   }, [killedBy]);
 
+  useEffect(() => {
+    if (isConfirmKill !== null) {
+      setIsLoading(false);
+      setIsPopUpDisplayKill(true);
+    }  
+  }, [isConfirmKill]);
+
+
+
   
   const handlePressKill = () => {
     setIsPopUpConfirmationVisible(true);
-    console.log('Kill action pressed');
+    
   };
 
   const getSocketId = (target) => {
     for (let i = 0; i < listPlayer.length; i++) {
       if (listPlayer[i].surname === target) {
         return listPlayer[i].socketId;
+      }
+    }
+  }
+
+  const getExpoToken = (target) => {
+    for (let i = 0; i < listPlayer.length; i++) {
+      if (listPlayer[i].surname === target) {
+        return listPlayer[i].expoToken;
       }
     }
   }
@@ -75,20 +95,29 @@ const CibleScreen = ({navigation}) => {
   };
 
   const handleCancelKilled = () => {
+    const socketKiller = getSocketId(killedBy);
     dispatch(setKilledBy(null));
     setIsPopUpKilledConfirmationVisible(false);
+    socket.emit("notKilled", socketKiller);
+    //Il faut dire au tueur que la cible a refusé
   };
 
 
   const handleConfirmation = () => {
     const socketTarget = getSocketId(targetAndMission[0]);
-    socket.emit("confirmKill", socketTarget, userSurname);
+    const expoTokenTarget = getExpoToken(targetAndMission[0]);
+    socket.emit("confirmKill", socketTarget, userSurname, expoTokenTarget);
+    setIsLoading(true);
     setIsPopUpConfirmationVisible(false);
   }
 
   const handleCancel = () => {
     setIsPopUpConfirmationVisible(false);
+  }
 
+  const handleCancelPopUpDisplayKill = () => {
+    setIsPopUpDisplayKill(false);
+    dispatch(setConfirmKill(null));
   }
   
 
@@ -97,59 +126,44 @@ const CibleScreen = ({navigation}) => {
     <View style={styles.ViewMain}>
       <Header titre={""} navigation= {navigation} visible = {true} />
       <View style={styles.ViewBody}>
-        <View style={styles.mainContainer}>
-          <Text style={styles.TextTitre}>Cible</Text>
-          <View style={styles.targetContainer}>
-            <Text style={styles.TextTarget}>{targetAndMission[0]}</Text>
+          <View>
+          <View style={styles.mainContainer}>
+            <Text style={styles.TextTitre}>Cible</Text>
+            <View style={styles.targetContainer}>
+              <Text style={styles.TextTarget}>{targetAndMission[0]}</Text>
+
+            </View>
+
+          </View>
+          <View style={styles.mainContainer}>
+            <Text style={styles.TextTitre}>Mission</Text>
+            <View style={styles.targetContainer}>
+              <Text style={styles.TextMission}>{targetAndMission[1]}</Text>
+
+            </View>
 
           </View>
 
-        </View>
-        <View style={styles.mainContainer}>
-          <Text style={styles.TextTitre}>Mission</Text>
-          <View style={styles.targetContainer}>
-            <Text style={styles.TextMission}>{targetAndMission[1]}</Text>
+          <View style={styles.buttonContainer}>
+
+            {isLoading ? (
+              <View style={styles.ViewLoading}>
+                <ActivityIndicator size={50} color="#F0122D" />
+                <Text style={styles.TextLoading}>En attente de ta cible ...</Text>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.button} onPress={handlePressKill}>
+              <Text style={styles.buttonText}>KILL</Text>
+            </TouchableOpacity>
+            )}
 
           </View>
-
-        </View>
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handlePressKill}>
-            <Text style={styles.buttonText}>KILL</Text>
-          </TouchableOpacity>
-
         </View>
         
       </View>
       <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       <PopUpConfirm message={messagePopUpKilled} visible={isPopUpKilledConfirmationVisible} exit={handleCancelKilled} confirm= {handleConfirmationKilled} />
-    
-      
-
-      {/* <View style={styles.View1}>
-        <HeaderMenu onClick={retourMenu} fill={styles.txtColor} />
-      </View> */}
-
-      {/* <StatusBar barStyle="light-content" />
-      <Header titre={"Cible"}/>
-      <View style={styles.ViewBody}>
-        
-        <View style={styles.targetContainer}>
-          <Text style={styles.TextTitre}>{targetAndMission[0]}</Text>
-        </View>
-        
-        
-        <View style={styles.actionContainer}>
-          <Text style={styles.TextTitre}>{targetAndMission[1]}</Text>
-        </View>
-        
-        
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handlePressKill}>
-            <Text style={styles.buttonText}>KILL</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
+      <PopUpDisplayKill visible={isPopUpDisplayKill} exit={handleCancelPopUpDisplayKill} isConfirmKill={isConfirmKill} />
       
    </View>
   );
@@ -168,10 +182,13 @@ const styles = StyleSheet.create({
   
   ViewBody: {
     flex: 5, 
-    
     alignItems:'center',
     
     
+  },
+  ViewLoading: {
+    borderRadius: 20,
+    padding: 40,
   },
   mainContainer: {
     marginTop: 0,
@@ -199,7 +216,7 @@ const styles = StyleSheet.create({
     borderColor: '#F0122D',
     borderWidth: 2,
     borderRadius: 10,
-    maxWidth:'80%'
+    maxWidth:'90%'
   },
   TextTarget: {
     color: 'white',
@@ -213,7 +230,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: 'Sen',
   },
- 
+  TextLoading: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: 'Sen',
+    marginTop: 20,
+  },
   actionContainer: {
     marginBottom: 40,
     padding: 10,
@@ -240,6 +263,7 @@ const styles = StyleSheet.create({
   buttonContainer:{
     flex:1,
     justifyContent: 'center',
+    alignItems: 'center',
     
   },
   buttonText: {

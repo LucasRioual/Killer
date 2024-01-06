@@ -14,6 +14,7 @@ const PopUpJoin = (props) => {
 
   const gameCode = useSelector((state) => state.game.gameCode);
   const userSurname = useSelector((state) => state.user.surname);
+  const expoToken = useSelector((state) => state.user.expoToken);
   const userId = useSelector((state) => state.user.userId);
   const [isNonDrinker, setIsNonDrinker] = useState(false);
   const [errorMessage, setErrorMessage] = useState(''); // Message d'erreur à afficher
@@ -43,7 +44,7 @@ const PopUpJoin = (props) => {
           return;
         }
       }
-      const dataToSend = {userId: userId, surname: userSurname, code: code};
+      const dataToSend = {userId: userId, surname: userSurname, code: code, expoToken: expoToken};
       socket.emit('connectRoom', dataToSend);
       navigation.navigate('Salon');
     }

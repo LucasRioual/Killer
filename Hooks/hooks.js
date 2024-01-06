@@ -39,7 +39,7 @@ const getSurname = async(userId) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ surname: userSurname }),
+      body: JSON.stringify({ surname: userSurname}),
     });
     const data = await response.json();
     if (!response.ok) {
@@ -117,7 +117,7 @@ const getSurname = async(userId) => {
 
     
 
-  const createGame = async (userId, userSurname) => {
+  const createGame = async (userId, userSurname, expoToken) => {
     try {
 
       const response = await fetch(`${apiUrl}/api/game`, {
@@ -128,7 +128,7 @@ const getSurname = async(userId) => {
         body: JSON.stringify({ hostId: userId, surname: userSurname }),
       });
       const data = await response.json();
-      const dataToSend = {userId: userId, surname: userSurname, code: data.code};
+      const dataToSend = {userId: userId, surname: userSurname, code: data.code, expoToken: expoToken};
       
       socket.emit('connectRoom', dataToSend);
       
