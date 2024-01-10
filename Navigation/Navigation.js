@@ -7,6 +7,7 @@ import SalonScreen from '../Screen/SalonScreen';
 import SettingsScreen from '../Screen/SettingsScreen';
 import CibleScreen from '../Screen/CibleScreen';
 import EndGameScreen from '../Screen/EndGameScreen';
+import HistoriqueScreen from '../Screen/HistoriqueScreen';
  import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
@@ -49,13 +50,14 @@ const Navigation = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}}>
+      <Stack.Navigator initialRouteName="EndGame" screenOptions={{ headerShown: false}}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Cible" component={CibleScreen} />
         <Stack.Screen name="EndGame" component={EndGameScreen} />
+        <Stack.Screen name="Historique" component={HistoriqueScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
