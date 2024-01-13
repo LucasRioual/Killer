@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import React,  { useState, useEffect, useRef }  from 'react';
+import {   Animated,  SafeAreaView, View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
 import socket from '../Socket/socketManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,18 @@ const GameOverScreen = ({ navigation }) => {
   const VoirHistorique = () => {
       navigation.navigate('Historique');
   };
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    // Commencer l'animation de fondu dès que le composant est monté
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1, // Animer l'opacité jusqu'à 1 (complètement opaque)
+        duration: 2000, // Durée de l'animation en millisecondes
+        useNativeDriver: true, // Ajouter cette ligne pour améliorer les performances
+      }
+    ).start();
+  }, [fadeAnim]); // Le tableau de dépendances vide indique que l'effet ne s'exécute qu'au montage
 
   const leaveGame = () => {
     socket.emit("leaveGame", gameCode, userSurname);
@@ -24,7 +36,20 @@ const GameOverScreen = ({ navigation }) => {
       <Header titre={""} navigation= {navigation} visible = {true} onClickBack={leaveGame} />
       <View style={styles.ViewBody}>
         <View style={styles.mainContainer}>
-          <Text style={styles.TextTitre}>Vous avez été éliminé!</Text>
+        <SafeAreaView style={styles.container}>
+          <Animated.View                 // Vue animée spéciale de React Native
+            style={{
+              ...props.style,
+              opacity: fadeAnim,        // Lie l'opacité à la valeur animée
+            }}
+          >
+            {props.children}
+          </Animated.View>
+        </SafeAreaView>
+              
+          <FadeInView style={styles.fadingContainer}>
+            <Text style={styles.TextTitre} onPress={fadeIn}>Vous avez été éliminé!</Text>
+          </FadeInView>
         </View>
         <TouchableOpacity style={styles.button} onPress={VoirHistorique}>
           <Text style={styles.buttonText}>Historique</Text>
@@ -44,20 +69,23 @@ const styles = StyleSheet.create({
   ViewBody: {
     flex: 5, 
     alignItems:'center',
-    
-    
   },
-  ViewLoading: {
-    borderRadius: 20,
-    padding: 40,
+  fadingContainer: {
+    padding: 20,
+    backgroundColor: 'powderblue',
   },
   mainContainer: {
-    marginTop: 20,
+    marginTop: 70,
     marginBottom: 40,
-    alignItems:'center',
+    borderColor: '#F0122D', // Couleur de la bordure de l'action
+    borderWidth: 10,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    maxWidth:'90%'
     
   },
-  
+
   menuButton: {
     backgroundColor: 'red' ,
     position: 'absolute',
@@ -69,42 +97,7 @@ const styles = StyleSheet.create({
     fontFamily: 'LuckiestGuy',
     color: 'white',
   },
-  targetContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginTop: 10,
-    borderColor: '#F0122D',
-    borderWidth: 2,
-    borderRadius: 10,
-    maxWidth:'90%'
-  },
-  TextTarget: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 35,
-    fontFamily: 'Sen',
-  },
-  TextMission: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 25,
-    fontFamily: 'Sen',
-  },
-  TextLoading: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 18,
-    fontFamily: 'Sen',
-    marginTop: 20,
-  },
-  actionContainer: {
-    marginBottom: 40,
-    padding: 10,
-    borderColor: 'red', // Couleur de la bordure de l'action
-    borderWidth: 2,
-    borderRadius: 10,
-  },
-  
+
   button: {
     backgroundColor:'#F0122D',
     borderRadius: 50,
