@@ -7,6 +7,7 @@ import { setKilledBy, setConfirmKill } from '../Store/Reducer/gameSlice';
 import PopUpConfirm from '../Components/PopUpConfirm';
 import socket from '../Socket/socketManager';
 import PopUpDisplayKill from '../Components/PopUpDisplayKill';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -16,6 +17,7 @@ const CibleScreen = ({navigation}) => {
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
+  const expoToken = useSelector((state) => state.user.expoToken);
   const gameCode = useSelector((state) => state.game.gameCode);
   const killedBy = useSelector((state) => state.game.killedBy);
   const isConfirmKill = useSelector((state) => state.game.isConfirmKill);
@@ -25,23 +27,30 @@ const CibleScreen = ({navigation}) => {
   const [isPopUpKilledConfirmationVisible, setIsPopUpKilledConfirmationVisible] = useState(false);
   const [messagePopUp, setMessagePopUp] = useState('');
   const [isPopUpDisplayKill, setIsPopUpDisplayKill] = useState(false);
+  const [isPopUpLeaveVisible, setIsPopUpLeaveVisible] = useState(false);
 
   const [messagePopUpKilled, setMessagePopUpKilled] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const getTargetAndMission = () => {
-    console.log('listPlayer : ', listPlayer);
+   
     for (let i = 0; i < listPlayer.length; i++) {
-      if (listPlayer[i].userId === userId) {
+
+      if (listPlayer[i].surname === userSurname) {
         return [listPlayer[i].target,listPlayer[i].mission];
       }
     }
+    return ['',''];
   }
 
   useEffect(() => {
 
-    const targetAndMission = getTargetAndMission();
-    setTargetAndMission(targetAndMission);
+   
+      
+      const targetAndMission = getTargetAndMission();
+      setTargetAndMission(targetAndMission);
+    
+    
     setMessagePopUp('Confirmes-tu le meurtre de ' + targetAndMission[0] + ' ?')
   },[listPlayer]);
 
@@ -59,6 +68,15 @@ const CibleScreen = ({navigation}) => {
       setIsPopUpDisplayKill(true);
     }  
   }, [isConfirmKill]);
+
+  useEffect(() => {
+        AsyncStorage.setItem('gameCode', gameCode);
+        if(gameCode !== null){
+          const dataToSend = {surname: userSurname, code: gameCode, expoToken: expoToken};
+          socket.emit('connectRoom', dataToSend);
+        }
+       
+  }, [gameCode]);
 
 
 
@@ -119,12 +137,19 @@ const CibleScreen = ({navigation}) => {
     setIsPopUpDisplayKill(false);
     dispatch(setConfirmKill(null));
   }
+
+  const leaveGame = () => {
+    setIsPopUpLeaveVisible(false);
+    socket.emit("leaveGame", gameCode, userSurname);
+    AsyncStorage.removeItem('gameCode');
+    navigation.navigate('Home');
+  }
   
 
 
   return (
     <View style={styles.ViewMain}>
-      <Header titre={""} navigation= {navigation} visible = {true} />
+      <Header titre={""} navigation= {navigation} visible = {true} onClick = {()=>{setIsPopUpLeaveVisible(true)}}  />
       <View style={styles.ViewBody}>
           <View>
           <View style={styles.mainContainer}>
@@ -163,6 +188,7 @@ const CibleScreen = ({navigation}) => {
       </View>
       <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       <PopUpConfirm message={messagePopUpKilled} visible={isPopUpKilledConfirmationVisible} exit={handleCancelKilled} confirm= {handleConfirmationKilled} />
+      <PopUpConfirm message={'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpLeaveVisible} exit={()=>setIsPopUpLeaveVisible(false)} confirm= {leaveGame} />
       <PopUpDisplayKill visible={isPopUpDisplayKill} exit={handleCancelPopUpDisplayKill} isConfirmKill={isConfirmKill} />
       
    </View>
@@ -185,6 +211,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     
     
+    
   },
   ViewLoading: {
     borderRadius: 20,
@@ -195,11 +222,12 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     
     alignItems:'center',
+    maxWidth: '90%',
 
   },
   
   menuButton: {
-    backgroundColor: 'red' ,
+    
     position: 'absolute',
     right: 10,
     top: 10,
@@ -216,7 +244,8 @@ const styles = StyleSheet.create({
     borderColor: '#F0122D',
     borderWidth: 2,
     borderRadius: 10,
-    maxWidth:'90%'
+    
+    
   },
   TextTarget: {
     color: 'white',

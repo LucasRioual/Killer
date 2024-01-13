@@ -1,10 +1,9 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//import socket from '../socket';
 import socket from '../Socket/socketManager';
 
 
-const apiUrl = 'http://192.168.1.93:3000';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 
 const saveUserId = async (userToSave) => {
@@ -100,7 +99,7 @@ const getSurname = async(userId) => {
   const getGame = async(code) => {
     const response = await fetch(`${apiUrl}/api/game/${code}`);
     const data = await response.json();
-    return data;
+    return data.listPlayer;
   };
 
 
@@ -117,7 +116,7 @@ const getSurname = async(userId) => {
 
     
 
-  const createGame = async (userId, userSurname, expoToken) => {
+  const createGame = async (userSurname, expoToken) => {
     try {
 
       const response = await fetch(`${apiUrl}/api/game`, {
@@ -125,10 +124,10 @@ const getSurname = async(userId) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ hostId: userId, surname: userSurname }),
+        body: JSON.stringify({surname: userSurname }),
       });
       const data = await response.json();
-      const dataToSend = {userId: userId, surname: userSurname, code: data.code, expoToken: expoToken};
+      const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};
       
       socket.emit('connectRoom', dataToSend);
       

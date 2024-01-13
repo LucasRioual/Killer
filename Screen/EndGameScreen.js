@@ -1,15 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
+import socket from '../Socket/socketManager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const GameOverScreen = ({ navigation }) => {
+
   const VoirHistorique = () => {
       navigation.navigate('Historique');
   };
 
+  const leaveGame = () => {
+    socket.emit("leaveGame", gameCode, userSurname);
+    AsyncStorage.removeItem('gameCode');
+    navigation.navigate('Home');
+  }
+
+  
+
   return (
     <View style={styles.ViewMain}>
-      <Header titre={""} navigation= {navigation} visible = {true} />
+      <Header titre={""} navigation= {navigation} visible = {true} onClickBack={leaveGame} />
       <View style={styles.ViewBody}>
         <View style={styles.mainContainer}>
           <Text style={styles.TextTitre}>Vous avez été éliminé!</Text>
@@ -32,7 +44,7 @@ const styles = StyleSheet.create({
   ViewBody: {
     flex: 5, 
     alignItems:'center',
-    backgroundColor: 'yellow',
+    
     
   },
   ViewLoading: {
@@ -43,7 +55,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
     alignItems:'center',
-    backgroundColor: 'green',
+    
   },
   
   menuButton: {

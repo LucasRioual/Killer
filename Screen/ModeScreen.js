@@ -12,7 +12,7 @@ const ModeScreen=({navigation}) => {
     return (
 
       <View style={styles.ViewMain} >
-        <Header titre={"Modes"} navigation= {navigation} visible={false} />
+        <Header titre={"Modes"} navigation= {navigation} visible={false} onClickBack={()=> navigation.navigate('Home')} />
         <View style={styles.ViewBody}>
           <View style={styles.ViewScrollContainer}>
             <ScrollView style={styles.Scroll}>

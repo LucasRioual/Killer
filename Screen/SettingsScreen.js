@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { createGame} from '../Hooks/hooks'
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode} from '../Store/Reducer/gameSlice'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   const [selectedTime, setSelectedTime] = useState('no_limit'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
@@ -21,7 +22,7 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   
   const Create = async () => {
     
-    const responseCode =  await createGame(userId, userSurname, expoToken);
+    const responseCode =  await createGame(userSurname, expoToken);
     console.log('responseCode : ', responseCode);
     dispatch(modifyCode(responseCode));
     navigation.navigate("Salon");
@@ -31,7 +32,7 @@ const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
   return (
     <View style={styles.ViewMain}>
       
-      <Header titre="Classique" navigation= {navigation} visible = {false} />
+      <Header titre="Classique" navigation= {navigation} visible = {false} onClickBack={()=> navigation.navigate('Mode')} />
 
       <View style={styles.ViewBody}>
 
