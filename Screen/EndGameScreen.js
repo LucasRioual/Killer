@@ -9,35 +9,30 @@ const GameOverScreen = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     // Commencer l'animation de fondu dès que le composant est monté
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1, // Animer l'opacité jusqu'à 1 (complètement opaque)
-        duration: 2000, // Durée de l'animation en millisecondes
-        useNativeDriver: true, // Ajouter cette ligne pour améliorer les performances
-      }
-    ).start();
-  }, [fadeAnim]); // Le tableau de dépendances vide indique que l'effet ne s'exécute qu'au montage
-
+    Animated.timing(fadeAnim, {
+      toValue: 1, // Animer l'opacité jusqu'à 1 (complètement opaque)
+      duration: 2000, // Durée de l'animation en millisecondes
+      useNativeDriver: true, // Ajouter cette ligne pour améliorer les performances
+    }).start();
+  }, []);
   return (
     <View style={styles.ViewMain}>
       <Header titre={""} navigation= {navigation} visible = {true} />
       <View style={styles.ViewBody}>
-        <View style={styles.mainContainer}>
+      <View style={styles.mainContainer}>
         <SafeAreaView style={styles.container}>
-          <Animated.View                 // Vue animée spéciale de React Native
-            style={{
-              ...props.style,
-              opacity: fadeAnim,        // Lie l'opacité à la valeur animée
-            }}
+          <Animated.View // Vue animée spéciale de React Native
+            style={[
+              styles.fadingContainer,
+              {
+                opacity: fadeAnim, // Lie l'opacité à la valeur animée
+              }
+            ]}
           >
-            {props.children}
+            <Text style={styles.TextTitre} >Vous avez été éliminé!</Text>
           </Animated.View>
         </SafeAreaView>
-              
-          <FadeInView style={styles.fadingContainer}>
-            <Text style={styles.TextTitre} onPress={fadeIn}>Vous avez été éliminé!</Text>
-          </FadeInView>
+                
         </View>
         <TouchableOpacity style={styles.button} onPress={VoirHistorique}>
           <Text style={styles.buttonText}>Historique</Text>
