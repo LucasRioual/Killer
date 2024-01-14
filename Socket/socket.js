@@ -22,6 +22,7 @@ const SocketHandler = () => {
     });
 
     socket.on('sendListPlayer', (updatedListPlayer) => {
+      //console.log('sendListPlayer', updatedListPlayer);
       dispatch(setListPlayer(updatedListPlayer));
     });
 

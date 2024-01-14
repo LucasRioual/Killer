@@ -29,7 +29,9 @@ const SalonScreen = ({navigation})=> {
 
 
   
- 
+  const onClickBack = () => {
+    setIsPopUpConfirmationVisible(true);
+  };
 
 
   const handleConfirmation = async () => {
@@ -38,12 +40,11 @@ const SalonScreen = ({navigation})=> {
       socket.emit('removeGame', gameCode);
     }
     else{
-      const dataToSend = {userId: userId, code: gameCode};
+      const dataToSend = {surname: userSurname, code: gameCode};
       socket.emit('removePlayer', dataToSend);
     }
-    if(navigationEventRef.current){
-      navigation.dispatch(navigationEventRef.current.data.action);
-    }
+    navigation.goBack();
+    console.log(navigation)
   };
 
   const handleCancel = () => {
@@ -62,12 +63,6 @@ const SalonScreen = ({navigation})=> {
     }, [])
   );
 
-
- 
-
-
-
-
   useEffect( () => {
     if(hostFlag){
       setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
@@ -77,16 +72,6 @@ const SalonScreen = ({navigation})=> {
       setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
     }
      
-    navigation.addListener('beforeRemove', (e) => {
-      /* if(isHostStopGame){
-        return;
-      } */
-      e.preventDefault();
-      navigationEventRef.current = e;
-      setIsPopUpConfirmationVisible(true);
-    });
-       
-
   }, []);
 
   useEffect( () => {
@@ -94,6 +79,8 @@ const SalonScreen = ({navigation})=> {
     console.log('isGameStarted : ', isGameStarted);
     if(isGameStarted){
       navigation.navigate('Cible');
+      dispatch(setGameStarted(false));
+      
     }
   }, [isGameStarted]);
 
@@ -111,7 +98,6 @@ const SalonScreen = ({navigation})=> {
 
 
   const onClickStart = () =>{
-    console.log('onClickStart', isGameStarted);
     startGame(gameCode);
     
   }
@@ -119,7 +105,7 @@ const SalonScreen = ({navigation})=> {
     return (
 
       <View style={styles.ViewMain} >
-        <Header titre={"Salon"} navigation= {navigation} visible = {false}/>
+        <Header titre={"Salon"} navigation= {navigation} visible = {false} onClickBack={onClickBack}/>
         <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>

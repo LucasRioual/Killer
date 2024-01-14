@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 
-const socket = io('http://192.168.1.93:3000');
+
+const socket = io(process.env.EXPO_PUBLIC_API_URL);
 
 export default socket;

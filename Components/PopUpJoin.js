@@ -5,6 +5,7 @@ import { useSelector, useDispatch} from 'react-redux';
 import { modifyCode } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
 import socket from '../Socket/socketManager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -26,7 +27,7 @@ const PopUpJoin = (props) => {
   //const {startSocket} = useGame({navigation});
  
 
-  const apiUrl = 'http://192.168.1.93:3000';
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
  
   
   const testGameCode = async (code) => {
@@ -41,10 +42,12 @@ const PopUpJoin = (props) => {
           props.shakeAnim(props.animRef);
           setErrorMessage('');
           props.exit();
+          console.log(props.visible);
           return;
         }
       }
-      const dataToSend = {userId: userId, surname: userSurname, code: code, expoToken: expoToken};
+      const dataToSend = {surname: userSurname, code: code, expoToken: expoToken};
+      // Enregistre le code de la partie dans asyncstorage
       socket.emit('connectRoom', dataToSend);
       navigation.navigate('Salon');
     }

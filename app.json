@@ -7,9 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.svg",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#061624"
     },
     "assetBundlePatterns": [
       "assets/fonts/"
@@ -33,6 +33,14 @@
         "projectId": "dd739689-a08f-4c7a-873c-10c48f8c171f"
       }
     },
-    "owner": "lrioual"
-  }
+    "owner": "lrioual",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dd739689-a08f-4c7a-873c-10c48f8c171f"
+    },
+    "sdkVersion": "49.0.0"
+  },
+  "name": "killer"
 }

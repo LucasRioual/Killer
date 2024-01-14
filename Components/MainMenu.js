@@ -3,6 +3,7 @@ import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 're
 import { useSelector, useDispatch } from 'react-redux'
 import {  modifySurname, setHostTrue, modifyId} from '../Store/Reducer/userSlice'
 import { createUser, changeSurnameAPI } from '../Hooks/hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -33,37 +34,41 @@ const MainMenu =  (props) => {
 
  
 
-  const Create = async () => {
+  const Create = async () => { // modifier pour enregistrer simplement le surnom dans asyncstorage
     if (!userSurname){
       props.shakeAnim(props.animRef);
     }
     else{
-      if(!userId){
+      AsyncStorage.setItem('surname', userSurname);
+      /* if(!userId){
         console.log('createUser');  
         const id = await createUser(userSurname);
         dispatch(modifyId(id));
       }
       else{
         changeSurnameAPI(userId, userSurname);
-      }
+      } */
       dispatch(setHostTrue());
       props.navigation.navigate("Mode");
       
     }
   };  
 
-  const Join = async () => {
+  const Join = async () => { // La même chose que pour create
     if (!userSurname){
       props.shakeAnim(props.animRef);
     }
     else{
-      if(!userId){
+      console.log('join');
+      AsyncStorage.setItem('surname', userSurname);
+      /* if(!userId){
         const id = await createUser(userSurname);
+        AsyncStorage.setItem('surname', userSurname);
         dispatch(modifyId(id));
       }
       else{
         changeSurnameAPI(userId, userSurname);
-      }
+      } */
       props.clickJoin();
       
     }

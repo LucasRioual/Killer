@@ -9,14 +9,19 @@ import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
 import { dark, light } from '../Store/Reducer/colorSlice';
 import { modifyId, modifySurname, setHostFalse} from '../Store/Reducer/userSlice';
+import { setListPlayer, modifyCode } from '../Store/Reducer/gameSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import {getSurname} from '../Hooks/hooks';
+import {getGame} from '../Hooks/hooks';
+import socket from '../Socket/socketManager';
 
 
 
 const HomeScreen = ({navigation}) => {
 
+  const userSurname = useSelector((state) => state.user.surname);
+  const expoToken = useSelector((state) => state.user.expoToken);
+  const gameCode = useSelector((state) => state.game.gameCode);
   const backColor = useSelector((state) => state.color.backColor);
   const MainColor = useSelector((state) => state.color.mainColor);
   const txtColor = useSelector((state) => state.color.txtColor);
@@ -24,18 +29,12 @@ const HomeScreen = ({navigation}) => {
   const svgData = useSelector((state) => state.color.svgData);
   const shakeAnimJoin = useRef(new Animated.Value(0)).current;
   const shakeAnimSurname = useRef(new Animated.Value(0)).current;
-
- 
- 
-
-
-
   const dispatch = useDispatch();
-
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
   const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
   const [isPopUpRegleVisible, setPopUpRegleVisible] = useState(false);
   const [messageError, setMessageError] = useState(''); 
+
   
   const openPopUpRegle = () => {
     setPopUpRegleVisible(true);
@@ -45,7 +44,9 @@ const HomeScreen = ({navigation}) => {
   };  
   //PopUp pour rejoindre une partie
   const openPopUpJoin = () => {
+    console.log('JoinPopUp');
     setIsPopUpJoinVisible(true);
+    console.log(isPopUpJoinVisible);
   };
   const closePopUpJoin = () => {
     setIsPopUpJoinVisible(false);
@@ -76,13 +77,48 @@ const HomeScreen = ({navigation}) => {
       if (storedUserId !== null) {
         console.log('Identifiant chargé avec succès :', storedUserId);
         dispatch(modifyId(storedUserId));
-        const surname = await getSurname(storedUserId);
-        dispatch(modifySurname(surname));
+        //const surname = await getSurname(storedUserId);
+        //dispatch(modifySurname(surname));
       } else {
         console.log('Aucun identifiant trouvé dans le stockage.');
       }
     } catch (error) {
       console.error('Erreur lors du chargement de l\'identifiant :', error);
+    }
+  };
+
+  const loadSurname = async () => {
+    try {
+      const storedSurname = await AsyncStorage.getItem('surname');
+      if (storedSurname !== null) {
+        console.log('Surnom chargé avec succès :', storedSurname);
+        dispatch(modifySurname(storedSurname));
+      } else {
+        console.log('Aucun surnom trouvé dans le stockage.');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du surnom :', error);
+    }
+  };
+
+  const loadCodeGame = async () => {
+    try {
+      const storedCodeGame = await AsyncStorage.getItem('gameCode');
+      if (storedCodeGame !== null) {
+        console.log('Le joueur se trouve dans la partie : ', storedCodeGame);
+        //Socket
+        dispatch(modifyCode(storedCodeGame));
+        const listPlayer = await getGame(storedCodeGame);
+        dispatch(setListPlayer(listPlayer));
+  
+        navigation.navigate('Cible');
+
+        
+      } else {
+        console.log('Le joueur ne se trouve pas dans une partie.');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du code de la partie :', error);
     }
   };
 
@@ -100,9 +136,9 @@ const HomeScreen = ({navigation}) => {
     startShake(shakeAnimSurname);
   } */
 
-  const saveUserId = async (userToSave) => {
+  const saveCode = async () => {
     try {
-      await AsyncStorage.setItem('userId', userToSave);
+      await AsyncStorage.removeItem('gameCode');
       console.log('Identifiant sauvegardé avec succès.');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
@@ -110,10 +146,20 @@ const HomeScreen = ({navigation}) => {
   };
 
   useEffect(() => {
+    /* saveCode();
+    AsyncStorage.removeItem('userId');
+    AsyncStorage.removeItem('surname'); */
+    //AsyncStorage.removeItem('gameCode');
     loadUserId();
-    //saveUserId('');
+    loadSurname();
+    loadCodeGame();
+    // Si codeGame est null, alors on est pas dans une partie, sinon navigate to cibleScreen, se reconnecter à la room socket et récuperer sa cible et sa mission
+
+
+    
     
   }, []);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -140,9 +186,11 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.View4}>
         <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} color = {MainColor} txtcolor = {txtColor}/>
       </View> 
+       
       <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
       <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>     
-      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin} setMessageError = {setMessageError} animRef={shakeAnimSurname} shakeAnim = {startShake}/>  
+      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin} setMessageError = {setMessageError} animRef={shakeAnimSurname} shakeAnim = {startShake}/> 
+      
              
     </View>
     
