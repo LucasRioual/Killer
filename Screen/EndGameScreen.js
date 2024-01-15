@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
   },
   fadingContainer: {
     padding: 20,
-    backgroundColor: 'powderblue',
   },
   mainContainer: {
     marginTop: 70,
