@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -42,6 +42,7 @@ const CibleScreen = ({navigation}) => {
     }
     return ['',''];
   }
+
 
   useEffect(() => {
 
@@ -208,9 +209,7 @@ const styles = StyleSheet.create({
   
   ViewBody: {
     flex: 5, 
-    alignItems:'center',
-    
-    
+    alignItems:'center',  
     
   },
   ViewLoading: {
