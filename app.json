@@ -19,16 +19,6 @@
       "bundleIdentifier": "com.lrioual.killer"
     },
     "android": {
-      "permissions": [
-        "INTERNET"
-      ],
-      "config": {
-        "networkSecurity": {
-          "config": {
-            "cleartext": true
-          }
-        }
-      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/iconAndroid.png",
         "backgroundColor": "#0B1623"
@@ -43,6 +33,16 @@
         "projectId": "dd739689-a08f-4c7a-873c-10c48f8c171f"
       }
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
     "owner": "lrioual",
     "runtimeVersion": {
       "policy": "appVersion"
