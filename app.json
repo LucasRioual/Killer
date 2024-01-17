@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/icon.svg",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#061624"
     },
@@ -19,9 +19,19 @@
       "bundleIdentifier": "com.lrioual.killer"
     },
     "android": {
+      "permissions": [
+        "INTERNET"
+      ],
+      "config": {
+        "networkSecurity": {
+          "config": {
+            "cleartext": true
+          }
+        }
+      },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/iconAndroid.png",
+        "backgroundColor": "#0B1623"
       },
       "package": "com.lrioual.killer"
     },
