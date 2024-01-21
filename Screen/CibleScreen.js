@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Ani
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setKilledBy, setConfirmKill, setPlayerComeBack, setNewPlayer } from '../Store/Reducer/gameSlice';
+import { setKilledBy, setConfirmKill, setPlayerComeBack, setNewPlayer, removeNewPlayer } from '../Store/Reducer/gameSlice';
 import PopUpConfirm from '../Components/PopUpConfirm';
 import socket from '../Socket/socketManager';
 import PopUpDisplayKill from '../Components/PopUpDisplayKill';
@@ -15,6 +15,8 @@ import Svg, { Path } from "react-native-svg";
 
 
 const CibleScreen = ({navigation}) => {
+
+  const isRefuseNewPlayer = useSelector((state) => state.game.isRefuseNewPlayer);
   const listPlayer = useSelector((state) => state.game.listPlayer);
   const userId = useSelector((state) => state.user.userId);
   const userSurname = useSelector((state) => state.user.surname);
@@ -47,6 +49,12 @@ const CibleScreen = ({navigation}) => {
     return player ? [player.target, player.mission] : ['', ''];
   };
 
+  useEffect(() => {
+    if(isRefuseNewPlayer){
+      navigation.navigate('Home');
+    };
+  },[isRefuseNewPlayer]);
+
 
   useEffect(() => {
 
@@ -65,7 +73,8 @@ const CibleScreen = ({navigation}) => {
 
   useEffect(() => {
     if (newPlayer.length !== 0) {
-      setMessagePopUpNewPlayer('Veux-tu que ' + newPlayer.surname + ' rejoigne la partie');
+      console.log('newPlayer : ', newPlayer);
+      setMessagePopUpNewPlayer('Veux-tu que ' + newPlayer[0] + ' rejoigne la partie');
       setIsPopUpNewPlayerVisible(true);
     }
   }, [newPlayer]);
@@ -216,16 +225,16 @@ const CibleScreen = ({navigation}) => {
   }
 
   const handleConfirmationNewPlayer = () => {
-    socket.emit("confirmNewPlayer", newPlayer, gameCode);
+    socket.emit("confirmNewPlayer", newPlayer[0], gameCode);
     setIsPopUpNewPlayerVisible(false);
-    dispatch(setNewPlayer([]));
+    dispatch(removeNewPlayer());
   }
 
   const handleCancelPopUpNewPlayer = () => {
     console.log('handleCancelPopUpNewPlayer');
-    socket.emit("cancelNewPlayer", newPlayer);
+    socket.emit("cancelNewPlayer", newPlayer[0], gameCode);
     setIsPopUpNewPlayerVisible(false);
-    dispatch(setNewPlayer([]));
+    dispatch(removeNewPlayer());
   }
 
 

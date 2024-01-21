@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyCode, setGameStarted} from '../Store/Reducer/gameSlice'
+import { modifyCode, setGameStarted, setNewPlayer, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
 
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const SalonScreen = ({navigation})=> {
 
-
+  const isRefuseNewPlayer = useSelector((state) => state.game.isRefuseNewPlayer);
   const gameStatut = useSelector((state) => state.game.gameStatut);
   const userSurname = useSelector((state) => state.user.surname);
   const hostFlag = useSelector((state) => state.user.hostFlag);
@@ -100,6 +100,13 @@ const SalonScreen = ({navigation})=> {
       
     }
   }, [isGameStarted]);
+
+  useEffect(() => {
+    if(isRefuseNewPlayer){
+      dispatch(setRefuseNewPlayer(false));
+      navigation.navigate('Home');
+    };
+  },[isRefuseNewPlayer]);
 
 
     const ListPlayer = () =>{
