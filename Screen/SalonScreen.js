@@ -4,7 +4,7 @@ import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode, setGameStarted} from '../Store/Reducer/gameSlice'
-import listData from '../Data/UserData.json'
+
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
 import socket from '../Socket/socketManager';
@@ -12,11 +12,11 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 
+
 const SalonScreen = ({navigation})=> {
 
 
-
-  const userId = useSelector((state) => state.user.userId);
+  const gameStatut = useSelector((state) => state.game.gameStatut);
   const userSurname = useSelector((state) => state.user.surname);
   const hostFlag = useSelector((state) => state.user.hostFlag);
   const gameCode = useSelector((state) => state.game.gameCode);
@@ -26,6 +26,10 @@ const SalonScreen = ({navigation})=> {
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
   const navigationEventRef = useRef(null);
   const [messagePopUp, setMessagePopUp] = useState(''); 
+  const expoToken = useSelector((state) => state.user.expoToken);
+  const [gameIsStarted, setGameIsStarted] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
 
 
   
@@ -57,21 +61,34 @@ const SalonScreen = ({navigation})=> {
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setGameStarted(false));
+      setIsButtonDisabled(false);
       console.log('useFocusEffect');
 
       
     }, [])
   );
 
-  useEffect( () => {
+  const getGame = async () => {
+    const responseCode =  await createGame(userSurname, expoToken);
+    console.log('responseCode : ', responseCode);
+    dispatch(modifyCode(responseCode));
+
+  }
+
+  useEffect(  () => {
+    
     if(hostFlag){
       setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
-
+      getGame();
     }
     else{
       setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
+      if(gameStatut === 'start'){
+        //La partie a déjà été lancé 
+        setGameIsStarted(true);
+      }
     }
-     
+  
   }, []);
 
   useEffect( () => {
@@ -98,7 +115,10 @@ const SalonScreen = ({navigation})=> {
 
 
   const onClickStart = () =>{
-    startGame(gameCode);
+    //startGame(gameCode);
+    socket.emit('hostStartGame', gameCode);
+    setIsButtonDisabled(true);
+
     
   }
 
@@ -109,7 +129,9 @@ const SalonScreen = ({navigation})=> {
         <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
-            <View style={styles.MainContainer}>
+
+            {!gameIsStarted ? (
+              <View style={styles.MainContainer}>
               <View style={styles.ViewPlayer}>
                 
                 <Text style={styles.TextTitreJoueur}>Joueurs</Text>
@@ -122,13 +144,21 @@ const SalonScreen = ({navigation})=> {
               <Text style={styles.TextWait}>En attente de joueurs ...</Text>
             </View>
 
-            
-            
-            
+            ):(
+              <View style={styles.MainContainer}>
+              <View style={styles.MessageContainer}>
+                <Text style={styles.TextMessage}>La partie est en cours</Text>
+                <Text style={styles.TextMessageDescription}>L'hôte de la partie doit confirmer ton intégration</Text>
+              </View>
+              <Text style={styles.TextWait}>En attente de l'hôte ...</Text>
+
+                
+              </View>
+            )}
             <View style={styles.buttonContainer}>
 
             {hostFlag && (
-              <TouchableOpacity style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
+              <TouchableOpacity disabled={isButtonDisabled} style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
                 <Text style={styles.buttonText}>Lancer</Text>
               </TouchableOpacity>
             )}
@@ -173,6 +203,7 @@ const styles = StyleSheet.create ({
     marginTop:10,
     flex:4,
     width:'80%',
+    justifyContent:'center',
     
 
   },
@@ -233,6 +264,26 @@ const styles = StyleSheet.create ({
     fontSize: 35,
     fontFamily: 'LuckiestGuy',
     
+  },
+  MessageContainer: {
+    justifySelf:'center',
+    backgroundColor: 'white',
+    borderRadius:20,
+    paddingVertical: 30,
+  },
+  TextMessage: {
+   
+    textAlign: 'center',
+    fontSize: 25,
+    fontFamily: 'Sen',
+    fontWeight: 'bold',
+    
+  },
+  TextMessageDescription: {
+    textAlign: 'center',
+    fontSize: 15,
+    fontFamily: 'Sen',
+    marginTop: 10,
   },
   
   

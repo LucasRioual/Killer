@@ -48,9 +48,11 @@ const Navigation = () => {
     registerForPushNotificationsAsync();
   }, []);
 
+  
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />

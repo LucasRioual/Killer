@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated} from 'react-native';
 import { useSelector, useDispatch} from 'react-redux';
-import { modifyCode } from '../Store/Reducer/gameSlice';
+import { modifyCode, setGameStatut } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
 import socket from '../Socket/socketManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,6 +36,9 @@ const PopUpJoin = (props) => {
     const data = await response.json();
     if(response.ok){
       const listPlayer = data.listPlayer;
+      const statut = data.statut;
+      console.log('Statut de la partie : ',statut);
+      dispatch(setGameStatut(statut)); 
       for (let i = 0; i < listPlayer.length; i++) {
         if(listPlayer[i].surname == userSurname){
           props.setMessageError('Ton nom est déjà pris');
@@ -47,9 +50,9 @@ const PopUpJoin = (props) => {
         }
       }
       const dataToSend = {surname: userSurname, code: code, expoToken: expoToken};
-      // Enregistre le code de la partie dans asyncstorage
       socket.emit('connectRoom', dataToSend);
-      navigation.navigate('Salon');
+      props.exit();
+      navigation.navigate('Salon',{gameStatut: statut});
     }
     else{
       props.shakeAnim(animRef);

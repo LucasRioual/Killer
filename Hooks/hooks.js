@@ -90,8 +90,7 @@ const getSurname = async(userId) => {
     const data = await response.json();
     if (response.ok) {
     } else {
-      // Si la requête a échoué, afficher une popup avec le message d'erreur
-      alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
+      return data.statut;
     }
   };
 
@@ -128,9 +127,7 @@ const getSurname = async(userId) => {
       });
       const data = await response.json();
       const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};
-      
       socket.emit('connectRoom', dataToSend);
-      
       return data.code;
     } catch (error) {
       

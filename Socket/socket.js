@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer } from '../Store/Reducer/gameSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
 //import * as Notifications from 'expo-notifications';
@@ -22,7 +22,7 @@ const SocketHandler = () => {
     });
 
     socket.on('sendListPlayer', (updatedListPlayer) => {
-      //console.log('sendListPlayer', updatedListPlayer);
+      console.log('sendListPlayer', updatedListPlayer);
       dispatch(setListPlayer(updatedListPlayer));
     });
 
@@ -51,6 +51,10 @@ const SocketHandler = () => {
     });
     socket.on('isNotKilledConfirm', () => {
       dispatch(setConfirmKill(false));
+    });
+    socket.on('NewPlayer', (newPlayer) => {
+      console.log('un nouveau joueur arrive', newPlayer);
+      dispatch(setNewPlayer(newPlayer));
     });
 
     

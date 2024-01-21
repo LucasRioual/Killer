@@ -8,23 +8,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { modifyCode} from '../Store/Reducer/gameSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const GameSettingsScreen = ({ visible, onSelect, onCancel, options }) => {
+const GameSettingsScreen = ({navigation}) => {
   const [selectedTime, setSelectedTime] = useState('no_limit'); // La valeur initiale peut être 'no', '15min', '30min', '60min'
   const [selectedParticipants, setSelectedParticipants] = useState('unlimited');
   const [joinMidGame, setJoinMidGame] = useState(true);
   const [includeAlcoholicDares, setIncludeAlcoholicDares] = useState(true);
-  const userId = useSelector((state) => state.user.userId);
-  const userSurname = useSelector((state) => state.user.surname);
-  const dispatch = useDispatch();
-  const expoToken = useSelector((state) => state.user.expoToken);
 
-  const navigation = useNavigation();
+
   
   const Create = async () => {
     
-    const responseCode =  await createGame(userSurname, expoToken);
-    console.log('responseCode : ', responseCode);
-    dispatch(modifyCode(responseCode));
     navigation.navigate("Salon");
   };
    
