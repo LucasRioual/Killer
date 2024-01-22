@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Ani
 import HeaderGame from '../Components/HeaderGame';
 
 import { useSelector, useDispatch } from 'react-redux';
-import {setConfirmKill } from '../Store/Reducer/gameSlice';
+import {setConfirmKill, setMission, setTarget } from '../Store/Reducer/gameSlice';
 import PopUpConfirm from '../Components/PopUpConfirm';
 import socket from '../Socket/socketManager';
 import PopUpDisplayKill from '../Components/PopUpDisplayKill';
@@ -20,20 +20,27 @@ import NewPlayer from '../Components/PopUpGame/NewPlayer';
 
 const CibleScreen = ({navigation}) => {
 
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
   
-  const listPlayer = useSelector((state) => state.game.listPlayer);
+  //const listPlayer = useSelector((state) => state.game.listPlayer);
+  const target = useSelector((state) => state.game.target);
+  const mission = useSelector((state) => state.game.mission);
+
   const userSurname = useSelector((state) => state.user.surname);
   const gameCode = useSelector((state) => state.game.gameCode);
  
   const isConfirmKill = useSelector((state) => state.game.isConfirmKill);
   const dispatch = useDispatch();
  
-  const [targetAndMission, setTargetAndMission] = useState([]);
+  //const [targetAndMission, setTargetAndMission] = useState([]);
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
 
   const [messagePopUp, setMessagePopUp] = useState('');
   const [isPopUpDisplayKill, setIsPopUpDisplayKill] = useState(false);
   const [isPopUpLeaveVisible, setIsPopUpLeaveVisible] = useState(false);
+  const [numberMission, setNumberMission] = useState(3);
+  const [showSecondButton, setShowSecondButton] = useState(true);
 
  
   const [isLoading, setIsLoading] = useState(false);
@@ -45,11 +52,11 @@ const CibleScreen = ({navigation}) => {
     return player ? [player.target, player.mission] : ['', ''];
   };
 
-  useEffect(() => {
+ /*  useEffect(() => {
     const targetAndMission = getTargetAndMission();
     setTargetAndMission(targetAndMission);
-    setMessagePopUp('Confirmes-tu le meurtre de ' + targetAndMission[0] + ' ?')
-  },[listPlayer]);
+    setMessagePopUp('Confirmes-tu le meurtre de ' + target + ' ?')
+  },[taget, mission]); */
 
 
   useEffect(() => {
@@ -64,28 +71,47 @@ const CibleScreen = ({navigation}) => {
     setIsPopUpConfirmationVisible(true);
     
   };
-
   const handleConfirmation = () => {
     socket.emit("confirmKill",gameCode);
     setIsLoading(true);
     setIsPopUpConfirmationVisible(false);
   }
-
   const handleCancel = () => {
     setIsPopUpConfirmationVisible(false);
   }
-
-
   const handleCancelPopUpDisplayKill = () => {
     setIsPopUpDisplayKill(false);
     dispatch(setConfirmKill(null));
   }
-
   const leaveGame = () => {
     setIsPopUpLeaveVisible(false);
     socket.emit("leaveGame", gameCode, userSurname);
     AsyncStorage.removeItem('gameCode');
     navigation.navigate('Home');
+  }
+
+  const getNewMission = async() => {
+    const response = await fetch(`${apiUrl}/api/game/${gameCode}/${userSurname}`);
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data.mission
+      
+    } 
+    else return;
+  };
+
+  const changeMission = async () => {
+    if(numberMission > 0 ){
+      const newMission = await getNewMission();
+      dispatch(setMission(newMission));
+      setNumberMission(numberMission - 1);
+      if(numberMission == 1){
+        setShowSecondButton(false);
+      }
+      
+    }
+    
   }
   
 
@@ -96,7 +122,7 @@ const CibleScreen = ({navigation}) => {
       <Animated.View style={[styles.AnimationView, {opacity: opacityBody}]}>
           <View style={styles.ViewBody} >
             <Timer />
-            <TargetAndMission target={targetAndMission[0]} mission = {targetAndMission[1]} />
+            <TargetAndMission target={target} mission = {mission} number= {numberMission} />
             <View style={styles.bottomContainer}>
               {isLoading ? (
                 <View style={styles.ViewLoading}>
@@ -105,12 +131,16 @@ const CibleScreen = ({navigation}) => {
                 </View>
               ) : (
                 <View style = {styles.buttonContainer}>
-                    <TouchableOpacity style={styles.buttonChange} onPress={() => {}}>
+                  {showSecondButton && (
+                      <TouchableOpacity style={styles.buttonChange} onPress={changeMission}>
                       <Text style={styles.buttonTextChange}>Changer de mission</Text>
-                    </TouchableOpacity>
+                      </TouchableOpacity>
+                    )}
+                    
                     <TouchableOpacity style={styles.buttonKill} onPress={handlePressKill}>
                       <Text style={styles.buttonTextKill}>KILL</Text>
                     </TouchableOpacity>
+                    
                 </View>
               )}
             </View>
@@ -120,13 +150,11 @@ const CibleScreen = ({navigation}) => {
 
       <ConfirmKilled navigation={navigation} gameCode={gameCode} />
       <NewPlayer gameCode={gameCode} />
-
       <PopUpDisplayKill visible={isPopUpDisplayKill} exit={handleCancelPopUpDisplayKill} isConfirmKill={isConfirmKill} />
-      <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
+      <PopUpConfirm message={'Confirmes-tu le meurtre de ' + target + ' ?'} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       <PopUpConfirm message={'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpLeaveVisible} exit={()=>setIsPopUpLeaveVisible(false)} confirm= {leaveGame} />
 
 
-      
       <GameAnimation opacityBody = {opacityBody} gameCode={gameCode}/>
       
       

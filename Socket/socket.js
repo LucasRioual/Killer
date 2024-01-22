@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission } from '../Store/Reducer/gameSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
 //import * as Notifications from 'expo-notifications';
@@ -22,12 +22,21 @@ const SocketHandler = () => {
     });
 
     socket.on('sendListPlayer', (updatedListPlayer) => {
-      console.log('sendListPlayer', updatedListPlayer);
+      console.log('setListPlayer');
       dispatch(setListPlayer(updatedListPlayer));
     });
 
-    socket.on('startGame', (updatedListPlayer) => {
-      dispatch(setListPlayer(updatedListPlayer));
+    socket.on('sendTargetAndMission', (target, mission) => { //A modifier
+      console.log('Mission et cible reçu', mission);
+      //dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
+    });
+
+    socket.on('startGame', (target, mission) => { // A modifier
+      //dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
       dispatch(setGameStarted(true));
       console.log('startGame');
       //navigation.navigate('Cible');
@@ -45,9 +54,10 @@ const SocketHandler = () => {
 
     });
 
-    socket.on('isKilledConfirm', (updatedListPlayer) => {
+    socket.on('isKilledConfirm', (target, mission) => { // A modifier
       dispatch(setConfirmKill(true));
-      dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
     });
     socket.on('isNotKilledConfirm', () => {
       dispatch(setConfirmKill(false));

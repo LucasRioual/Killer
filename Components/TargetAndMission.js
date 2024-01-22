@@ -3,8 +3,6 @@ import { Text, View, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const TargetAndMission = (props) => {
-
-
     return (
         <View>
             <View style={styles.mainContainer}>
@@ -18,16 +16,31 @@ const TargetAndMission = (props) => {
               <View style={styles.targetContainer}>
                 <Text style={styles.TextMission}>{props.mission}</Text>
               </View>
-              <Text style={styles.TextMissionRestante}>
-                Tu peux encore changer
-                <Text style={{ fontWeight: 'bold', color: '#FFF'  }}> 3 fois </Text>
-                de mission
-              </Text>
+              <MessageMission number={props.number}/>
+              
             </View>
 
         </View>  
     );
 };
+
+const MessageMission =(props) =>{
+  if (props.number === 0) {
+    return (
+      <Text style={styles.TextMissionRestante}>
+        Tu ne peux plus changer de mission
+      </Text>
+    );
+  }
+  else {
+    return (
+      <Text style={styles.TextMissionRestante}>
+        Tu peux encore changer de mission
+        <Text style={{ fontWeight: 'bold', color: '#FFF'  }}> {props.number} fois </Text>
+      </Text>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
     mainContainer: {

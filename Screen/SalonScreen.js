@@ -24,7 +24,6 @@ const SalonScreen = ({navigation})=> {
   const isGameStarted = useSelector((state) => state.game.isGameStarted);
   const dispatch = useDispatch();
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
-  const navigationEventRef = useRef(null);
   const [messagePopUp, setMessagePopUp] = useState(''); 
   const expoToken = useSelector((state) => state.user.expoToken);
   const [gameIsStarted, setGameIsStarted] = useState(false);
@@ -113,7 +112,7 @@ const SalonScreen = ({navigation})=> {
       return (
           <View style={styles.PlayerContainer}>
             {listPlayer.map((user, index) => (
-              <PlayerName key={index} label={user.surname} />
+              <PlayerName key={index} label={user} />
             ))}
           </View>
         );
