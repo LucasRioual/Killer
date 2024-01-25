@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef} from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated} from 'react-native';
+import { BackHandler, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated, ScrollView} from 'react-native';
 import HeaderGame from '../Components/HeaderGame';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,6 +18,7 @@ import NewPlayer from '../Components/PopUpGame/NewPlayer';
 
 
 
+
 const CibleScreen = ({navigation}) => {
 
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -31,6 +32,7 @@ const CibleScreen = ({navigation}) => {
   const gameCode = useSelector((state) => state.game.gameCode);
  
   const isConfirmKill = useSelector((state) => state.game.isConfirmKill);
+  const isHost = useSelector((state) => state.user.hostFlag);
   const dispatch = useDispatch();
  
   //const [targetAndMission, setTargetAndMission] = useState([]);
@@ -47,16 +49,29 @@ const CibleScreen = ({navigation}) => {
   
   const opacityBody = useRef(new Animated.Value(0)).current;
 
-  const getTargetAndMission = () => {
-    const player = listPlayer.find((player) => player.surname === userSurname);
-    return player ? [player.target, player.mission] : ['', ''];
-  };
 
- /*  useEffect(() => {
-    const targetAndMission = getTargetAndMission();
-    setTargetAndMission(targetAndMission);
-    setMessagePopUp('Confirmes-tu le meurtre de ' + target + ' ?')
-  },[taget, mission]); */
+  useEffect(() => {
+    const handleHardwareBackPress = () => {
+      setIsPopUpLeaveVisible(true);
+      return true;
+    };
+    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
+    };
+
+
+  }, []); 
+
+  useEffect(() => {
+    if(target === userSurname){
+      navigation.navigate('EndGame', {isWinner: true});
+    }
+  }, [target]);
+
+
+
 
 
   useEffect(() => {
@@ -118,10 +133,12 @@ const CibleScreen = ({navigation}) => {
 
   return (
     <View style={styles.ViewMain}>
-      <HeaderGame titre={gameCode} navigation= {navigation} visible = {true} onClick = {()=>{setIsPopUpLeaveVisible(true)}}  />
+      <HeaderGame titre={gameCode} navigation= {navigation} visible = {true} onClick = {()=>{setIsPopUpLeaveVisible(true)}} host ={isHost}  />
       <Animated.View style={[styles.AnimationView, {opacity: opacityBody}]}>
           <View style={styles.ViewBody} >
-            <Timer />
+            <ScrollView style={styles.ScrollView}>
+              <View style={styles.ScrollViewContent}>
+              <Timer />
             <TargetAndMission target={target} mission = {mission} number= {numberMission} />
             <View style={styles.bottomContainer}>
               {isLoading ? (
@@ -144,6 +161,10 @@ const CibleScreen = ({navigation}) => {
                 </View>
               )}
             </View>
+
+              </View>
+            </ScrollView>
+            
           </View>
         
       </Animated.View>
@@ -178,10 +199,14 @@ const styles = StyleSheet.create({
     flex: 5,
   },
   ViewBody: {
-    alignItems:'center', 
-    flex: 1,
+    flex: 1, 
+  },
+  ScrollView: {
+    padding: 20,
     
-    
+  },
+  ScrollViewContent: {
+    alignItems: 'center',
   },
   ViewLoading: {
     borderRadius: 20,
@@ -238,8 +263,9 @@ const styles = StyleSheet.create({
 
   },
   bottomContainer:{
-    flex:1, 
+    paddingVertical: 20,
     width: '100%',
+    marginVertical  : 20,
   },
   buttonContainer: {
     flex:1,

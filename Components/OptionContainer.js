@@ -1,174 +1,153 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Circle, Path, Line } from 'react-native-svg';
 
-
-
-
-
-
 const OptionContainer = () => {
+  const options = [
+    { key: '1h', label: '1 h' },
+    { key: '2h', label: '2 h' },
+    { key: '3h', label: '3 h' },
+    { key: '4h', label: '4 h' },
+  ];
 
-    const [selectedDuration, setSelectedDuration] = useState('4h');
-    const [selectedJoin, setSelectedJoin] = useState(true);
-    const [selectedChangeMission, setSelectedChangeMission] = useState('non');
+  const [selectedDuration, setSelectedDuration] = useState(options[3].key);
+  const [selectedJoin, setSelectedJoin] = useState(true);
+  const changeMissionOptions = [
+    { key: 'non', label: 'Non' },
+    { key: '1', label: '1 fois' },
+    { key: '2', label: '2 fois' },
+    { key: '3', label: '3 fois' },
+  ];
+  const [selectedChangeMission, setSelectedChangeMission] = useState(changeMissionOptions[0].key);
 
+  const handleOptionSelection = (key, setter) => {
+    setter(key === setter ? null : key);
+  };
 
-    const handleDurationSelection = (duration) => {
+  
 
-        setSelectedDuration(duration === selectedDuration ? null : duration);
-      };
-    
-    const handleJoinSelection = (join) => {
-            
-        setSelectedJoin(join === selectedJoin ? null : join);
-    };
-    
-    const handleChangeMissionSelection = (changeMission) => {
-                
-        setSelectedChangeMission(changeMission === selectedChangeMission ? null : changeMission);
-    };
+  return (
+    <View style={styles.MainContainer}>
+      <OptionSection
+        title="Durée de la partie :"
+        options={options}
+        selectedOption={selectedDuration}
+        onOptionSelect={(key) => handleOptionSelection(key, setSelectedDuration)}
+        info="Un chronomètre sera lancé au début de la partie. Si la partie n'est pas terminée à la fin du temps imparti, le joueurs avec le plus de kill remportera la partie"
+      />
 
+      <OptionSection
+        title="Rejoindre en cours de partie :"
+        options={[{ key: true, label: 'Oui' }, { key: false, label: 'Non' }]}
+        selectedOption={selectedJoin}
+        onOptionSelect={(key) => handleOptionSelection(key, setSelectedJoin)}
+        info="Si un joueurs souhaite rejoindre une partie en cours de route, tu recevras une demande d'intégration. Les missions et les cibles seront réarrangées pour le bon fonctionnement de la partie"
+      />
 
+      <OptionSection
+        title="Possibilité de changer de missions :"
+        options={changeMissionOptions}
+        selectedOption={selectedChangeMission}
+        onOptionSelect={(key) => handleOptionSelection(key, setSelectedChangeMission)}
+        info="Si tu ne souhaites pas changer de mission, tu pourras la refaire autant de fois que tu le souhaites"
+      />
+    </View>
+  );
+};
 
+const OptionSection = ({ title, options, selectedOption, onOptionSelect, info }) => {
+  const [showInfo, setShowInfo] = useState(false);
 
-    return (
-        <View style={styles.MainContainer} >
-            <Text style= {styles.TextOption}>Durée de la partie : </Text>
-            <View style={styles.ChoiceContainer}>
-                <TouchableOpacity
-                style={[
-                    styles.FirstButtonChoice,
-                    { backgroundColor: selectedDuration === '1h' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleDurationSelection('1h')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedDuration === '1h' ? 'white' : 'black' }]}>1 h</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.ButtonChoice,
-                    { backgroundColor: selectedDuration === '2h' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleDurationSelection('2h')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedDuration === '2h' ? 'white' : 'black' }]}>2 h</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.ButtonChoice,
-                    { backgroundColor: selectedDuration === '3h' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleDurationSelection('3h')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedDuration === '3h' ? 'white' : 'black' }]}>3 h</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.LastButtonChoice,
-                    { backgroundColor: selectedDuration === '4h' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleDurationSelection('4h')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedDuration === '4h' ? 'white' : 'black' }]}>4 h</Text>
-                </TouchableOpacity>
-            </View>
-            <Text style= {styles.TextOption}>Rejoindre en cours de partie : </Text>
-            <View style={styles.ChoiceContainer}>
-                <TouchableOpacity style={[styles.FirstButtonChoice, {backgroundColor: selectedJoin ? '#F0122D' : 'white'}]} onPress={() => handleJoinSelection(true)}>
-                    <Text style={[styles.TextChoice, {color: selectedJoin ? 'white' : 'black'}]}>Oui</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.LastButtonChoice, {backgroundColor: !selectedJoin ? '#F0122D' : 'white'}]} onPress={() => handleJoinSelection(false)}>
-                    <Text style={[styles.TextChoice, {color: !selectedJoin ? 'white' : 'black'}]}>Non</Text>
-                </TouchableOpacity>
-            </View>
-            <Text style= {styles.TextOption}>Possibilité de changer de missions : </Text>
-            <View style={styles.ChoiceContainer}>
-                <TouchableOpacity
-                style={[
-                    styles.FirstButtonChoice,
-                    { backgroundColor: selectedChangeMission === 'non' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleChangeMissionSelection('non')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedChangeMission === 'non' ? 'white' : 'black' }]}>Non</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.ButtonChoice,
-                    { backgroundColor: selectedChangeMission === '1' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleChangeMissionSelection('1')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedChangeMission === '1' ? 'white' : 'black' }]}>1 fois</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.ButtonChoice,
-                    { backgroundColor: selectedChangeMission === '2' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleChangeMissionSelection('2')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedChangeMission === '2' ? 'white' : 'black' }]}>2 fois</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={[
-                    styles.LastButtonChoice,
-                    { backgroundColor: selectedChangeMission === '3' ? '#F0122D' : 'white' },
-                ]}
-                onPress={() => handleChangeMissionSelection('3')}
-                >
-                <Text style={[styles.TextChoice,{ color: selectedChangeMission === '3' ? 'white' : 'black' }]}>3 fois</Text>
-                </TouchableOpacity>
-            </View>
+  return (
+    <>
+      <View style={styles.TitleContainer}>
+        <Text style={styles.TextOption}>{title}</Text>
+        <TouchableOpacity style={styles.ImgInfo} onPress={() => setShowInfo(!showInfo)}>
+          <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <Path d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM11 11V17H13V11H11ZM11 7V9H13V7H11Z" fill="white"/>
+          </Svg>
 
+        </TouchableOpacity>
+      </View>
+      {showInfo && (
+        <View style={styles.InfoContainer}>
+          <Text style={styles.TextInfo}>{info}</Text>
         </View>
-    );
-}
+      )}
+      
+      
+      <View style={styles.ChoiceContainer}>
+        {options.map((option, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.ButtonChoice,
+              index === 0 && styles.FirstButtonChoice,
+              index === options.length - 1 && styles.LastButtonChoice,
+              { backgroundColor: selectedOption === option.key ? '#F0122D' : 'white' },
+            ]}
+            onPress={() => onOptionSelect(option.key)}
+          >
+            <Text style={[styles.TextChoice, { color: selectedOption === option.key ? 'white' : 'black' }]}>
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
-    MainContainer: {
-        marginTop: 20,
-        width: '100%',
-        alignItems: 'center',
-    },
-    TextOption: {
-        color: 'white',
-        fontSize: 15,
-        fontFamily: 'Sen',
-    },
-    ChoiceContainer: {
-        flexDirection: 'row',
-        marginVertical: 20,
-    },
-    FirstButtonChoice: {
-        backgroundColor: '#FFF',
-        marginHorizontal: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-    },
-    ButtonChoice: {
-        backgroundColor: '#FFF',
-        marginHorizontal: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-    },
-    LastButtonChoice: {
-        backgroundColor: '#FFF',
-        marginHorizontal: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderTopRightRadius: 10,
-        borderBottomRightRadius: 10,
-    },
-    TextChoice: {
-        fontSize: 15,
-        fontFamily: 'Sen',
-    },
-    
-    
+  MainContainer: {
+    marginTop: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  TitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ImgInfo: {
+    marginLeft: 10,
+  },
+  InfoContainer: {
+    width: '90%',
+    marginVertical: 5,
+  },
+  TextInfo: {
+    color: 'gray',
+    fontSize: 12,
+    fontFamily: 'Sen',
+  },
+
+  TextOption: {
+    color: 'white',
+    fontSize: 15,
+    fontFamily: 'Sen',
+  },
+  ChoiceContainer: {
+    flexDirection: 'row',
+    marginVertical: 20,
+  },
+  FirstButtonChoice: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  ButtonChoice: {
+    marginHorizontal: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#FFF',
+  },
+  LastButtonChoice: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  TextChoice: {
+    fontSize: 15,
+    fontFamily: 'Sen',
+  },
 });
 
 export default OptionContainer;

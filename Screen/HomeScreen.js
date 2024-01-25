@@ -70,23 +70,7 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
- 
 
-  /* const loadUserId = async () => {
-    try {
-      const storedUserId = await AsyncStorage.getItem('userId');
-      if (storedUserId !== null) {
-        console.log('Identifiant chargé avec succès :', storedUserId);
-        dispatch(modifyId(storedUserId));
-        //const surname = await getSurname(storedUserId);
-        //dispatch(modifySurname(surname));
-      } else {
-        console.log('Aucun identifiant trouvé dans le stockage.');
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement de l\'identifiant :', error);
-    }
-  }; */
 
   const loadUserSurnameAndCode = async () => {
     try {

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
       TextMission: {
         color: 'white',
         textAlign: 'center',
-        fontSize: 25,
+        fontSize: 20,
         fontFamily: 'Sen',
       },
       TextMissionRestante: {

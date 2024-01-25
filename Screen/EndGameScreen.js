@@ -1,13 +1,28 @@
 import React,  { useState, useEffect, useRef }  from 'react';
 import {   Animated,  SafeAreaView, View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
+import socket from '../Socket/socketManager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector, useDispatch } from 'react-redux';
 
-const GameOverScreen = ({ navigation }) => {
+
+
+const GameOverScreen = ({ navigation, route }) => {
+
+  const { isWinner } = route.params;
+  const gameCode = useSelector((state) => state.game.gameCode);
+  const userSurname = useSelector((state) => state.user.surname);
+
+
   const VoirHistorique = () => {
       navigation.navigate('Historique');
   };
   const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
+
+    socket.emit("leaveGame", gameCode, userSurname);
+    AsyncStorage.removeItem('gameCode');
+
     // Commencer l'animation de fondu dès que le composant est monté
     Animated.timing(fadeAnim, {
       toValue: 1, // Animer l'opacité jusqu'à 1 (complètement opaque)
@@ -15,6 +30,9 @@ const GameOverScreen = ({ navigation }) => {
       useNativeDriver: true, // Ajouter cette ligne pour améliorer les performances
     }).start();
   }, []);
+
+
+
   return (
     <View style={styles.ViewMain}>
       <Header titre={""} navigation= {navigation} visible = {true} />
@@ -29,7 +47,8 @@ const GameOverScreen = ({ navigation }) => {
               }
             ]}
           >
-            <Text style={styles.TextTitre} >Vous avez été éliminé!</Text>
+            
+            <Text style={styles.TextTitre} >{isWinner ? 'Tu as gagné' : 'Tu es éliminé'}</Text>
           </Animated.View>
         </SafeAreaView>
                 

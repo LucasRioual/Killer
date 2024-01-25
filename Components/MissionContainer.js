@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     MissionContainer: {
         width: '100%',
         marginTop: 20,
-        borderRadius: 20,
+        borderRadius: 10,
         backgroundColor: '#FFF',
         paddingLeft: 20,
         paddingVertical: 13,

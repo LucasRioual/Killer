@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame } from '../Store/Reducer/gameSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
 //import * as Notifications from 'expo-notifications';
@@ -24,6 +24,7 @@ const SocketHandler = () => {
     socket.on('sendListPlayer', (updatedListPlayer) => {
       console.log('setListPlayer');
       dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setLoadingSalon(false));
     });
 
     socket.on('sendTargetAndMission', (target, mission) => { //A modifier
@@ -42,11 +43,6 @@ const SocketHandler = () => {
       //navigation.navigate('Cible');
     });
 
-    socket.on('endGame', () => {
-      // Afficher une popUp qui explique la fin de la partie
-      // Puis retourner à l'écran d'accueil
-      //navigation.goBack();
-    });
 
     socket.on('sendConfirmKill', (tueurSurname) => {
       console.log('Tu es mort par ' + tueurSurname);
@@ -70,6 +66,11 @@ const SocketHandler = () => {
       console.log('refuseNewPlayer');
       dispatch(setRefuseNewPlayer(true));
 
+    });
+    socket.on('endGame', () => {
+      console.log('endGame');
+      dispatch(setEndGame(true));
+      
     });
 
     

@@ -1,14 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, BackHandler } from 'react-native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyCode, setGameStarted, setNewPlayer, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
+import { modifyCode, setEndGame, setGameStarted, setLoadingSalon, setNewPlayer, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
 
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
 import socket from '../Socket/socketManager';
 import { useFocusEffect } from '@react-navigation/native';
+
 
 
 
@@ -24,10 +25,13 @@ const SalonScreen = ({navigation})=> {
   const isGameStarted = useSelector((state) => state.game.isGameStarted);
   const dispatch = useDispatch();
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
-  const [messagePopUp, setMessagePopUp] = useState(''); 
   const expoToken = useSelector((state) => state.user.expoToken);
   const [gameIsStarted, setGameIsStarted] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const isLoading = useSelector((state) => state.game.isLoadingSalon);
+  const isEndGame = useSelector((state) => state.game.isEndGame);
+  
+
 
 
 
@@ -45,25 +49,19 @@ const SalonScreen = ({navigation})=> {
     else{
       const dataToSend = {surname: userSurname, code: gameCode};
       socket.emit('removePlayer', dataToSend);
+      navigation.goBack();
     }
-    navigation.goBack();
-    console.log(navigation)
+
   };
 
   const handleCancel = () => {
     setIsPopUpConfirmationVisible(false);
-    
   };
-
-
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setGameStarted(false));
-      setIsButtonDisabled(false);
-      console.log('useFocusEffect');
-
-      
+      setIsButtonDisabled(false);    
     }, [])
   );
 
@@ -71,28 +69,47 @@ const SalonScreen = ({navigation})=> {
     const responseCode =  await createGame(userSurname, expoToken);
     console.log('responseCode : ', responseCode);
     dispatch(modifyCode(responseCode));
+    
 
   }
 
+  useEffect(() => {
+    if(isEndGame){
+      dispatch(setEndGame(false));
+      navigation.navigate('Home');
+      
+    }
+  }, [isEndGame]);
+
+
   useEffect(  () => {
+
+    dispatch(setLoadingSalon(true));
     
     if(hostFlag){
-      setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
       getGame();
     }
-    else{
-      setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
-      if(gameStatut === 'start'){
-        //La partie a déjà été lancé 
-        setGameIsStarted(true);
-      }
+    if(gameStatut === 'start'){
+      //La partie a déjà été lancé 
+      setGameIsStarted(true);
     }
+
+    const handleHardwareBackPress = () => {
+      setIsPopUpConfirmationVisible(true);
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
+    };
+    
   
   }, []);
 
   useEffect( () => {
 
-    console.log('isGameStarted : ', isGameStarted);
     if(isGameStarted){
       navigation.navigate('Cible');
       dispatch(setGameStarted(false));
@@ -122,6 +139,7 @@ const SalonScreen = ({navigation})=> {
 
   const onClickStart = () =>{
     //startGame(gameCode);
+    dispatch(setLoadingSalon(true));
     socket.emit('hostStartGame', gameCode);
     setIsButtonDisabled(true);
 
@@ -132,7 +150,17 @@ const SalonScreen = ({navigation})=> {
 
       <View style={styles.ViewMain} >
         <Header titre={"Salon"} navigation= {navigation} visible = {false} onClickBack={onClickBack}/>
-        <View style={styles.ViewBody}>
+        {isLoading ? (
+
+          <View style={styles.ViewBody}>
+            
+            <ActivityIndicator style={styles.LoadingView} size={150} color="#F0122D" />
+            
+          </View>
+
+        ) : (
+
+          <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
 
@@ -170,11 +198,12 @@ const SalonScreen = ({navigation})=> {
             )}
 
             </View>
-            
-
-            
         </View>
-        <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
+
+        )}
+
+        
+        <PopUpConfirm message={hostFlag ? 'Es-tu sûr de vouloir arrêter la partie ?' : 'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       </View>
      
     );
@@ -192,6 +221,9 @@ const styles = StyleSheet.create ({
     paddingTop:20,
     paddingBottom: 30,
     alignItems:'center',
+  },
+  LoadingView: {
+    marginTop: 100,
   },
   TextCode: {
     fontFamily: 'LuckiestGuy',

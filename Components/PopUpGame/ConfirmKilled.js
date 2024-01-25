@@ -25,7 +25,7 @@ const ConfirmKilled = (props) => {
         socket.emit("killed", props.gameCode);
         setIsVisible(false);
         dispatch(setKilledBy(null));
-        props.navigation.navigate('EndGame');
+        props.navigation.navigate('EndGame', {isWinner: false});
     
       };
     
