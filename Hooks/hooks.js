@@ -115,7 +115,7 @@ const getSurname = async(userId) => {
 
     
 
-  const createGame = async (userSurname, expoToken) => {
+  const createGame = async (userSurname, expoToken, setting,tagMission) => {
     try {
 
       const response = await fetch(`${apiUrl}/api/game`, {
@@ -123,7 +123,7 @@ const getSurname = async(userId) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({surname: userSurname }),
+        body: JSON.stringify({surname: userSurname, setting: setting, tagMission: tagMission}),
       });
       const data = await response.json();
       const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};

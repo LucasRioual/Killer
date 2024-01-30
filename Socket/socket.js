@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame, setCoutdown, setNumberMission } from '../Store/Reducer/gameSlice';
+import { setHostTrue } from '../Store/Reducer/userSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
 //import * as Notifications from 'expo-notifications';
@@ -34,12 +35,13 @@ const SocketHandler = () => {
       dispatch(setMission(mission));
     });
 
-    socket.on('startGame', (target, mission) => { // A modifier
+    socket.on('startGame', (target, mission, numberMission) => { // A modifier
       //dispatch(setListPlayer(updatedListPlayer));
       dispatch(setTarget(target));
       dispatch(setMission(mission));
       dispatch(setGameStarted(true));
-      console.log('startGame');
+      dispatch(setNumberMission(numberMission));
+      console.log('startGame', numberMission);
       //navigation.navigate('Cible');
     });
 
@@ -71,6 +73,17 @@ const SocketHandler = () => {
       console.log('endGame');
       dispatch(setEndGame(true));
       
+    });
+    socket.on('isHost', () => {
+      console.log('isHost');
+      dispatch(setHostTrue());
+      
+    });
+    socket.on('countdown', (coutdown) => {
+      console.log('coutdown', coutdown);
+      dispatch(setCoutdown(coutdown));
+    
+
     });
 
     

@@ -2,23 +2,22 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Circle, Path, Line } from 'react-native-svg';
 
-const OptionContainer = () => {
+const OptionContainer = (props) => {
   const options = [
-    { key: '1h', label: '1 h' },
-    { key: '2h', label: '2 h' },
-    { key: '3h', label: '3 h' },
-    { key: '4h', label: '4 h' },
+    { key: 3600, label: '1 h' },
+    { key: 7200, label: '2 h' },
+    { key: 10800, label: '3 h' },
+    { key: 14400, label: '4 h' },
   ];
 
-  const [selectedDuration, setSelectedDuration] = useState(options[3].key);
-  const [selectedJoin, setSelectedJoin] = useState(true);
+  
+  
   const changeMissionOptions = [
-    { key: 'non', label: 'Non' },
-    { key: '1', label: '1 fois' },
-    { key: '2', label: '2 fois' },
-    { key: '3', label: '3 fois' },
+    { key: 0, label: 'Non' },
+    { key: 1, label: '1 fois' },
+    { key: 2, label: '2 fois' },
+    { key: 3, label: '3 fois' },
   ];
-  const [selectedChangeMission, setSelectedChangeMission] = useState(changeMissionOptions[0].key);
 
   const handleOptionSelection = (key, setter) => {
     setter(key === setter ? null : key);
@@ -31,24 +30,24 @@ const OptionContainer = () => {
       <OptionSection
         title="Durée de la partie :"
         options={options}
-        selectedOption={selectedDuration}
-        onOptionSelect={(key) => handleOptionSelection(key, setSelectedDuration)}
+        selectedOption={props.time}
+        onOptionSelect={(key) => handleOptionSelection(key, props.setTime)}
         info="Un chronomètre sera lancé au début de la partie. Si la partie n'est pas terminée à la fin du temps imparti, le joueurs avec le plus de kill remportera la partie"
       />
 
       <OptionSection
         title="Rejoindre en cours de partie :"
         options={[{ key: true, label: 'Oui' }, { key: false, label: 'Non' }]}
-        selectedOption={selectedJoin}
-        onOptionSelect={(key) => handleOptionSelection(key, setSelectedJoin)}
+        selectedOption={props.join}
+        onOptionSelect={(key) => handleOptionSelection(key, props.setJoin)}
         info="Si un joueurs souhaite rejoindre une partie en cours de route, tu recevras une demande d'intégration. Les missions et les cibles seront réarrangées pour le bon fonctionnement de la partie"
       />
 
       <OptionSection
         title="Possibilité de changer de missions :"
         options={changeMissionOptions}
-        selectedOption={selectedChangeMission}
-        onOptionSelect={(key) => handleOptionSelection(key, setSelectedChangeMission)}
+        selectedOption={props.changeMission}
+        onOptionSelect={(key) => handleOptionSelection(key, props.setChangeMission)}
         info="Si tu ne souhaites pas changer de mission, tu pourras la refaire autant de fois que tu le souhaites"
       />
     </View>

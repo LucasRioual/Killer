@@ -10,9 +10,15 @@ import OptionContainer from '../Components/OptionContainer';
 
 const SettingGameScreen = ({navigation}) => {
 
+  const [time, setTime] = useState(3600);
+  const [join, setJoin] = useState(false);
+  const [changeMission, setChangeMission] = useState(0);
+  const [selectedMissions, setSelectedMissions] = useState(['Test']);
+
   const MoveSalon = async () => {
+    console.log('missions', selectedMissions)
     
-    navigation.navigate("Salon");
+    navigation.navigate("Salon", {setting: {time : time, join : join, changeMission: changeMission}, tagMission: selectedMissions});
   };
 
  
@@ -27,8 +33,8 @@ const SettingGameScreen = ({navigation}) => {
         <ScrollView style={styles.ScrollView}>
             <View style={styles.ScrollViewContent}>
                 <TimeContainer />
-                <MissionContainer />
-                <OptionContainer />
+                <MissionContainer selectedMissions={selectedMissions} setSelectedMissions={setSelectedMissions} />
+                <OptionContainer time={time} setTime={setTime} join={join} setJoin={setJoin} changeMission={changeMission} setChangeMission={setChangeMission}/>
                 <TouchableOpacity style={styles.button} onPress={MoveSalon}>
                 <Text style={styles.buttonText}>LANCER</Text>
                 </TouchableOpacity>

@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Svg, { Circle, Path, Line } from 'react-native-svg';
-import userData from '../Data/UserData.json';
+import tagMission from '../Data/TagMission.json';
 
 
 
 
 
-const MissionContainer = () => {
+const MissionContainer = (props) => {
 
 
     const [isMissionVisible, setIsMissionVisible] = useState(false);
     const [rotationAngle, setRotationAngle] = useState(0);
-    const [listMission, setListMission] = useState(userData);
-    const [selectedMissions, setSelectedMissions] = useState([]);
+    const [listMission, setListMission] = useState(tagMission);
+    
 
-    const handleMissionPress = (missionId) => {
+    const handleMissionPress = (missionName) => {
         
-        const isSelected = selectedMissions.includes(missionId);
+        const isSelected = props.selectedMissions.includes(missionName);
     
         
-        setSelectedMissions((prevSelectedMissions) =>
+        props.setSelectedMissions((prevSelectedMissions) =>
           isSelected
-            ? prevSelectedMissions.filter((id) => id !== missionId)
-            : [...prevSelectedMissions, missionId]
+            ? prevSelectedMissions.filter((name) => name !== missionName)
+            : [...prevSelectedMissions, missionName]
         );
       };
 
@@ -35,13 +35,13 @@ const MissionContainer = () => {
                 style={[
                     styles.TextMissionContainer,
                     {
-                    backgroundColor: selectedMissions.includes(mission.id) ? '#F0122D' : '#D9D9D9',    
+                    backgroundColor: props.selectedMissions.includes(mission.mission) ? '#F0122D' : '#D9D9D9',    
                     },
                 ]}
                 key={mission.id}
-                onPress={() => handleMissionPress(mission.id)}
+                onPress={() => handleMissionPress(mission.mission)}
                 >
-                <Text style={{ color: selectedMissions.includes(mission.id) ? 'white' : '#927A7A' }}>
+                <Text style={{ color: props.selectedMissions.includes(mission.mission) ? 'white' : '#927A7A' }}>
                     {mission.mission}
                 </Text>
                 </TouchableOpacity>

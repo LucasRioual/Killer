@@ -9,12 +9,16 @@ import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
 import socket from '../Socket/socketManager';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 
 
-const SalonScreen = ({navigation})=> {
+const SalonScreen = ({navigation, route})=> {
+
+
+  const { setting, tagMission } = route.params;
 
   const isRefuseNewPlayer = useSelector((state) => state.game.isRefuseNewPlayer);
   const gameStatut = useSelector((state) => state.game.gameStatut);
@@ -66,7 +70,7 @@ const SalonScreen = ({navigation})=> {
   );
 
   const getGame = async () => {
-    const responseCode =  await createGame(userSurname, expoToken);
+    const responseCode =  await createGame(userSurname, expoToken, setting, tagMission);
     console.log('responseCode : ', responseCode);
     dispatch(modifyCode(responseCode));
     
@@ -88,7 +92,13 @@ const SalonScreen = ({navigation})=> {
     
     if(hostFlag){
       getGame();
+      AsyncStorage.setItem('hostFlag', 'true');
     }
+    else{
+      AsyncStorage.setItem('hostFlag', 'false');
+    }
+
+
     if(gameStatut === 'start'){
       //La partie a déjà été lancé 
       setGameIsStarted(true);

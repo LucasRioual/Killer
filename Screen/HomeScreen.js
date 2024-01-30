@@ -9,7 +9,7 @@ import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
 import { dark, light } from '../Store/Reducer/colorSlice';
 import { modifyId, modifySurname, setHostFalse} from '../Store/Reducer/userSlice';
-import { setListPlayer, modifyCode, setPlayerComeBack } from '../Store/Reducer/gameSlice';
+import { setListPlayer, modifyCode, setPlayerComeBack, setNumberMission } from '../Store/Reducer/gameSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import {getGame} from '../Hooks/hooks';
@@ -76,6 +76,7 @@ const HomeScreen = ({navigation}) => {
     try {
       const storedUserSurname = await AsyncStorage.getItem('surname');
       const storedCodeGame = await AsyncStorage.getItem('gameCode');
+      const numberMission = await AsyncStorage.getItem('numberMission');
       if (storedUserSurname !== null) {
         console.log('Identifiant chargé avec succès :', storedUserSurname);
         dispatch(modifySurname(storedUserSurname));
@@ -83,6 +84,7 @@ const HomeScreen = ({navigation}) => {
           console.log('Le joueur se trouve dans la partie : ', storedCodeGame);
           dispatch(setPlayerComeBack(true));
           dispatch(modifyCode(storedCodeGame));
+          dispatch(setNumberMission(parseInt(numberMission)));
           const dataToSend = {surname: storedUserSurname, code: storedCodeGame, expoToken: expoToken};
           socket.emit('connectRoom', dataToSend);
           navigation.navigate('Cible');

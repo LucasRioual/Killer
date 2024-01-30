@@ -3,7 +3,7 @@ import { BackHandler, View, Text, TouchableOpacity, StyleSheet, ActivityIndicato
 import HeaderGame from '../Components/HeaderGame';
 
 import { useSelector, useDispatch } from 'react-redux';
-import {setConfirmKill, setMission, setTarget } from '../Store/Reducer/gameSlice';
+import {setConfirmKill, setMission, setNumberMission} from '../Store/Reducer/gameSlice';
 import PopUpConfirm from '../Components/PopUpConfirm';
 import socket from '../Socket/socketManager';
 import PopUpDisplayKill from '../Components/PopUpDisplayKill';
@@ -14,6 +14,7 @@ import TargetAndMission from '../Components/TargetAndMission';
 import GameAnimation from '../Components/GameAnimation';
 import ConfirmKilled from '../Components/PopUpGame/ConfirmKilled';
 import NewPlayer from '../Components/PopUpGame/NewPlayer';
+import LeavePlayer from '../Components/PopUpGame/LeavePlayer';
 
 
 
@@ -38,12 +39,12 @@ const CibleScreen = ({navigation}) => {
   //const [targetAndMission, setTargetAndMission] = useState([]);
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
 
-  const [messagePopUp, setMessagePopUp] = useState('');
   const [isPopUpDisplayKill, setIsPopUpDisplayKill] = useState(false);
   const [isPopUpLeaveVisible, setIsPopUpLeaveVisible] = useState(false);
-  const [numberMission, setNumberMission] = useState(3);
-  const [showSecondButton, setShowSecondButton] = useState(true);
-
+  const numberMission = useSelector((state) => state.game.numberMission);
+  const [showSecondButton, setShowSecondButton] = useState(false);
+  
+  const [isTargetLoading, setIsTargetLoading] = useState(false);
  
   const [isLoading, setIsLoading] = useState(false);
   
@@ -56,6 +57,11 @@ const CibleScreen = ({navigation}) => {
       return true;
     };
     BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+    if(numberMission > 0){
+      setShowSecondButton(true);
+    }
+    AsyncStorage.setItem('numberMission', JSON.stringify(numberMission));
+    setIsTargetLoading(true);
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
@@ -65,8 +71,11 @@ const CibleScreen = ({navigation}) => {
   }, []); 
 
   useEffect(() => {
-    if(target === userSurname){
+    /* if(target === userSurname){
       navigation.navigate('EndGame', {isWinner: true});
+    } */
+    if(target !== null){
+      setIsTargetLoading(false);
     }
   }, [target]);
 
@@ -102,6 +111,7 @@ const CibleScreen = ({navigation}) => {
     setIsPopUpLeaveVisible(false);
     socket.emit("leaveGame", gameCode, userSurname);
     AsyncStorage.removeItem('gameCode');
+    AsyncStorage.removeItem('hostFlag');
     navigation.navigate('Home');
   }
 
@@ -120,7 +130,8 @@ const CibleScreen = ({navigation}) => {
     if(numberMission > 0 ){
       const newMission = await getNewMission();
       dispatch(setMission(newMission));
-      setNumberMission(numberMission - 1);
+      dispatch(setNumberMission(numberMission - 1));
+      AsyncStorage.setItem('numberMission', JSON.stringify(numberMission - 1));
       if(numberMission == 1){
         setShowSecondButton(false);
       }
@@ -134,7 +145,14 @@ const CibleScreen = ({navigation}) => {
   return (
     <View style={styles.ViewMain}>
       <HeaderGame titre={gameCode} navigation= {navigation} visible = {true} onClick = {()=>{setIsPopUpLeaveVisible(true)}} host ={isHost}  />
-      <Animated.View style={[styles.AnimationView, {opacity: opacityBody}]}>
+      {isTargetLoading ? (
+        <View style={styles.TargetLoadingView}>
+          <ActivityIndicator size={100} color="#F0122D" />
+          
+        </View>
+
+      ):(
+        <Animated.View style={[styles.AnimationView, {opacity: opacityBody}]}>
           <View style={styles.ViewBody} >
             <ScrollView style={styles.ScrollView}>
               <View style={styles.ScrollViewContent}>
@@ -169,12 +187,15 @@ const CibleScreen = ({navigation}) => {
         
       </Animated.View>
 
+      )}
+      
+
       <ConfirmKilled navigation={navigation} gameCode={gameCode} />
       <NewPlayer gameCode={gameCode} />
       <PopUpDisplayKill visible={isPopUpDisplayKill} exit={handleCancelPopUpDisplayKill} isConfirmKill={isConfirmKill} />
       <PopUpConfirm message={'Confirmes-tu le meurtre de ' + target + ' ?'} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       <PopUpConfirm message={'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpLeaveVisible} exit={()=>setIsPopUpLeaveVisible(false)} confirm= {leaveGame} />
-
+      <LeavePlayer />
 
       <GameAnimation opacityBody = {opacityBody} gameCode={gameCode}/>
       
@@ -197,6 +218,11 @@ const styles = StyleSheet.create({
   
   AnimationView: {
     flex: 5,
+  },
+  TargetLoadingView: {
+    flex: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   ViewBody: {
     flex: 1, 
