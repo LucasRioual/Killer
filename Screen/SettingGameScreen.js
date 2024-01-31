@@ -27,7 +27,7 @@ const SettingGameScreen = ({navigation}) => {
   return (
     <View style={styles.ViewMain}>
       
-      <Header titre="Classique" navigation= {navigation} visible = {false} onClickBack={()=> navigation.navigate('Mode')} />
+      <Header titre="Classique" navigation= {navigation} visible = {false} onClickBack={()=> navigation.navigate('Home')} />
 
       <View style={styles.ViewBody}>
         <ScrollView style={styles.ScrollView}>

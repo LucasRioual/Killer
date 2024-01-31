@@ -20,6 +20,7 @@ export const gameSlice = createSlice({
     isEndGame: false,
     coutdown: null,
     numberMission: null,
+    isLeaveGame: false,
     },
   reducers: {
     modifyCode: (state, actions) => {
@@ -70,10 +71,13 @@ export const gameSlice = createSlice({
     setNumberMission: (state, actions) => {
       state.numberMission = actions.payload
       },
+    setLeaveGame: (state, actions) => {
+      state.isLeaveGame = actions.payload
+      }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const {setNumberMission, modifyCode, setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setPlayerComeBack, setGameStatut, setNewPlayer, removeNewPlayer, setRefuseNewPlayer, setMission, setTarget, setLoadingSalon, setEndGame, setCoutdown} = gameSlice.actions;
+export const {setLeaveGame, setNumberMission, modifyCode, setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setPlayerComeBack, setGameStatut, setNewPlayer, removeNewPlayer, setRefuseNewPlayer, setMission, setTarget, setLoadingSalon, setEndGame, setCoutdown} = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -14,7 +14,8 @@ import TargetAndMission from '../Components/TargetAndMission';
 import GameAnimation from '../Components/GameAnimation';
 import ConfirmKilled from '../Components/PopUpGame/ConfirmKilled';
 import NewPlayer from '../Components/PopUpGame/NewPlayer';
-import LeavePlayer from '../Components/PopUpGame/LeavePlayer';
+import LeaveGame from '../Components/PopUpGame/LeaveGame';
+import HostLeave from '../Components/PopUpGame/HostLeave';
 
 
 
@@ -195,7 +196,8 @@ const CibleScreen = ({navigation}) => {
       <PopUpDisplayKill visible={isPopUpDisplayKill} exit={handleCancelPopUpDisplayKill} isConfirmKill={isConfirmKill} />
       <PopUpConfirm message={'Confirmes-tu le meurtre de ' + target + ' ?'} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       <PopUpConfirm message={'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpLeaveVisible} exit={()=>setIsPopUpLeaveVisible(false)} confirm= {leaveGame} />
-      <LeavePlayer />
+      <HostLeave />
+      <LeaveGame />
 
       <GameAnimation opacityBody = {opacityBody} gameCode={gameCode}/>
       

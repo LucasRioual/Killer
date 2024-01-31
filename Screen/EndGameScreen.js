@@ -20,8 +20,8 @@ const GameOverScreen = ({ navigation, route }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
 
-    socket.emit("leaveGame", gameCode, userSurname);
-    AsyncStorage.removeItem('gameCode');
+    //socket.emit("leaveGame", gameCode, userSurname);
+   // AsyncStorage.removeItem('gameCode');
 
     // Commencer l'animation de fondu dès que le composant est monté
     Animated.timing(fadeAnim, {

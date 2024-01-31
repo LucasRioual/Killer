@@ -49,7 +49,7 @@ const MainMenu =  (props) => {
         changeSurnameAPI(userId, userSurname);
       } */
       dispatch(setHostTrue());
-      props.navigation.navigate("Mode");
+      props.navigation.navigate("Settings");
       
     }
   };  

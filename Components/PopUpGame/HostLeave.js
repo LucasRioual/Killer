@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 
 
-const LeavePlayer = () => {
+const HostLeave = () => {
 
     const [isVisible, setIsVisible] = useState(false);
     const isHost = useSelector((state) => state.user.hostFlag);
@@ -45,7 +45,7 @@ const LeavePlayer = () => {
         <View style={styles.Container} >                                    
             <TouchableOpacity  activeOpacity={1}>
               <Text style={styles.Titre}>Tu deviens organisateur de la partie</Text>
-              <Text style={styles.Description}>Tu peux maintenant enlever des joueurs de la partie </Text>
+              <Text style={styles.Description}>Tu peux maintenant enlever des joueurs de la partie, tu reçois une nouvelle cible et une nouvelle mission </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={handleCancel} activeOpacity={0.5}>
                   <Text style={styles.buttonText}>OK</Text>
@@ -127,4 +127,4 @@ const styles = StyleSheet.create({
 
 
 
-export default LeavePlayer;
+export default HostLeave;

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame, setCoutdown, setNumberMission } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame, setCoutdown, setNumberMission, setLeaveGame } from '../Store/Reducer/gameSlice';
 import { setHostTrue } from '../Store/Reducer/userSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
@@ -84,6 +84,12 @@ const SocketHandler = () => {
       dispatch(setCoutdown(coutdown));
     
 
+    });
+    socket.on('leaveGame', (target, mission) => { //A modifier
+      console.log('leaveGame');
+      dispatch(setLeaveGame(true));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
     });
 
     
