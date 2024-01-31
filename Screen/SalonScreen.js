@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyCode, setEndGame, setGameStarted, setLoadingSalon, setNewPlayer, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
+import { modifyCode, setEndGame, setGameStarted, setLoadingSalon, setGameStatut, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
 
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
@@ -100,7 +100,7 @@ const SalonScreen = ({navigation, route})=> {
 
 
     if(gameStatut === 'start'){
-      //La partie a déjà été lancé 
+      dispatch(setGameStatut('wait')); 
       setGameIsStarted(true);
     }
 
@@ -121,8 +121,9 @@ const SalonScreen = ({navigation, route})=> {
   useEffect( () => {
 
     if(isGameStarted){
-      navigation.navigate('Cible');
       dispatch(setGameStarted(false));
+      navigation.navigate('Cible');
+      
       
     }
   }, [isGameStarted]);

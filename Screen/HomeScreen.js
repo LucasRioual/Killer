@@ -115,12 +115,7 @@ const HomeScreen = ({navigation}) => {
   }, []);
 
 
-  useFocusEffect(
-    useCallback(() => {
-      // Lorsque l'écran est en focus, définissez le hostFlag sur false
-      dispatch(setHostFalse());
-    }, [])
-  );
+  
   
   return (
     

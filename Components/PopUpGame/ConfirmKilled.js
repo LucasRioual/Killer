@@ -16,6 +16,7 @@ const ConfirmKilled = (props) => {
     useEffect(() => {
         if (killedBy !== null) {
           setMessage('Tu as été tué par ' + killedBy + ' ?');
+          dispatch(setKilledBy(null));
           setIsVisible(true);
         }
       }, [killedBy]);
@@ -24,13 +25,11 @@ const ConfirmKilled = (props) => {
         console.log('Tu est mort');
         socket.emit("killed", props.gameCode);
         setIsVisible(false);
-        dispatch(setKilledBy(null));
         props.navigation.navigate('EndGame', {isWinner: false});
     
       };
     
       const handleCancel = () => {
-        dispatch(setKilledBy(null));
         setIsVisible(false);
         socket.emit("notKilled", props.gameCode);
         //Il faut dire au tueur que la cible a refusé
