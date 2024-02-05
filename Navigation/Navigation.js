@@ -13,6 +13,7 @@ import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { setExpoToken } from '../Store/Reducer/userSlice';
 import CibleScreenTest from '../Screen/CibleScreenTest';
+import SettingGameScreen from '../Screen/SettingGameScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -48,13 +49,18 @@ const Navigation = () => {
     registerForPushNotificationsAsync();
   }, []);
 
+  
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="EndGame" screenOptions={{ headerShown: false}}>
+
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
+
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
+        <Stack.Screen name="Settings" component={SettingGameScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="GameSetting" component={SettingsScreen} />
         <Stack.Screen name="Cible" component={CibleScreen} />
         <Stack.Screen name="EndGame" component={EndGameScreen} />
         <Stack.Screen name="Historique" component={HistoriqueScreen} />

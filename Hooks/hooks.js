@@ -90,8 +90,7 @@ const getSurname = async(userId) => {
     const data = await response.json();
     if (response.ok) {
     } else {
-      // Si la requête a échoué, afficher une popup avec le message d'erreur
-      alert(data.error); // Vous pouvez personnaliser l'affichage de la popup selon vos besoins
+      return data.statut;
     }
   };
 
@@ -116,7 +115,7 @@ const getSurname = async(userId) => {
 
     
 
-  const createGame = async (userSurname, expoToken) => {
+  const createGame = async (userSurname, expoToken, setting,tagMission) => {
     try {
 
       const response = await fetch(`${apiUrl}/api/game`, {
@@ -124,13 +123,11 @@ const getSurname = async(userId) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({surname: userSurname }),
+        body: JSON.stringify({surname: userSurname, setting: setting, tagMission: tagMission}),
       });
       const data = await response.json();
       const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};
-      
       socket.emit('connectRoom', dataToSend);
-      
       return data.code;
     } catch (error) {
       

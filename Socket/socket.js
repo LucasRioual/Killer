@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill } from '../Store/Reducer/gameSlice';
+import { setListPlayer, setGameStarted, setKilledBy, setConfirmKill, setNewPlayer, setRefuseNewPlayer, setTarget, setMission, setLoadingSalon, setEndGame, setCoutdown, setNumberMission, setLeaveGame } from '../Store/Reducer/gameSlice';
+import { setHostTrue } from '../Store/Reducer/userSlice';
 import socket from './socketManager'
 import { useDispatch } from 'react-redux';
 //import * as Notifications from 'expo-notifications';
@@ -22,22 +23,28 @@ const SocketHandler = () => {
     });
 
     socket.on('sendListPlayer', (updatedListPlayer) => {
-      //console.log('sendListPlayer', updatedListPlayer);
+      console.log('setListPlayer');
       dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setLoadingSalon(false));
     });
 
-    socket.on('startGame', (updatedListPlayer) => {
-      dispatch(setListPlayer(updatedListPlayer));
+    socket.on('sendTargetAndMission', (target, mission) => { //A modifier
+      console.log('Mission et cible reçu', mission);
+      //dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
+    });
+
+    socket.on('startGame', (target, mission, numberMission) => { // A modifier
+      //dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
       dispatch(setGameStarted(true));
-      console.log('startGame');
+      dispatch(setNumberMission(numberMission));
+      console.log('startGame', numberMission);
       //navigation.navigate('Cible');
     });
 
-    socket.on('endGame', () => {
-      // Afficher une popUp qui explique la fin de la partie
-      // Puis retourner à l'écran d'accueil
-      //navigation.goBack();
-    });
 
     socket.on('sendConfirmKill', (tueurSurname) => {
       console.log('Tu es mort par ' + tueurSurname);
@@ -45,12 +52,44 @@ const SocketHandler = () => {
 
     });
 
-    socket.on('isKilledConfirm', (updatedListPlayer) => {
+    socket.on('isKilledConfirm', (target, mission) => { // A modifier
       dispatch(setConfirmKill(true));
-      dispatch(setListPlayer(updatedListPlayer));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
     });
     socket.on('isNotKilledConfirm', () => {
       dispatch(setConfirmKill(false));
+    });
+    socket.on('NewPlayer', (newPlayer) => {
+      console.log('un nouveau joueur arrive', newPlayer);
+      dispatch(setNewPlayer(newPlayer));
+    });
+    socket.on('refuseNewPlayer', () => {
+      console.log('refuseNewPlayer');
+      dispatch(setRefuseNewPlayer(true));
+
+    });
+    socket.on('endGame', () => {
+      console.log('endGame');
+      dispatch(setEndGame(true));
+      
+    });
+    socket.on('isHost', () => {
+      console.log('isHost');
+      dispatch(setHostTrue());
+      
+    });
+    socket.on('countdown', (coutdown) => {
+      console.log('coutdown', coutdown);
+      dispatch(setCoutdown(coutdown));
+    
+
+    });
+    socket.on('leaveGame', (target, mission) => { //A modifier
+      console.log('leaveGame');
+      dispatch(setLeaveGame(true));
+      dispatch(setTarget(target));
+      dispatch(setMission(mission));
     });
 
     

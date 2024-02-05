@@ -1,22 +1,27 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, BackHandler } from 'react-native';
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import { modifyCode, setGameStarted} from '../Store/Reducer/gameSlice'
-import listData from '../Data/UserData.json'
+import { modifyCode, setEndGame, setGameStarted, setLoadingSalon, setGameStatut, setRefuseNewPlayer} from '../Store/Reducer/gameSlice'
+
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
 import socket from '../Socket/socketManager';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-const SalonScreen = ({navigation})=> {
 
 
+const SalonScreen = ({navigation, route})=> {
 
-  const userId = useSelector((state) => state.user.userId);
+
+  const { setting, tagMission } = route.params;
+
+  const isRefuseNewPlayer = useSelector((state) => state.game.isRefuseNewPlayer);
+  const gameStatut = useSelector((state) => state.game.gameStatut);
   const userSurname = useSelector((state) => state.user.surname);
   const hostFlag = useSelector((state) => state.user.hostFlag);
   const gameCode = useSelector((state) => state.game.gameCode);
@@ -24,8 +29,14 @@ const SalonScreen = ({navigation})=> {
   const isGameStarted = useSelector((state) => state.game.isGameStarted);
   const dispatch = useDispatch();
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
-  const navigationEventRef = useRef(null);
-  const [messagePopUp, setMessagePopUp] = useState(''); 
+  const expoToken = useSelector((state) => state.user.expoToken);
+  const [gameIsStarted, setGameIsStarted] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const isLoading = useSelector((state) => state.game.isLoadingSalon);
+  const isEndGame = useSelector((state) => state.game.isEndGame);
+  
+
+
 
 
   
@@ -42,54 +53,94 @@ const SalonScreen = ({navigation})=> {
     else{
       const dataToSend = {surname: userSurname, code: gameCode};
       socket.emit('removePlayer', dataToSend);
+      navigation.goBack();
     }
-    navigation.goBack();
-    console.log(navigation)
+
   };
 
   const handleCancel = () => {
     setIsPopUpConfirmationVisible(false);
-    
   };
-
-
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setGameStarted(false));
-      console.log('useFocusEffect');
-
-      
+      setIsButtonDisabled(false);    
     }, [])
   );
 
-  useEffect( () => {
-    if(hostFlag){
-      setMessagePopUp('Es-tu sûr de vouloir arrêter la partie ?');
+  const getGame = async () => {
+    const responseCode =  await createGame(userSurname, expoToken, setting, tagMission);
+    console.log('responseCode : ', responseCode);
+    dispatch(modifyCode(responseCode));
+    
 
+  }
+
+  useEffect(() => {
+    if(isEndGame){
+      dispatch(setEndGame(false));
+      navigation.navigate('Home');
+      
+    }
+  }, [isEndGame]);
+
+
+  useEffect(  () => {
+
+    dispatch(setLoadingSalon(true));
+    
+    if(hostFlag){
+      getGame();
+      AsyncStorage.setItem('hostFlag', 'true');
     }
     else{
-      setMessagePopUp('Es-tu sûr de vouloir quitter la partie ?');
+      AsyncStorage.setItem('hostFlag', 'false');
     }
-     
+
+
+    if(gameStatut === 'start'){
+      dispatch(setGameStatut('wait')); 
+      setGameIsStarted(true);
+    }
+
+    const handleHardwareBackPress = () => {
+      setIsPopUpConfirmationVisible(true);
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
+    };
+    
+  
   }, []);
 
   useEffect( () => {
 
-    console.log('isGameStarted : ', isGameStarted);
     if(isGameStarted){
-      navigation.navigate('Cible');
       dispatch(setGameStarted(false));
+      navigation.navigate('Cible');
+      
       
     }
   }, [isGameStarted]);
+
+  useEffect(() => {
+    if(isRefuseNewPlayer){
+      dispatch(setRefuseNewPlayer(false));
+      navigation.navigate('Home');
+    };
+  },[isRefuseNewPlayer]);
 
 
     const ListPlayer = () =>{
       return (
           <View style={styles.PlayerContainer}>
             {listPlayer.map((user, index) => (
-              <PlayerName key={index} label={user.surname} />
+              <PlayerName key={index} label={user} />
             ))}
           </View>
         );
@@ -98,7 +149,11 @@ const SalonScreen = ({navigation})=> {
 
 
   const onClickStart = () =>{
-    startGame(gameCode);
+    //startGame(gameCode);
+    dispatch(setLoadingSalon(true));
+    socket.emit('hostStartGame', gameCode);
+    setIsButtonDisabled(true);
+
     
   }
 
@@ -106,10 +161,22 @@ const SalonScreen = ({navigation})=> {
 
       <View style={styles.ViewMain} >
         <Header titre={"Salon"} navigation= {navigation} visible = {false} onClickBack={onClickBack}/>
-        <View style={styles.ViewBody}>
+        {isLoading ? (
+
+          <View style={styles.ViewBody}>
+            
+            <ActivityIndicator style={styles.LoadingView} size={150} color="#F0122D" />
+            
+          </View>
+
+        ) : (
+
+          <View style={styles.ViewBody}>
             <Text style={styles.TextTitre}>Code de la partie :</Text>
             <Text style={styles.TextCode}>{gameCode}</Text>
-            <View style={styles.MainContainer}>
+
+            {!gameIsStarted ? (
+              <View style={styles.MainContainer}>
               <View style={styles.ViewPlayer}>
                 
                 <Text style={styles.TextTitreJoueur}>Joueurs</Text>
@@ -122,23 +189,32 @@ const SalonScreen = ({navigation})=> {
               <Text style={styles.TextWait}>En attente de joueurs ...</Text>
             </View>
 
-            
-            
-            
+            ):(
+              <View style={styles.MainContainer}>
+              <View style={styles.MessageContainer}>
+                <Text style={styles.TextMessage}>La partie est en cours</Text>
+                <Text style={styles.TextMessageDescription}>L'hôte de la partie doit confirmer ton intégration</Text>
+              </View>
+              <Text style={styles.TextWait}>En attente de l'hôte ...</Text>
+
+                
+              </View>
+            )}
             <View style={styles.buttonContainer}>
 
             {hostFlag && (
-              <TouchableOpacity style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
+              <TouchableOpacity disabled={isButtonDisabled} style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
                 <Text style={styles.buttonText}>Lancer</Text>
               </TouchableOpacity>
             )}
 
             </View>
-            
-
-            
         </View>
-        <PopUpConfirm message={messagePopUp} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
+
+        )}
+
+        
+        <PopUpConfirm message={hostFlag ? 'Es-tu sûr de vouloir arrêter la partie ?' : 'Es-tu sûr de vouloir quitter la partie ?'} visible={isPopUpConfirmationVisible} exit={handleCancel} confirm= {handleConfirmation} />
       </View>
      
     );
@@ -157,6 +233,9 @@ const styles = StyleSheet.create ({
     paddingBottom: 30,
     alignItems:'center',
   },
+  LoadingView: {
+    marginTop: 100,
+  },
   TextCode: {
     fontFamily: 'LuckiestGuy',
     fontSize: 58,
@@ -173,6 +252,7 @@ const styles = StyleSheet.create ({
     marginTop:10,
     flex:4,
     width:'80%',
+    justifyContent:'center',
     
 
   },
@@ -233,6 +313,26 @@ const styles = StyleSheet.create ({
     fontSize: 35,
     fontFamily: 'LuckiestGuy',
     
+  },
+  MessageContainer: {
+    justifySelf:'center',
+    backgroundColor: 'white',
+    borderRadius:20,
+    paddingVertical: 30,
+  },
+  TextMessage: {
+   
+    textAlign: 'center',
+    fontSize: 25,
+    fontFamily: 'Sen',
+    fontWeight: 'bold',
+    
+  },
+  TextMessageDescription: {
+    textAlign: 'center',
+    fontSize: 15,
+    fontFamily: 'Sen',
+    marginTop: 10,
   },
   
   

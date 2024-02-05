@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import listData from '../Data/UserData.json'
+
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
 import socket from '../Socket/socketManager';

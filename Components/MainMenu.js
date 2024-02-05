@@ -1,7 +1,7 @@
 import React, { Component, useRef, useState, useEffect  } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
-import {  modifySurname, setHostTrue, modifyId} from '../Store/Reducer/userSlice'
+import {  modifySurname, setHostTrue, setHostFalse} from '../Store/Reducer/userSlice'
 import { createUser, changeSurnameAPI } from '../Hooks/hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -40,16 +40,8 @@ const MainMenu =  (props) => {
     }
     else{
       AsyncStorage.setItem('surname', userSurname);
-      /* if(!userId){
-        console.log('createUser');  
-        const id = await createUser(userSurname);
-        dispatch(modifyId(id));
-      }
-      else{
-        changeSurnameAPI(userId, userSurname);
-      } */
       dispatch(setHostTrue());
-      props.navigation.navigate("Mode");
+      props.navigation.navigate("Settings");
       
     }
   };  
@@ -60,15 +52,8 @@ const MainMenu =  (props) => {
     }
     else{
       console.log('join');
+      dispatch(setHostFalse());
       AsyncStorage.setItem('surname', userSurname);
-      /* if(!userId){
-        const id = await createUser(userSurname);
-        AsyncStorage.setItem('surname', userSurname);
-        dispatch(modifyId(id));
-      }
-      else{
-        changeSurnameAPI(userId, userSurname);
-      } */
       props.clickJoin();
       
     }

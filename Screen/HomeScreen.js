@@ -9,11 +9,12 @@ import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
 import { dark, light } from '../Store/Reducer/colorSlice';
 import { modifyId, modifySurname, setHostFalse} from '../Store/Reducer/userSlice';
-import { setListPlayer, modifyCode } from '../Store/Reducer/gameSlice';
+import { setListPlayer, modifyCode, setPlayerComeBack, setNumberMission } from '../Store/Reducer/gameSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import {getGame} from '../Hooks/hooks';
 import socket from '../Socket/socketManager';
+import { Socket } from 'socket.io-client';
 
 
 
@@ -69,16 +70,25 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
- 
 
-  const loadUserId = async () => {
+
+  const loadUserSurnameAndCode = async () => {
     try {
-      const storedUserId = await AsyncStorage.getItem('userId');
-      if (storedUserId !== null) {
-        console.log('Identifiant chargé avec succès :', storedUserId);
-        dispatch(modifyId(storedUserId));
-        //const surname = await getSurname(storedUserId);
-        //dispatch(modifySurname(surname));
+      const storedUserSurname = await AsyncStorage.getItem('surname');
+      const storedCodeGame = await AsyncStorage.getItem('gameCode');
+      const numberMission = await AsyncStorage.getItem('numberMission');
+      if (storedUserSurname !== null) {
+        console.log('Identifiant chargé avec succès :', storedUserSurname);
+        dispatch(modifySurname(storedUserSurname));
+        if(storedCodeGame !== null){
+          console.log('Le joueur se trouve dans la partie : ', storedCodeGame);
+          dispatch(setPlayerComeBack(true));
+          dispatch(modifyCode(storedCodeGame));
+          dispatch(setNumberMission(parseInt(numberMission)));
+          const dataToSend = {surname: storedUserSurname, code: storedCodeGame, expoToken: expoToken};
+          socket.emit('connectRoom', dataToSend);
+          navigation.navigate('Cible');
+        }
       } else {
         console.log('Aucun identifiant trouvé dans le stockage.');
       }
@@ -87,40 +97,7 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  const loadSurname = async () => {
-    try {
-      const storedSurname = await AsyncStorage.getItem('surname');
-      if (storedSurname !== null) {
-        console.log('Surnom chargé avec succès :', storedSurname);
-        dispatch(modifySurname(storedSurname));
-      } else {
-        console.log('Aucun surnom trouvé dans le stockage.');
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement du surnom :', error);
-    }
-  };
-
-  const loadCodeGame = async () => {
-    try {
-      const storedCodeGame = await AsyncStorage.getItem('gameCode');
-      if (storedCodeGame !== null) {
-        console.log('Le joueur se trouve dans la partie : ', storedCodeGame);
-        //Socket
-        dispatch(modifyCode(storedCodeGame));
-        const listPlayer = await getGame(storedCodeGame);
-        dispatch(setListPlayer(listPlayer));
   
-        navigation.navigate('Cible');
-
-        
-      } else {
-        console.log('Le joueur ne se trouve pas dans une partie.');
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement du code de la partie :', error);
-    }
-  };
 
   startShake = (animRef) => {
     Animated.sequence([
@@ -131,42 +108,14 @@ const HomeScreen = ({navigation}) => {
     ]).start();
  }
 
- /*  const displaySurnameError = (message) => {
-    setMessageError(message);
-    startShake(shakeAnimSurname);
-  } */
 
-  const saveCode = async () => {
-    try {
-      await AsyncStorage.removeItem('gameCode');
-      console.log('Identifiant sauvegardé avec succès.');
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
-    }
-  };
 
   useEffect(() => {
-    /* saveCode();
-    AsyncStorage.removeItem('userId');
-    AsyncStorage.removeItem('surname'); */
-    //AsyncStorage.removeItem('gameCode');
-    loadUserId();
-    loadSurname();
-    loadCodeGame();
-    // Si codeGame est null, alors on est pas dans une partie, sinon navigate to cibleScreen, se reconnecter à la room socket et récuperer sa cible et sa mission
-
-
-    
-    
+    loadUserSurnameAndCode();
   }, []);
 
 
-  useFocusEffect(
-    useCallback(() => {
-      // Lorsque l'écran est en focus, définissez le hostFlag sur false
-      dispatch(setHostFalse());
-    }, [])
-  );
+  
   
   return (
     
