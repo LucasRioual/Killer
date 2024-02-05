@@ -1,6 +1,7 @@
 import React,  { useState, useEffect, useRef }  from 'react';
 import {   Animated,  SafeAreaView, View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
+import LottieView from 'lottie-react-native';
 
 const GameOverScreen = ({ navigation }) => {
   const VoirHistorique = () => {
@@ -20,6 +21,15 @@ const GameOverScreen = ({ navigation }) => {
       <Header titre={""} navigation= {navigation} visible = {true} />
       <View style={styles.ViewBody}>
       <View style={styles.mainContainer}>
+      <View style={styles.container}>
+      <LottieView
+        source={require('path/to/your/lottie/file.json')} // Remplacez par le chemin de votre fichier Lottie
+        autoPlay
+        loop={false} // Changez à true si vous voulez que l'animation boucle
+        style={styles.animation}
+      />
+      {/* Autres éléments de votre page de fin de jeu */}
+    </View>
         <SafeAreaView style={styles.container}>
           <Animated.View // Vue animée spéciale de React Native
             style={[
