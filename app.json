@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/iconAndroid.png",
         "backgroundColor": "#0B1623"
       },
-      "package": "com.lrioual.killer"
+      "package": "com.lrioual.killer",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

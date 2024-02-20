@@ -3,24 +3,26 @@
     "version": ">= 5.9.3"
   },
   "build": {
-    "preview": {
-      "android": {
-        "buildType": "apk"
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://192.168.43.130:3000"
       }
       
     },
-    "preview2": {
+    "preview": {
+      "distribution": "internal",
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://192.168.0.12:3000"
       }
     },
-    "preview3": {
-      "developmentClient": true
-    },
-    "preview4": {
-      "distribution": "internal"
-    },
-    "production": {}
+    "production": {
+
+    }
   },
   "submit": {
     "production": {}
