@@ -1,151 +1,117 @@
+import React, {useEffect, useRef, useState} from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import Header from '../Components/Header';
+import PlayerName from '../Components/PlayerName';
+import { useSelector, useDispatch } from 'react-redux'
 
-import React from "react";
-import { Text, View, StyleSheet, ScrollView} from "react-native";
-
-
-
-const HistoriqueItem = (props) => {
-  return (
-    <View style={styles.MainContainer}>
-          <View style={styles.LeftContainer}>
-            <Text style={styles.subText}>
-             <Text style={{ color:'#F0122D' }}>2 </Text>kills
-              </Text>
-            <Text style={styles.NameText}>Vladimir</Text>
-            <Text style= {styles.subText}>22h05</Text>
-          </View>
-          <View style={styles.RoundContainer}>
-            <Text style={styles.RoundText}>{props.number}</Text>
-          </View>
-          <View style={styles.RightContainer}>
-            <Text style={styles.MissionText}>Tu dois faire croire a ta cible qu’elle a marché dans une crotte de chien</Text>
-          </View>
-          <Text style= {styles.killerText}>
-            par <Text style={{ color:'#F0122D' }}>Caroline</Text>
-          </Text>
-
-        </View>
-
-  )
-}
+import PopUpConfirm from '../Components/PopUpConfirm';
+import { createGame, startGame} from '../Hooks/hooks'
+import socket from '../Socket/socketManager';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
+const HistoriqueScreen = ({navigation})=> {
 
-const HistoriqueScreen = ({ navigation }) => {
-  
+  const userId = useSelector((state) => state.user.userId);
+  const userSurname = useSelector((state) => state.user.surname);
+  const hostFlag = useSelector((state) => state.user.hostFlag);
+  const listPlayer = useSelector((state) => state.game.listPlayer);
+  const isGameEnded = useSelector((state) => state.game.isGameEnded);
+  const dispatch = useDispatch();
+  const navigationEventRef = useRef(null);
+
+
  
-  
+
+  const ListPlayer = () =>{
+      return (
+          <View style={styles.PlayerContainer}>
+            {listPlayer.map((user, index) => (
+              <PlayerName key={index} label={user.surname} />
+            ))}
+          </View>
+        );
+    } 
 
 
   return (
-    <View style={styles.ViewMain}>
-      <ScrollView style={styles.ScrollView}>
-        <View style={styles.Timeline}/>
-        <View style={styles.TimelineContainer}>
-          <HistoriqueItem number='1' />
-          <HistoriqueItem number='2' />
-          <HistoriqueItem  number='3' />
-          <HistoriqueItem number='4'  />
-          <HistoriqueItem number='5'  />
-          <HistoriqueItem number='6'  />
-          <HistoriqueItem number='7'  />
-          <HistoriqueItem number='8'  />
-          <HistoriqueItem number='9'  />
 
-        </View>
-        
-
-        
-
-      </ScrollView>
-        
+    <View style={styles.ViewMain} >
+      <Header titre={"Historique"} navigation= {navigation} visible = {false}/>
+      <View style={styles.ViewBody}>
+          <View style={styles.MainContainer}>
+            <View style={styles.ViewHistorique}>          
+              <Text style={styles.TextTitre}>Historique</Text>
+              <ScrollView persistentScrollbar={true}>         
+                  <ListPlayer/>
+                  
+              </ScrollView>
+              
+            </View>
+            <Text style={styles.TextWait}>En attente de la Fin de la partie ...</Text>
+          </View>
+                 
+      </View>
     </View>
-      
-  
-  );
-};
-
-const styles = StyleSheet.create({
+    
+    );
+}
+    
+const styles = StyleSheet.create ({
   ViewMain: {
-    flex: 1,
-    backgroundColor: "#061624",
+    flex: 1, 
+    backgroundColor: '#061624',
+
   },
-  ScrollView: {
-    position: 'relative',
+  ViewBody: {
+    flex: 5, 
+    paddingTop:20,
+    paddingBottom: 30,
+    alignItems:'center',
   },
-  Timeline: {
-    position: 'absolute',
-    width: 5,
-    height: '90%',
-    backgroundColor: '#F0122D',
-    left: 132,
-    top: 0,
+  TextCode: {
+    fontFamily: 'LuckiestGuy',
+    fontSize: 58,
+    color:'#F0122D',
+    
   },
+
   MainContainer: {
-    paddingHorizontal: 20,
-    marginTop: 50,
+    marginTop:10,
+    flex:4,
+    width:'80%',
+    
 
+  },
+  ViewHistorique: {
+    flex:1,
+    backgroundColor: 'white',
+    borderRadius:20,
+ 
+  },
+  TextWait: {
+    fontSize: 12,
+    fontFamily: 'Sen',
+    color: 'white',
+    marginTop:4,
+    
+    
+  },
+  TextTitre: {
+    fontSize: 28,
+    fontFamily: 'LuckiestGuy',
+    color: 'black', 
+    textAlign:'center',
+    marginVertical:5
+  },
+
+  PlayerContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    position: 'relative',
-    
+    flexWrap: 'wrap',
+    justifyContent:'center',
   },
-  TimelineContainer: {
-    paddingVertical: 100,
-  },
-
-  LeftContainer: {
-    width: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  subText: {
-    color: 'white',
-    fontFamily: 'LuckiestGuy',
-    fontSize: 14,
-  },
-  NameText: {
-    color: '#F0122D',
-    fontFamily: 'LuckiestGuy',
-    fontSize: 18,
-  },
-  RoundContainer: {
-    backgroundColor: '#F0122D',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 25,
-    height: 50,
-    width: 50,
-    marginHorizontal: 10,
-  },
-  RoundText: {
-    color: 'white',
-    fontFamily: 'LuckiestGuy',
-    fontSize: 30,
-    
-  },
-  RightContainer: {
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    borderRadius: 10,
-    padding: 10,
-  },
-  MissionText: {
-    color: 'black',
-    fontFamily: 'Sen',
-    fontSize: 12,
-  },
-  killerText: {
-    color: 'white',
-    fontFamily: 'Sen',
-    fontSize: 12,
-    position: 'absolute',
-    bottom: -20,
-    right: 20,
-  },
+  
   
 });
 

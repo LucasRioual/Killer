@@ -55,7 +55,7 @@ const Navigation = () => {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Historique" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
