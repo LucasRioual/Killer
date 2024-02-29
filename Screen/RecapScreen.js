@@ -4,12 +4,13 @@ import Header from '../Components/Header';
 import socket from '../Socket/socketManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector, useDispatch } from 'react-redux';
+import ListPlayer from '../Data/ListPlayer';
 
 const RecapScreen = ({ navigation, route }) => {
 
     const gameCode = useSelector((state) => state.game.gameCode);
     const userSurname = useSelector((state) => state.user.surname);
-    const listPlayer = useSelector((state) => state.game.listPlayer);
+    const [listPlayer, setListPlayer] = useState(ListPlayer);
   
     const VoirHistorique = () => {
         navigation.navigate('Historique');
@@ -42,7 +43,6 @@ const RecapScreen = ({ navigation, route }) => {
           <Header titre={"RECAP"} navigation= {navigation} visible = {true} />
           <View style={styles.ViewBody}>
             <View style={styles.mainContainer}>
-                //3 rectangles, the middle one being the tallest, the right one the shortest, and the left one in between. Each rectangle contains the number of kills and the name of the player.
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <View style={{flexDirection: 'column', alignItems: 'center'}}>
                         <View style={{backgroundColor: 'red', width: 50, height: 50, justifyContent: 'center', alignItems: 'center'}}>

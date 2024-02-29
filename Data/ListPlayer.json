@@ -1,0 +1,35 @@
+[
+    {
+      "surname": "Player1",
+      "socketId": "socketId1",
+      "expoToken": "expoToken1",
+      "target": "Player2",
+      "mission": "Assassination",
+      "statut": "Alive",
+      "kills": 2,
+      "startTime": "2024-02-29T10:00:00.000Z",
+      "aliveTime": 120
+    },
+    {
+      "surname": "Player2",
+      "socketId": "socketId2",
+      "expoToken": "expoToken2",
+      "target": "Player3",
+      "mission": "Assassination",
+      "statut": "Dead",
+      "kills": 1,
+      "startTime": "2024-02-29T10:05:00.000Z",
+      "aliveTime": 60
+    },
+    {
+      "surname": "Player3",
+      "socketId": "socketId3",
+      "expoToken": "expoToken3",
+      "target": "Player1",
+      "mission": "Assassination",
+      "statut": "Alive",
+      "kills": 3,
+      "startTime": "2024-02-29T10:10:00.000Z",
+      "aliveTime": 180
+    }
+  ]

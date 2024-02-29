@@ -48,7 +48,7 @@ const GameOverScreen = ({ navigation, route }) => {
         autoPlay
         loop={false} // Changez à true si vous voulez que l'animation boucle
         style={styles.animation}
-      />
+      /> */}
       <Text>Votre nombre de kills: {userKills}</Text>
       <Text>Votre temps passé en vie: {userAliveTime}</Text>
       {/* Autres éléments de votre page de fin de jeu */}
