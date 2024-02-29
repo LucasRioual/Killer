@@ -1,12 +1,11 @@
 // PopUp.js
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated} from 'react-native';
+import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated, ActivityIndicator} from 'react-native';
 import { useSelector, useDispatch} from 'react-redux';
 import { modifyCode, setGameStatut } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
 import socket from '../Socket/socketManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator } from 'react-native-paper';
 
 
 

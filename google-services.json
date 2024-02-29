@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "113592525761",
+    "project_id": "killer-78b5d",
+    "storage_bucket": "killer-78b5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113592525761:android:fdceb117c16df369e8c540",
+        "android_client_info": {
+          "package_name": "com.lrioual.killer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113592525761-2areiklcpkptbs4g0g1d7itav2oqoo1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvrDpMHOks1U05LQ9grzHA0vUbS8-lG28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113592525761-2areiklcpkptbs4g0g1d7itav2oqoo1o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
