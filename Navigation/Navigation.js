@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../Screen/HomeScreen';
 import ModeScreen from '../Screen/ModeScreen';
 import SalonScreen from '../Screen/SalonScreen';
+import SettingsScreen from '../Screen/SettingsScreen';
 import CibleScreen from '../Screen/CibleScreen';
 import EndGameScreen from '../Screen/EndGameScreen';
 import HistoriqueScreen from '../Screen/HistoriqueScreen';
@@ -53,12 +54,13 @@ const Navigation = () => {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Historique" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Settings" component={SettingGameScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
+        <Stack.Screen name="GameSetting" component={SettingsScreen} />
         <Stack.Screen name="Cible" component={CibleScreen} />
         <Stack.Screen name="EndGame" component={EndGameScreen} />
         <Stack.Screen name="Historique" component={HistoriqueScreen} />
