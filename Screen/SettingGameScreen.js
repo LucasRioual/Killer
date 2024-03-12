@@ -12,13 +12,13 @@ const SettingGameScreen = ({navigation}) => {
 
   const [time, setTime] = useState(3600);
   const [join, setJoin] = useState(false);
-  const [changeMission, setChangeMission] = useState(0);
+  const [changeMission, setChangeMission] = useState(1);
   const [selectedMissions, setSelectedMissions] = useState(['Test']);
 
   const MoveSalon = async () => {
     console.log('missions', selectedMissions)
     
-    navigation.navigate("Salon", {setting: {time : time, join : join, changeMission: changeMission}, tagMission: selectedMissions});
+    navigation.navigate("Salon",  {time : time, changeMission: changeMission, tagMission: selectedMissions, listPlayerReceived: []});
   };
 
  

@@ -1,12 +1,12 @@
 // PopUp.js
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated} from 'react-native';
+import { View, Text, Modal, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, Animated, ActivityIndicator} from 'react-native';
 import { useSelector, useDispatch} from 'react-redux';
-import { modifyCode, setGameStatut } from '../Store/Reducer/gameSlice';
+import { setGameCode } from '../Store/Reducer/gameSlice';
 import { useNavigation } from '@react-navigation/native';
 import socket from '../Socket/socketManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator } from 'react-native-paper';
+import { getPlayer } from '../Hooks/hooks';
 
 
 
@@ -15,7 +15,7 @@ import { ActivityIndicator } from 'react-native-paper';
 const PopUpJoin = (props) => {
 
   const gameCode = useSelector((state) => state.game.gameCode);
-  const userSurname = useSelector((state) => state.user.surname);
+  const userName = useSelector((state) => state.user.userName);
   const expoToken = useSelector((state) => state.user.expoToken);
   const userId = useSelector((state) => state.user.userId);
   const [isNonDrinker, setIsNonDrinker] = useState(false);
@@ -32,35 +32,24 @@ const PopUpJoin = (props) => {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
  
   
-  const testGameCode = async (code) => {
-    
-    const response = await fetch(`${apiUrl}/api/game/${code}`);
-    const data = await response.json();
-    setIsLoading(false);
-    if(response.ok){
-      const listPlayer = data.listPlayer;
-      const statut = data.statut;
-      console.log('Statut de la partie : ',statut);
-      dispatch(setGameStatut(statut)); 
-      for (let i = 0; i < listPlayer.length; i++) {
-        if(listPlayer[i].surname == userSurname){
-          props.setMessageError('Ton nom est déjà pris');
-          props.shakeAnim(props.animRef);
-          setErrorMessage('');
-          props.exit();
-          console.log(props.visible);
-          return;
-        }
+  const testGameCode = async (gameCode) => {
+
+    const [listPlayer, statut] = await getPlayer(gameCode);
+    console.log("Partie que je souhaite rejoindre ", statut);
+    for (let i = 0; i < listPlayer.length; i++) {
+      if (listPlayer[i] === userName) {
+        props.setMessageError("Ton nom est déjà pris");
+        props.shakeAnim(props.animRef);
+        setErrorMessage("");
+        setIsLoading(false);
+        props.exit();
+        return;
       }
-      const dataToSend = {surname: userSurname, code: code, expoToken: expoToken};
-      socket.emit('connectRoom', dataToSend);
-      props.exit();
-      navigation.navigate('Salon',{gameStatut: statut});
     }
-    else{
-      props.shakeAnim(animRef);
-      setErrorMessage(data.error);
-    }
+    socket.emit("join_room", gameCode, userId);
+    setIsLoading(false);
+    props.exit();
+    navigation.navigate("Salon", { gameStatut: statut, listPlayerReceived: listPlayer });
       
 
   }
@@ -107,7 +96,7 @@ const PopUpJoin = (props) => {
               <Animated.View style = {{ transform: [{translateX: animRef}] }}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={(text) => {dispatch(modifyCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
+                  onChangeText={(text) => {dispatch(setGameCode(text))}} // Met à jour le gameCode dans l'état lorsque l'utilisateur tape
                   value={gameCode} // Affiche la valeur actuelle de gameCode
                   placeholder="CODE" // Texte d'indication dans le champ de saisie
                   autoCapitalize="characters"

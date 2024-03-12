@@ -1,9 +1,9 @@
-import React, { Component, useRef, useState, useEffect  } from 'react';
-import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux'
-import {  modifySurname, setHostTrue, setHostFalse} from '../Store/Reducer/userSlice'
-import { createUser, changeSurnameAPI } from '../Hooks/hooks';
+import React, { useState } from 'react';
+import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated, ActivityIndicator} from 'react-native';
+import { useDispatch, useSelector} from 'react-redux';
+import { setIsHost, setUserId, setUserName } from '../Store/Reducer/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createUser, modifyUserName } from '../Hooks/hooks';
 
 
 
@@ -11,58 +11,84 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MainMenu =  (props) => {
 
-  //const {changeSurnameAPI, createUser} = useUserAPI();
-
   const userId = useSelector((state) => state.user.userId);
-  const userSurname = useSelector((state) => state.user.surname);
-  
   const dispatch = useDispatch();
-  
+  const [isLoading, setIsLoading] = useState(false);
 
-  //const [inputValue, setInputValue] = useState('');
-  /* const shakeAnim = useRef(new Animated.Value(0)).current;
-
-  startShake = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 20, duration: 70, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 70, useNativeDriver: true })
-    ]).start();
- } */
 
 
  
 
-  const Create = async () => { // modifier pour enregistrer simplement le surnom dans asyncstorage
-    if (!userSurname){
+  const Create =  async() => { // Si userId est null, on créer un nouvel utilisateur, sinon on le redirige vers les paramètres
+    if (!props.userName){
       props.shakeAnim(props.animRef);
     }
     else{
-      AsyncStorage.setItem('surname', userSurname);
-      dispatch(setHostTrue());
+      console.log(userId);
+      setIsLoading(true);
+      AsyncStorage.setItem('userName', props.userName);
+      dispatch(setUserName(props.userName));
+      dispatch(setIsHost(true));
+      if(userId === null){
+        const userIdResponse = await createUser(props.userName);
+        dispatch(setUserId(userIdResponse));
+        AsyncStorage.setItem('userId', userIdResponse);
+      }
+      else{
+        await modifyUserName(userId, props.userName);
+      }
+      setIsLoading(false);
       props.navigation.navigate("Settings");
+      
+      
       
     }
   };  
 
-  const Join = async () => { // La même chose que pour create
-    if (!userSurname){
+  const Join =  async () => { // La même chose que pour create
+    if (!props.userName){
       props.shakeAnim(props.animRef);
     }
     else{
-      console.log('join');
-      dispatch(setHostFalse());
-      AsyncStorage.setItem('surname', userSurname);
+      console.log(userId);
+      setIsLoading(true);
+      AsyncStorage.setItem('userName', props.userName);
+      dispatch(setIsHost(false));
+      dispatch(setUserName(props.userName));
+      
+      if(userId === null){
+        console.log('null rejoint la game');
+        const userIdResponse = await createUser(props.userName);
+        dispatch(setUserId(userIdResponse));
+        AsyncStorage.setItem('userId', userIdResponse);
+      }
+      else{
+        await modifyUserName(userId, props.userName);
+      }
+      setIsLoading(false);
       props.clickJoin();
+      
+      
       
     }
   };  
 
   const onSurnameChange = (text) => {
-    dispatch(modifySurname(text));
+    props.setUserName(text);
     props.setMessageError('');
   }
+
+  const MainBouton = props => {
+    return (
+      <TouchableOpacity  style={styles.button} onPress={props.onPress} activeOpacity={0.5}>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text style={styles.buttonText}>{props.titre}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
 
   
@@ -73,7 +99,7 @@ const MainMenu =  (props) => {
       <View style = {styles.inputContainer}>
         <Text style = {styles.txtError}>{props.labelError}</Text>
         <Animated.View style = {{ transform: [{translateX: props.animRef}] }}>
-          <TextInput style={styles.input} placeholder="Ton prénom" value={userSurname} onChangeText={(text) => onSurnameChange(text)}/>
+          <TextInput style={styles.input} placeholder="Ton prénom" value={props.userName} onChangeText={(text) => onSurnameChange(text)}/>
         </Animated.View> 
 
       </View>
@@ -88,16 +114,11 @@ const MainMenu =  (props) => {
 
 
 
-const MainBouton = props => {
-  return (
-    <TouchableOpacity style={[styles.button, { backgroundColor: props.color }]} onPress={props.onPress} activeOpacity={0.5}>
-      <Text style={styles.buttonText}>{props.titre}</Text>
-    </TouchableOpacity>
-  );
-};
+
 
 const styles = StyleSheet.create ({
   button: {
+    backgroundColor: '#F0122D',
     borderRadius: 50,
     width: 300,
     height: 60,

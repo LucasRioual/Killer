@@ -6,31 +6,36 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: {
     userId: null,
-    surname: null,
-    hostFlag: false,
-    expoToken: null,
+    userName: null,
+    isHost: false,
+    mission: null,
+    target: null,
+    isTargetLeave: false,
 
     },
   reducers: {
-    modifyId: (state, actions) => {
+    setUserId: (state, actions) => {
       state.userId = actions.payload
       },
-    modifySurname: (state, actions) => {
-      state.surname = actions.payload
+    setIsHost: (state, actions) => {
+      state.isHost = actions.payload
       },
-    setHostFalse: (state) => {
-        state.hostFlag = false;
+      setMission: (state, actions) => {
+        state.mission = actions.payload
       },
-      setHostTrue: (state) => {
-        state.hostFlag = true;
+      setTarget: (state, actions) => {
+        state.target = actions.payload
       },
-      setExpoToken: (state, actions) => {
-        state.expoToken = actions.payload
+      setUserName: (state, actions) => {
+        state.userName = actions.payload
       },
+      setTargetLeave: (state, actions) => {
+        state.isTargetLeave = actions.payload
+      }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { modifyId, modifySurname, setHostFalse, setHostTrue, setExpoToken } = userSlice.actions;
+export const { setUserId, setIsHost, setMission, setTarget, setUserName, setTargetLeave } = userSlice.actions;
 
 export default userSlice.reducer;

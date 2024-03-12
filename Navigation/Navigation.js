@@ -4,17 +4,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../Screen/HomeScreen';
 import ModeScreen from '../Screen/ModeScreen';
 import SalonScreen from '../Screen/SalonScreen';
-import SettingsScreen from '../Screen/SettingsScreen';
-import CibleScreen from '../Screen/CibleScreen';
+import GameScreen from '../Screen/GameScreen';
 import EndGameScreen from '../Screen/EndGameScreen';
 import HistoriqueScreen from '../Screen/HistoriqueScreen';
  import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
-import { setExpoToken } from '../Store/Reducer/userSlice';
-import CibleScreenTest from '../Screen/CibleScreenTest';
 import SettingGameScreen from '../Screen/SettingGameScreen';
 import RecapScreen from '../Screen/RecapScreen';
+import StatGenerale from '../Screen/StatGenarale';
+import StatPersoScreen from '../Screen/StatPersoScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,7 +46,7 @@ const Navigation = () => {
   }
 
   useEffect(() => {
-    registerForPushNotificationsAsync();
+    //registerForPushNotificationsAsync();
   }, []);
 
   
@@ -61,11 +60,12 @@ const Navigation = () => {
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Settings" component={SettingGameScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
-        <Stack.Screen name="GameSetting" component={SettingsScreen} />
-        <Stack.Screen name="Cible" component={CibleScreen} />
+        <Stack.Screen name="Game" component={GameScreen} />
         <Stack.Screen name="EndGame" component={EndGameScreen} />
         <Stack.Screen name="Recap" component={RecapScreen} />
         <Stack.Screen name="Historique" component={HistoriqueScreen} />
+        <Stack.Screen name="StatPerso" component={StatPersoScreen} />
+        <Stack.Screen name="StatGenerale" component={StatGenerale} />
       </Stack.Navigator>
     </NavigationContainer>
   );

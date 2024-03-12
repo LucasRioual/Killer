@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GameAnimation = (props) => {
 
-    const isPlayerComeBack = useSelector((state) => state.game.isPlayerComeBack);
+    //const isPlayerComeBack = useSelector((state) => state.game.isPlayerComeBack);
 
     const scaleAnim = useRef(new Animated.Value(2)).current;
     const scaleAnimMouth = useRef(new Animated.Value(1)).current;
@@ -81,7 +81,7 @@ const GameAnimation = (props) => {
     };
 
     useEffect(() => {
-        console.log('isPlayerComeBack : ', isPlayerComeBack);
+        /* console.log('isPlayerComeBack : ', isPlayerComeBack);
         if(isPlayerComeBack){
             dispatch(setPlayerComeBack(false));
             props.opacityBody.setValue(1);
@@ -90,7 +90,8 @@ const GameAnimation = (props) => {
             AsyncStorage.setItem('gameCode', props.gameCode);
             animationDebut();
             dispatch(setPlayerComeBack(false));
-        }
+        } */
+        animationDebut();
     }, []);
 
 

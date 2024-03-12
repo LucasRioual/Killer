@@ -1,9 +1,10 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socket from '../Socket/socketManager';
+import { EXPO_PUBLIC_API_URL } from '@env';
 
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+const apiUrl = 'http://172.18.32.91:3000';
 
 
 const saveUserId = async (userToSave) => {
@@ -31,40 +32,34 @@ const getSurname = async(userId) => {
     }
   };
 
-  const createUser = async(userSurname) => {
+  const createUser = async(userName) => {
+     console.log('Création de l\'utilisateur en cours...');
 
-  const response = await fetch(`${apiUrl}/api/users`, {
+  const response = await fetch(`${apiUrl}/api/user/${userName}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ surname: userSurname}),
     });
     const data = await response.json();
-    if (!response.ok) {
-      throw new Error("Erreur lors de la création d'utilisateurs");
-    }
-
-    saveUserId(data.userId);
+    console.log('Utilisateur créé : ', data);
     return data.userId;
     //dispatch(modifyId(data.userId));
     
     
   };
   
-
-
-  const changeSurnameAPI = async(userId, userSurname) => {
+  const modifyUserName = async(userId, userName) => {
   try{
    
-    await fetch(`${apiUrl}/api/users/${userId}`, {
+    await fetch(`${apiUrl}/api/user/${userId}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
           // Ajoutez d'autres en-têtes si nécessaire
       },
       body: JSON.stringify({
-          surname: userSurname,
+          userName: userName,
       }),
   });
   }
@@ -73,6 +68,48 @@ const getSurname = async(userId) => {
   }
 
 }
+
+
+const getUserGameCode = async(userId) => {
+  try {
+    console.log('Récupération du code de la partie pour le joueur : ', userId);
+    const response = await fetch(`${apiUrl}/api/user/${userId}`);
+    const data = await response.json();
+    console.log('Le code de la partie a été récupéré : ',data);
+    return [data.statut, data.gameCode];
+  }
+  catch(error){
+    console.log('Erreur lors de la récupération du code de la partie', error);
+  }
+}
+
+
+
+const sendKillAccept = async(userId) => {
+  try{
+   
+    await fetch(`${apiUrl}/api/game/kill/${userId}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          // Ajoutez d'autres en-têtes si nécessaire
+      },
+  });
+  }
+  catch(error){
+    console.log('Erreur lors du changement de surname', error);
+  }
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -85,20 +122,18 @@ const getSurname = async(userId) => {
 
 
   const startGame = async(code) => {
-
-    const response = await fetch(`${apiUrl}/api/game/${code}/start`);
+    console.log('Démarrage de la partie en cours...', code);
+    const response = await fetch(`${apiUrl}/api/game/start/${code}`);
     const data = await response.json();
-    if (response.ok) {
-    } else {
-      return data.statut;
-    }
+    console.log('Partie démarrée : ', data);
   };
 
 
-  const getGame = async(code) => {
-    const response = await fetch(`${apiUrl}/api/game/${code}`);
+  const getPlayer = async(code) => {
+    const response = await fetch(`${apiUrl}/api/user/players/${code}`);
     const data = await response.json();
-    return data.listPlayer;
+    console.log('Liste des joueurs récupérée : ', data.listPlayer);
+    return [data.listPlayer, data.statut];
   };
 
 
@@ -114,31 +149,81 @@ const getSurname = async(userId) => {
   }
 
     
+//createGame(userId, time, changeMission, tagMission);
 
-  const createGame = async (userSurname, expoToken, setting,tagMission) => {
+  const createGame = async (userId, time, changeMission,tagMission) => {
     try {
 
-      const response = await fetch(`${apiUrl}/api/game`, {
+      const response = await fetch(`${apiUrl}/api/game/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({surname: userSurname, setting: setting, tagMission: tagMission}),
+        body: JSON.stringify({timer: time, changeMission:changeMission, tagMission: tagMission}),
       });
       const data = await response.json();
-      const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};
-      socket.emit('connectRoom', dataToSend);
-      return data.code;
+      //const dataToSend = {surname: userSurname, code: data.code, expoToken: expoToken};
+      //socket.emit('connectRoom', dataToSend);
+      console.log('Partie créée avec succès : ', data);
+      return data.gameCode;
     } catch (error) {
       
     }
+  };
+
+  const getGameInfo = async (gameCode, userId) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/user/gameInfo/${gameCode}/${userId}`);
+      const data = await response.json();
+      console.log('Informations de la partie récupérées : ', data);
+      return data;
+    }
+    catch(error){
+      console.log('Erreur lors de la récupération des informations de la partie', error);
+    }
+  };
+
+  const getStatPerso = async(userId) => {
+    const response = await fetch(`${apiUrl}/api/user/stat/${userId}`);
+    const data = await response.json();
+    console.log('Récupération des stats perso', data);
+    return data;
+  };
+
+  const getStatGeneral = async(code) => {
+    const response = await fetch(`${apiUrl}/api/game/classement/${code}`);
+    const data = await response.json();
+    console.log('Récupération de la timeline', data.timeline);
+    return data.timeline;
+  };
+
+  const getNewMission = async(userId) => {
+    const response = await fetch(`${apiUrl}/api/game/mission/${userId}`);
+    const data = await response.json();
+    console.log('Récupération de la nouvelle mission', data.mission);
+    return data.mission;
   };
 
 
 
 
 
-export {saveUserId, getSurname, createUser, changeSurnameAPI, startGame, getGame, removePlayer, removeGame, createGame};
+export {
+      getNewMission,
+      getStatGeneral,
+      sendKillAccept, 
+      getStatPerso, 
+      getGameInfo,
+      saveUserId,
+      getUserGameCode,
+      getSurname, 
+      createUser, 
+      modifyUserName, 
+      startGame, 
+      getPlayer, 
+      removePlayer,
+      removeGame,
+      createGame};
 
 
 

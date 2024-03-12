@@ -1,34 +1,27 @@
 import React, {  useEffect, useState, useCallback, useRef } from 'react';
 import { Text, View, StyleSheet, Animated } from 'react-native';
 import MainMenu from '../Components/MainMenu';
-import ImageNuit from '../Components/ImageNuit';
 import Footer from '../Components/Footer';
 import PopUpRegle from '../Components/PopUpRegle';
 import PopUpJoin from '../Components/PopUpJoin';
 import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
-import { dark, light } from '../Store/Reducer/colorSlice';
-import { modifyId, modifySurname, setHostFalse} from '../Store/Reducer/userSlice';
-import { setListPlayer, modifyCode, setPlayerComeBack, setNumberMission } from '../Store/Reducer/gameSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import {getGame} from '../Hooks/hooks';
-import socket from '../Socket/socketManager';
-import { Socket } from 'socket.io-client';
+import { setUserId } from '../Store/Reducer/userSlice';
+import { setGameCode } from '../Store/Reducer/gameSlice';
+import { getUserGameCode } from '../Hooks/hooks';
+
+
+
 
 
 
 const HomeScreen = ({navigation}) => {
 
-  const userSurname = useSelector((state) => state.user.surname);
-  const expoToken = useSelector((state) => state.user.expoToken);
-  const gameCode = useSelector((state) => state.game.gameCode);
-  const backColor = useSelector((state) => state.color.backColor);
-  const MainColor = useSelector((state) => state.color.mainColor);
-  const txtColor = useSelector((state) => state.color.txtColor);
-  const titreColor = useSelector((state) => state.color.titreColor);
-  const svgData = useSelector((state) => state.color.svgData);
-  const shakeAnimJoin = useRef(new Animated.Value(0)).current;
+
+  const [userName, setUserName] = useState('');
+
+
   const shakeAnimSurname = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
   const [isPopUpJoinVisible, setIsPopUpJoinVisible] = useState(false);
@@ -45,7 +38,6 @@ const HomeScreen = ({navigation}) => {
   };  
   //PopUp pour rejoindre une partie
   const openPopUpJoin = () => {
-    console.log('JoinPopUp');
     setIsPopUpJoinVisible(true);
     console.log(isPopUpJoinVisible);
   };
@@ -60,37 +52,22 @@ const HomeScreen = ({navigation}) => {
     setIsPopUpSettingsVisible(false);
   }; 
 
-  const changeColor = () =>{
-    if(backColor == '#FFEBD7'){ //Light
-      dispatch(dark());
-      console.log("ok");
-    }
-    else{
-      dispatch(light());
-    }
-  }
 
 
 
-  const loadUserSurnameAndCode = async () => {
+  const loadUserIdAndSurname = async () => {
     try {
-      const storedUserSurname = await AsyncStorage.getItem('surname');
-      const storedCodeGame = await AsyncStorage.getItem('gameCode');
-      const numberMission = await AsyncStorage.getItem('numberMission');
-      if (storedUserSurname !== null) {
-        console.log('Identifiant chargé avec succès :', storedUserSurname);
-        dispatch(modifySurname(storedUserSurname));
-        if(storedCodeGame !== null){
-          console.log('Le joueur se trouve dans la partie : ', storedCodeGame);
-          dispatch(setPlayerComeBack(true));
-          dispatch(modifyCode(storedCodeGame));
-          dispatch(setNumberMission(parseInt(numberMission)));
-          const dataToSend = {surname: storedUserSurname, code: storedCodeGame, expoToken: expoToken};
-          socket.emit('connectRoom', dataToSend);
-          navigation.navigate('Cible');
-        }
+      const storedUserId = await AsyncStorage.getItem('userId');
+      const storedUserName = await AsyncStorage.getItem('userName');
+      if (storedUserId !== null) {
+        console.log('Récupération des données du joueurs : ', storedUserName);
+        console.log('Récupération de lid du joueurs : ', storedUserId);
+        dispatch(setUserId(storedUserId));
+        setUserName(storedUserName);
+        return storedUserId;
       } else {
-        console.log('Aucun identifiant trouvé dans le stockage.');
+        console.log('Aucun joueur trouvé dans le stockage.');
+        return null;
       }
     } catch (error) {
       console.error('Erreur lors du chargement de l\'identifiant :', error);
@@ -99,7 +76,7 @@ const HomeScreen = ({navigation}) => {
 
   
 
-  startShake = (animRef) => {
+  const startShake = (animRef) => {
     Animated.sequence([
       Animated.timing(animRef, { toValue: 20, duration: 70, useNativeDriver: true }),
       Animated.timing(animRef, { toValue: -20, duration: 70, useNativeDriver: true }),
@@ -108,10 +85,39 @@ const HomeScreen = ({navigation}) => {
     ]).start();
  }
 
+ const saveUserIdAndSurname = async () => {
+  try {
+    await AsyncStorage.setItem('userId', '10');
+    console.log('Identifiant sauvegardé avec succès.');
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde de l\'identifiant :', error);
+  }
+};
+
+
+
 
 
   useEffect(() => {
-    loadUserSurnameAndCode();
+
+    const navigateToGame = async () => {
+      const userId = await loadUserIdAndSurname();
+      if(userId){
+        const [userStatut, gameCode] = await getUserGameCode(userId);
+        console.log('gameCode : ', gameCode);
+        dispatch(setGameCode(gameCode));
+        if(userStatut === 'alive'){
+          navigation.navigate('Game');
+        }
+        else if(userStatut === 'dead'){
+          //navigation.navigate('StatPerso');
+        }
+      }
+    }
+    navigateToGame();
+    //saveUserIdAndSurname();
+    //AsyncStorage.removeItem('userId');
+
   }, []);
 
 
@@ -119,21 +125,18 @@ const HomeScreen = ({navigation}) => {
   
   return (
     
-    <View style={[styles.ViewMain, { backgroundColor: backColor }]}>
-      <View style={styles.View1}>
-      <ImageNuit onClick = {changeColor} fill = {txtColor} d = {svgData}/>
-      </View>
+    <View style={styles.ViewMain}>
      
       <View style={styles.View2}>
-        <Text style={[styles.Titre, { color: titreColor }]}>KILLER</Text>
+        <Text style={styles.Titre}>KILLER</Text>
       </View>
       <View style={styles.View3}>
-        <MainMenu navigation={navigation} clickJoin = {openPopUpJoin} color = {MainColor} labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
+        <MainMenu userName={userName} setUserName={setUserName} navigation={navigation} clickJoin = {openPopUpJoin}  labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
       </View>
       <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 
 
       <View style={styles.View4}>
-        <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} color = {MainColor} txtcolor = {txtColor}/>
+        <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} />
       </View> 
        
       <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
@@ -150,6 +153,7 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   ViewMain: {
     flex: 1, 
+    backgroundColor: '#061624',
     
     
   },
@@ -157,6 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 100,
     fontFamily: 'LuckiestGuy',
     textAlign: 'center', 
+    color: 'white',
        
   },
   View1: {
@@ -166,7 +171,7 @@ const styles = StyleSheet.create({
   },
   View2: {
     flex: 2,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
           
   },
   View3: {

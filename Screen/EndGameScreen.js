@@ -43,12 +43,12 @@ const GameOverScreen = ({ navigation, route }) => {
       <View style={styles.ViewBody}>
       <View style={styles.mainContainer}>
       <View style={styles.container}>
-      <LottieView
+      {/* <LottieView
         source={require('path/to/your/lottie/file.json')} // Remplacez par le chemin de votre fichier Lottie
         autoPlay
         loop={false} // Changez à true si vous voulez que l'animation boucle
         style={styles.animation}
-      /> 
+      />  */}
       <Text>Votre nombre de kills: {userKills}</Text>
       <Text>Votre temps passé en vie: {userAliveTime}</Text>
       {/* Autres éléments de votre page de fin de jeu */}

@@ -10,15 +10,15 @@ const ConfirmKilled = (props) => {
 
     const [isVisible, setIsVisible] = useState(false);
     const [message, setMessage] = useState('');
-    const killedBy = useSelector((state) => state.game.killedBy);
+    //const killedBy = useSelector((state) => state.game.killedBy);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (killedBy !== null) {
+        /* if (killedBy !== null) {
           setMessage('Tu as été tué par ' + killedBy + ' ?');
           dispatch(setKilledBy(null));
           setIsVisible(true);
-        }
+        } */
       }, [killedBy]);
 
       const handleConfirm = () => {
