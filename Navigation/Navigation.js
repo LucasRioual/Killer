@@ -5,15 +5,14 @@ import HomeScreen from '../Screen/HomeScreen';
 import ModeScreen from '../Screen/ModeScreen';
 import SalonScreen from '../Screen/SalonScreen';
 import GameScreen from '../Screen/GameScreen';
-import EndGameScreen from '../Screen/EndGameScreen';
 import HistoriqueScreen from '../Screen/HistoriqueScreen';
  import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
 import SettingGameScreen from '../Screen/SettingGameScreen';
-import RecapScreen from '../Screen/RecapScreen';
 import StatGenerale from '../Screen/StatGenarale';
 import StatPersoScreen from '../Screen/StatPersoScreen';
+import testAnimation from '../Screen/testAnimation';
 
 
 const Stack = createNativeStackNavigator();
@@ -54,18 +53,17 @@ const Navigation = () => {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
+      <Stack.Navigator initialRouteName="Test" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
         <Stack.Screen name="Settings" component={SettingGameScreen} />
         <Stack.Screen name="Salon" component={SalonScreen} />
         <Stack.Screen name="Game" component={GameScreen} />
-        <Stack.Screen name="EndGame" component={EndGameScreen} />
-        <Stack.Screen name="Recap" component={RecapScreen} />
         <Stack.Screen name="Historique" component={HistoriqueScreen} />
         <Stack.Screen name="StatPerso" component={StatPersoScreen} />
         <Stack.Screen name="StatGenerale" component={StatGenerale} />
+        <Stack.Screen name="Test" component={testAnimation} />
       </Stack.Navigator>
     </NavigationContainer>
   );
