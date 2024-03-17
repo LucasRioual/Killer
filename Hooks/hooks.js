@@ -1,10 +1,10 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import socket from '../Socket/socketManager';
-import { EXPO_PUBLIC_API_URL } from '@env';
 
 
-const apiUrl = 'http://172.18.32.91:3000';
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 
 const saveUserId = async (userToSave) => {
@@ -32,7 +32,7 @@ const getSurname = async(userId) => {
     }
   };
 
-  const createUser = async(userName) => {
+  const createUser = async(userName, expoToken) => {
      console.log('Création de l\'utilisateur en cours...');
 
   const response = await fetch(`${apiUrl}/api/user/${userName}`, {
@@ -40,19 +40,21 @@ const getSurname = async(userId) => {
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        expoToken: expoToken
+    }),
     });
     const data = await response.json();
     console.log('Utilisateur créé : ', data);
     return data.userId;
-    //dispatch(modifyId(data.userId));
     
     
   };
   
-  const modifyUserName = async(userId, userName) => {
+  const modifyUserName = async(userId, userName, expoToken) => {
   try{
    
-    await fetch(`${apiUrl}/api/user/${userId}`, {
+    const response = await fetch(`${apiUrl}/api/user/${userId}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
@@ -60,8 +62,13 @@ const getSurname = async(userId) => {
       },
       body: JSON.stringify({
           userName: userName,
+          expoToken: expoToken
       }),
-  });
+    
+    });
+    const data = await response.json();
+    return data.userId;
+
   }
   catch(error){
     console.log('Erreur lors du changement de surname', error);
@@ -133,7 +140,7 @@ const sendKillAccept = async(userId) => {
     const response = await fetch(`${apiUrl}/api/user/players/${code}`);
     const data = await response.json();
     console.log('Liste des joueurs récupérée : ', data.listPlayer);
-    return [data.listPlayer, data.statut];
+    return [data.listPlayer, data.statut, data.success];
   };
 
 

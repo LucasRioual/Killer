@@ -14,6 +14,7 @@ import SettingGameScreen from '../Screen/SettingGameScreen';
 import RecapScreen from '../Screen/RecapScreen';
 import StatGenerale from '../Screen/StatGenarale';
 import StatPersoScreen from '../Screen/StatPersoScreen';
+import { setExpoToken } from '../Store/Reducer/userSlice';
 
 
 const Stack = createNativeStackNavigator();
@@ -46,7 +47,7 @@ const Navigation = () => {
   }
 
   useEffect(() => {
-    //registerForPushNotificationsAsync();
+    registerForPushNotificationsAsync();
   }, []);
 
   

@@ -12,7 +12,7 @@ const Timer = () => {
   const formatTime = (time) => {
     const days = Math.floor(time / (3600 * 24));
     const hours = Math.floor((time % (3600 * 24)) / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
+    const minutes = Math.round((time % 3600) / 60);
 
     const formattedDays = String(days);
     const formattedHours = String(hours).padStart(2, '0');

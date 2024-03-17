@@ -10,6 +10,7 @@ export const gameSlice = createSlice({
     timer: 0,
     isPopUpVisible: false,
     newPlayer: null,
+    playerLeave: null,
     isConfirmKill: false,
     isTargetResponse: null,
     isGameFinish: false,
@@ -38,12 +39,15 @@ export const gameSlice = createSlice({
       },
     setGameFinish: (state, actions) => {
       state.isGameFinish = actions.payload
-    }
+    },
+    setPlayerLeave: (state, actions) => {
+      state.playerLeave = actions.payload
+    },
     
   },
 });
 
 // Action creators are generated for each case reducer function
-export const {setGameFinish, setGameCode, setNewPlayer, setIsGameStarted, setPopUpVisible, setTimer, setConfirmKill, setTargetResponse} = gameSlice.actions;
+export const {setPlayerLeave, setGameFinish, setGameCode, setNewPlayer, setIsGameStarted, setPopUpVisible, setTimer, setConfirmKill, setTargetResponse} = gameSlice.actions;
 
 export default gameSlice.reducer;

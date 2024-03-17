@@ -11,6 +11,8 @@ export const userSlice = createSlice({
     mission: null,
     target: null,
     isTargetLeave: false,
+    playerStatut: 'none', //none, winner, timeout
+    expoToken: null,
 
     },
   reducers: {
@@ -31,11 +33,25 @@ export const userSlice = createSlice({
       },
       setTargetLeave: (state, actions) => {
         state.isTargetLeave = actions.payload
+      },
+      setPlayerStatut: (state, actions) => {
+        state.playerStatut = actions.payload
+      },
+      setExpoToken: (state, actions) => {
+        state.expoToken = actions.payload
       }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUserId, setIsHost, setMission, setTarget, setUserName, setTargetLeave } = userSlice.actions;
+export const {
+  setExpoToken, 
+  setPlayerStatut,
+  setUserId, 
+  setIsHost,
+  setMission,
+  setTarget,
+  setUserName, 
+  setTargetLeave } = userSlice.actions;
 
 export default userSlice.reducer;

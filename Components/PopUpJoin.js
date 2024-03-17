@@ -34,8 +34,22 @@ const PopUpJoin = (props) => {
   
   const testGameCode = async (gameCode) => {
 
-    const [listPlayer, statut] = await getPlayer(gameCode);
+    const [listPlayer, statut, success] = await getPlayer(gameCode);
+    console.log("success", success);
+    if(!success){
+      setErrorMessage("La partie n'existe pas");
+      props.shakeAnim(animRef);
+      setIsLoading(false);
+      return;
+    }
     console.log("Partie que je souhaite rejoindre ", statut);
+    if(statut === "start"){
+      setErrorMessage("La partie a déjà commencé");
+      props.shakeAnim(animRef);
+      setIsLoading(false);
+      return;
+
+    }
     for (let i = 0; i < listPlayer.length; i++) {
       if (listPlayer[i] === userName) {
         props.setMessageError("Ton nom est déjà pris");
