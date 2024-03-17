@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef} from 'react';
-import { BackHandler, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated, ScrollView} from 'react-native';
+import { BackHandler, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated, ScrollView, AppState} from 'react-native';
 import HeaderGame from '../Components/HeaderGame';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,8 +11,8 @@ import { getGameInfo, sendKillAccept, getNewMission } from '../Hooks/hooks';
 import Timer from '../Components/Timer';
 import TargetAndMission from '../Components/TargetAndMission';
 import GameAnimation from '../Components/GameAnimation';
-import { setTargetResponse, setTimer, setGameFinish } from '../Store/Reducer/gameSlice';
-import { setTargetLeave } from '../Store/Reducer/userSlice';
+import { setTargetResponse, setTimer, setConfirmKill } from '../Store/Reducer/gameSlice';
+import { setTargetLeave, setIsWinner} from '../Store/Reducer/userSlice';
 import PopUpGame from '../Components/PopUpGame';
 
 
@@ -23,10 +23,9 @@ import PopUpGame from '../Components/PopUpGame';
 
 const GameScreen = ({navigation}) => {
 
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  const appState = useRef(AppState.currentState);
 
   
-  //const listPlayer = useSelector((state) => state.game.listPlayer);
   const target = useSelector((state) => state.user.target);
   const mission = useSelector((state) => state.user.mission);
 
@@ -38,17 +37,12 @@ const GameScreen = ({navigation}) => {
   const isHost = useSelector((state) => state.user.hostFlag);
   const dispatch = useDispatch();
   const [numberMission, setNumberMission] = useState(0);
- 
-  //const [targetAndMission, setTargetAndMission] = useState([]);
-  /* const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
 
-  const [isPopUpDisplayKill, setIsPopUpDisplayKill] = useState(false);
-  const [isPopUpLeaveVisible, setIsPopUpLeaveVisible] = useState(false); */
   
   const [showSecondButton, setShowSecondButton] = useState(false);
   
   const [isTargetLoading, setIsTargetLoading] = useState(false);
- 
+  const [isChangeMissionLoading, setIsChangeMissionLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const isConfirmKill = useSelector((state) => state.game.isConfirmKill);
@@ -72,17 +66,22 @@ const GameScreen = ({navigation}) => {
       setShowSecondButton(true);
     };
     setNumberMission(gameInfo.numberMission);
+    if(gameInfo.userStatut == 'confirmation'){
+      dispatch(setConfirmKill(true));
+    }
     
   };
 
   const changeMission = async () => {
     if(numberMission > 0 ){
+      setIsChangeMissionLoading(true);
       const newMission = await getNewMission(userId);
       dispatch(setMission(newMission));
       setNumberMission(numberMission - 1);
       if(numberMission == 1){
         setShowSecondButton(false);
       }
+      setIsChangeMissionLoading(false);
     }
   }
 
@@ -91,7 +90,19 @@ const GameScreen = ({navigation}) => {
       displayLeavePopUp();
       return true;
     };
+
     BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+    const subscription = AppState.addEventListener('change', nextAppState => {  // Se reconnecter au websocket si l'application revient en premier plan
+
+      if ( appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        console.log('App has come to the foreground!');
+        getGameData();
+        socket.emit('join_room', gameCode, userId);
+
+      }
+      appState.current = nextAppState;
+      
+    });
 
     
     if(gameCode){
@@ -101,6 +112,7 @@ const GameScreen = ({navigation}) => {
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
+      subscription.remove();
     };
 
   }, []); 
@@ -141,8 +153,7 @@ const GameScreen = ({navigation}) => {
 
   useEffect(() => { // La partie est terminée 
     if(isGameFinish){
-      navigation.navigate('StatPerso',{isWinner: true});
-      dispatch(setGameFinish(false));
+      navigation.navigate('StatPerso');
     }
 
 
@@ -200,7 +211,8 @@ const GameScreen = ({navigation}) => {
         break;
       case 'receive_kill':
         await sendKillAccept(userId);
-        navigation.navigate('StatPerso', {isWinner: false});
+        dispatch(setConfirmKill(false));
+        navigation.navigate('StatPerso');
         break;
       case 'leave':
         socket.emit("leave_game", userId);
@@ -216,6 +228,7 @@ const GameScreen = ({navigation}) => {
     switch(popUpType){
       case 'receive_kill':
         socket.emit("kill_refuse", userId);
+        dispatch(setConfirmKill(false));
         break;
       default:
         break;
@@ -250,8 +263,13 @@ const GameScreen = ({navigation}) => {
               ) : (
                 <View style = {styles.buttonContainer}>
                   {showSecondButton && (
-                      <TouchableOpacity style={styles.buttonChange} onPress={changeMission}>
-                      <Text style={styles.buttonTextChange}>Changer de mission</Text>
+                      <TouchableOpacity style={styles.buttonChange} onPress={changeMission} disabled={isChangeMissionLoading}>
+                      {isChangeMissionLoading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Text style={styles.buttonTextChange}>Changer de mission</Text>
+                        )}
+                      
                       </TouchableOpacity>
                     )}
                     

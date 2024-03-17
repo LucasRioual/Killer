@@ -1,12 +1,12 @@
 import React,  { useState, useEffect, useRef }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Header from '../Components/Header';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { getStatGeneral } from '../Hooks/hooks';
 
 import Podium from '../Components/Podium';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
 
 
 const StatGenerale = ({ navigation, route }) => {
@@ -20,6 +20,7 @@ const StatGenerale = ({ navigation, route }) => {
   const [topPlayer, setTopPlayer] = useState({});
   const [secondPlayer, setSecondPlayer] = useState({});
   const [thirdPlayer, setThirdPlayer] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
 
 
@@ -60,6 +61,7 @@ const StatGenerale = ({ navigation, route }) => {
         getBiggestKiller(timeline);
         getPodiumPlayer(timeline);
         setTimeline(timeline);
+        setIsLoading(false);
         
       };
       getStat();
@@ -70,7 +72,18 @@ const StatGenerale = ({ navigation, route }) => {
        return (
         <View style={styles.ViewMain}>
           <Header titre={"Classement"} navigation= {navigation} onClickBack={()=> navigation.goBack()} />
+          {isLoading ? (
+
+            <View style={styles.ViewBody}>
+              
+              <ActivityIndicator style={styles.LoadingView} size={150} color="#F0122D" />
+              
+            </View>
+
+          ) : (
+
           <View style={styles.ViewBody}>
+            
                 <Podium first={topPlayer} second={secondPlayer} third={thirdPlayer} />
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>
@@ -84,9 +97,10 @@ const StatGenerale = ({ navigation, route }) => {
                 </View>
             
             <TouchableOpacity style={styles.button} onPress={VoirHistorique}>
-                    <Text style={styles.buttonText}>Historique</Text>
+                    <Text style={styles.buttonText}>Récap de la partie</Text>
                 </TouchableOpacity>
           </View>
+          )}
         </View>
     );
 };
@@ -101,11 +115,11 @@ const styles = StyleSheet.create({
       flex: 5, 
       alignItems:'center',
         paddingTop: 50,
-  
     },
 
-    podium: {
-        
+
+    LoadingView: {
+    marginTop: 100,
     },
     textContainer: {
         marginVertical: 50,
@@ -121,12 +135,11 @@ const styles = StyleSheet.create({
     },
   
     button: {
-      position: 'absolute',
-      bottom: 40,
+      
       backgroundColor:'#F0122D',
       borderRadius: 50,
       paddingHorizontal:40,
-      paddingVertical:10,
+      paddingVertical:15,
       justifyContent: 'center',
       shadowColor: "#000",
       shadowOffset: {
@@ -146,7 +159,7 @@ const styles = StyleSheet.create({
     buttonText: {
       color: 'white',
       textAlign: 'center',
-      fontSize: 30,
+      fontSize: 18,
       fontFamily: 'LuckiestGuy',
       
     },

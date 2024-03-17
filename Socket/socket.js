@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import socket from './socketManager'
-import { useDispatch } from 'react-redux';
-import { setNewPlayer, setIsGameStarted, setTimer, setConfirmKill, setTargetResponse, setGameFinish } from '../Store/Reducer/gameSlice';
-import { setTargetLeave } from '../Store/Reducer/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNewPlayer, setIsGameStarted, setTimer, setConfirmKill, setTargetResponse, setGameFinish, setPlayerLeave } from '../Store/Reducer/gameSlice';
+import { setTargetLeave, setPlayerStatut} from '../Store/Reducer/userSlice';
 //import * as Notifications from 'expo-notifications';
 
 
@@ -10,12 +10,22 @@ import { setTargetLeave } from '../Store/Reducer/userSlice';
 
 const SocketHandler = () => {
 
+
+
+  
+
   const dispatch = useDispatch();
+
+  const userId = useSelector((state) => state.user.userId);
+
+
   
 
 
 
   useEffect(() => {
+
+    
     
 
     socket.on('connect', () => {
@@ -60,16 +70,22 @@ const SocketHandler = () => {
       dispatch(setTargetLeave(true));
     });
 
+    socket.on('player_leave', (userName) => { //Un joueur quitte le salon
+      console.log('Un joueur a quitté le salon', userName);
+      dispatch(setPlayerLeave(userName));
+    });
+
     socket.on('end_game', () => {
-      console.log('Fin de partie !')
+      console.log('Fin de partie !');
       dispatch(setGameFinish(true));
     }
     );
-    
 
     
 
-  }, []);
+    
+
+  }, [userId]);
 
 };
 

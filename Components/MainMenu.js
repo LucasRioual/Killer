@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {StyleSheet, View, TouchableOpacity, Text, TextInput, Animated, ActivityIndicator} from 'react-native';
 import { useDispatch, useSelector} from 'react-redux';
 import { setIsHost, setUserId, setUserName } from '../Store/Reducer/userSlice';
@@ -12,88 +12,46 @@ import { createUser, modifyUserName } from '../Hooks/hooks';
 const MainMenu =  (props) => {
 
   const userId = useSelector((state) => state.user.userId);
+  const expoToken = useSelector((state) => state.user.expoToken);
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isDisable, setIsDisable] = useState(false);
 
 
-
- 
-
-  const Create =  async() => { // Si userId est null, on créer un nouvel utilisateur, sinon on le redirige vers les paramètres
-    if (!props.userName){
+  const handleAction = async (isHost) => {
+    if (!props.userName) {
       props.shakeAnim(props.animRef);
-    }
-    else{
-      console.log(userId);
-      setIsLoading(true);
+    } else {
+      setIsDisable(true);
       AsyncStorage.setItem('userName', props.userName);
       dispatch(setUserName(props.userName));
-      dispatch(setIsHost(true));
-      if(userId === null){
-        const userIdResponse = await createUser(props.userName);
+      dispatch(setIsHost(isHost));
+      if (userId === null) { // Création de l'utilisateur
+        const userIdResponse = await createUser(props.userName, expoToken);
+        dispatch(setUserId(userIdResponse));
+        AsyncStorage.setItem('userId', userIdResponse);
+      } else {
+        const userIdResponse = await modifyUserName(userId, props.userName, expoToken);
         dispatch(setUserId(userIdResponse));
         AsyncStorage.setItem('userId', userIdResponse);
       }
-      else{
-        await modifyUserName(userId, props.userName);
+      
+  
+      if (isHost) {
+        props.navigation.navigate("Settings");
+      } else {
+        props.clickJoin();
       }
-      setIsLoading(false);
-      props.navigation.navigate("Settings");
-      
-      
-      
+  
+      setIsDisable(false);
     }
-  };  
-
-  const Join =  async () => { // La même chose que pour create
-    if (!props.userName){
-      props.shakeAnim(props.animRef);
-    }
-    else{
-      console.log(userId);
-      setIsLoading(true);
-      AsyncStorage.setItem('userName', props.userName);
-      dispatch(setIsHost(false));
-      dispatch(setUserName(props.userName));
-      
-      if(userId === null){
-        console.log('null rejoint la game');
-        const userIdResponse = await createUser(props.userName);
-        dispatch(setUserId(userIdResponse));
-        AsyncStorage.setItem('userId', userIdResponse);
-      }
-      else{
-        await modifyUserName(userId, props.userName);
-      }
-      setIsLoading(false);
-      props.clickJoin();
-      
-      
-      
-    }
-  };  
+  };
 
   const onSurnameChange = (text) => {
     props.setUserName(text);
     props.setMessageError('');
   }
 
-  const MainBouton = props => {
-    return (
-      <TouchableOpacity  style={styles.button} onPress={props.onPress} activeOpacity={0.5}>
-        {isLoading ? (
-          <ActivityIndicator size="small" color="white" />
-        ) : (
-          <Text style={styles.buttonText}>{props.titre}</Text>
-        )}
-      </TouchableOpacity>
-    );
-  };
 
-
-  
-
- 
   return (
     <View>
       <View style = {styles.inputContainer}>
@@ -104,14 +62,35 @@ const MainMenu =  (props) => {
 
       </View>
         
-      <MainBouton titre="Créer une partie" onPress={Create} color = {props.color} />
-      <MainBouton titre="Rejoindre une partie" onPress = {Join} color = {props.color}/>
+      <MainBouton titre="Créer une partie" onPress={() => handleAction(true)} color = {props.color} isDisable = {isDisable} />
+      <MainBouton titre="Rejoindre une partie" onPress = {()=>handleAction(false)} color = {props.color} isDisable = {isDisable}/>
 
 
     </View>
   );
 }
 
+const MainBouton = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  onPress = async () => {
+    setIsLoading(true);
+    await props.onPress();
+    setIsLoading(false);
+  }
+
+
+
+  return (
+    <TouchableOpacity disabled={props.isDisable}  style={styles.button} onPress={onPress} activeOpacity={0.5}>
+      {isLoading ? (
+        <ActivityIndicator size="small" color="white" />
+      ) : (
+        <Text style={styles.buttonText}>{props.titre}</Text>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 
 

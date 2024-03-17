@@ -5,9 +5,9 @@ import Svg, { Path } from 'react-native-svg';
 const Podium = ({first, second, third}) => {
   return (
     <View style={styles.mainContainer}>
-      <PodiumContainer name={second.userName} place="2" killNumber={second.numberKill} />
+      <PodiumContainer name={second ? second.userName: 'Aucun'} place="2" killNumber={second ? second.numberKill: 0} />
       <PodiumContainer name={first.userName} place="1" killNumber={first.numberKill} />
-      <PodiumContainer name={third.userName} place="3" killNumber={third.numberKill} />
+      <PodiumContainer name={third ? third.userName: 'Aucun'} place="3" killNumber={third ? third.numberKill: 0} />
     </View>
   );
 }

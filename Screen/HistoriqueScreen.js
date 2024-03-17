@@ -57,7 +57,8 @@ const HistoriqueScreen = ({ navigation, route }) => {
  
   
   const ListPlayers = () =>{
-    const timelineWithoutLas = timeline.slice(0, -1);
+    const timelineWithoutLas = timeline.filter(element => element.mission !== "none");
+
 
     return (
         <View style={styles.TimelineContainer}>

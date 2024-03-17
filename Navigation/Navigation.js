@@ -12,7 +12,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import SettingGameScreen from '../Screen/SettingGameScreen';
 import StatGenerale from '../Screen/StatGenarale';
 import StatPersoScreen from '../Screen/StatPersoScreen';
-import testAnimation from '../Screen/testAnimation';
 
 
 const Stack = createNativeStackNavigator();
@@ -45,7 +44,7 @@ const Navigation = () => {
   }
 
   useEffect(() => {
-    //registerForPushNotificationsAsync();
+    registerForPushNotificationsAsync();
   }, []);
 
   

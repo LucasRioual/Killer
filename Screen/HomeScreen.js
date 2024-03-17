@@ -7,9 +7,10 @@ import PopUpJoin from '../Components/PopUpJoin';
 import PopUpSettings from '../Components/PopUpSettings';
 import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setUserId } from '../Store/Reducer/userSlice';
+import { setUserId, setPlayerStatut } from '../Store/Reducer/userSlice';
 import { setGameCode } from '../Store/Reducer/gameSlice';
 import { getUserGameCode } from '../Hooks/hooks';
+import socket from '../Socket/socketManager';
 
 
 
@@ -28,6 +29,7 @@ const HomeScreen = ({navigation}) => {
   const [isPopUpSettingsVisible, setIsPopUpSettingsVisible] = useState(false);
   const [isPopUpRegleVisible, setPopUpRegleVisible] = useState(false);
   const [messageError, setMessageError] = useState(''); 
+  const [isLoading, setIsLoading] = useState(true);
 
   
   const openPopUpRegle = () => {
@@ -104,15 +106,21 @@ const HomeScreen = ({navigation}) => {
       const userId = await loadUserIdAndSurname();
       if(userId){
         const [userStatut, gameCode] = await getUserGameCode(userId);
-        console.log('gameCode : ', gameCode);
-        dispatch(setGameCode(gameCode));
-        if(userStatut === 'alive'){
-          navigation.navigate('Game');
+        if(gameCode !== null){
+          console.log('gameCode : ', gameCode);
+          dispatch(setGameCode(gameCode)); 
+          if(userStatut === 'alive' || userStatut === 'confirmation' ){
+            socket.emit('join_room', gameCode, userId);
+            navigation.navigate('Game');
+          }
+          else if(userStatut === 'dead' || userStatut === 'timeout' || userStatut === 'winner'){
+            navigation.navigate('StatPerso');
+          }
+
         }
-        else if(userStatut === 'dead'){
-          //navigation.navigate('StatPerso');
-        }
+        
       }
+      setIsLoading(false);
     }
     navigateToGame();
     //saveUserIdAndSurname();
@@ -122,32 +130,41 @@ const HomeScreen = ({navigation}) => {
 
 
   
-  
-  return (
+  if(isLoading){
+    return (
+      <View style={styles.ViewMain}>
+        <Text>Chargement...</Text>
+      </View>
+    );
+  }
+  else{
+    return (
     
-    <View style={styles.ViewMain}>
-     
-      <View style={styles.View2}>
-        <Text style={styles.Titre}>KILLER</Text>
-      </View>
-      <View style={styles.View3}>
-        <MainMenu userName={userName} setUserName={setUserName} navigation={navigation} clickJoin = {openPopUpJoin}  labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
-      </View>
-      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 
-
-      <View style={styles.View4}>
-        <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} />
-      </View> 
+      <View style={styles.ViewMain}>
        
-      <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
-      <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>     
-      <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin} setMessageError = {setMessageError} animRef={shakeAnimSurname} shakeAnim = {startShake}/> 
+        <View style={styles.View2}>
+          <Text style={styles.Titre}>KILLER</Text>
+        </View>
+        <View style={styles.View3}>
+          <MainMenu userName={userName} setUserName={setUserName} navigation={navigation} clickJoin = {openPopUpJoin}  labelError = {messageError} setMessageError = {setMessageError} animRef= {shakeAnimSurname} shakeAnim = {startShake}/>
+        </View>
+        <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin}/> 
+  
+        <View style={styles.View4}>
+          <Footer clickRegle = {openPopUpRegle}  clickSettings = {openPopUpSettings} />
+        </View> 
+         
+        <PopUpRegle visible={isPopUpRegleVisible} exit={closePopUpRegle}/>  
+        <PopUpSettings visible={isPopUpSettingsVisible} exit={closePopUpSettings}/>     
+        <PopUpJoin visible={isPopUpJoinVisible} exit={closePopUpJoin} setMessageError = {setMessageError} animRef={shakeAnimSurname} shakeAnim = {startShake}/> 
+        
+               
+      </View>
       
-             
-    </View>
-    
-    
-  );
+      
+    );
+  }
+  
 }
 
 const styles = StyleSheet.create({

@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import Header from '../Components/Header';
 import PlayerName from '../Components/PlayerName';
 import { useSelector, useDispatch } from 'react-redux'
-import {setGameCode, setIsGameStarted} from '../Store/Reducer/gameSlice'
+import {setGameCode, setIsGameStarted, setNewPlayer, setPlayerLeave} from '../Store/Reducer/gameSlice'
 
 import PopUpConfirm from '../Components/PopUpConfirm';
 import { createGame, startGame} from '../Hooks/hooks'
@@ -27,6 +27,7 @@ const SalonScreen = ({navigation, route})=> {
   const isHost = useSelector((state) => state.user.isHost);
   const gameCode = useSelector((state) => state.game.gameCode);
   const newPlayer = useSelector((state) => state.game.newPlayer);
+  const playerLeave = useSelector((state) => state.game.playerLeave);
   const userId = useSelector((state) => state.user.userId);
 
 
@@ -35,7 +36,8 @@ const SalonScreen = ({navigation, route})=> {
   const [isPopUpConfirmationVisible, setIsPopUpConfirmationVisible] = useState(false);
   //const expoToken = useSelector((state) => state.user.expoToken);
   const [gameIsStarted, setGameIsStarted] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isStartLoading, setIsStartLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); 
 
 
   const [isLoading, setIsLoading] = useState(true);
@@ -52,15 +54,10 @@ const SalonScreen = ({navigation, route})=> {
 
 
   const handleConfirmation = async () => {
-    /* setIsPopUpConfirmationVisible(false);
-    if(hostFlag){
-      socket.emit('removeGame', gameCode);
-    }
-    else{
-      const dataToSend = {surname: userSurname, code: gameCode};
-      socket.emit('removePlayer', dataToSend);
-      navigation.goBack();
-    } */
+    setIsPopUpConfirmationVisible(false);
+  
+    socket.emit('leave_game_salon', userId);
+    navigation.goBack();
 
   };
 
@@ -89,11 +86,21 @@ const SalonScreen = ({navigation, route})=> {
   useEffect(  () => {
     if(newPlayer){
       setListPlayer([...listPlayer, newPlayer]);  
+      dispatch(setNewPlayer(null));
     };
   }, [newPlayer]);
 
+  useEffect(  () => {
+    if(playerLeave){
+      setListPlayer(listPlayer.filter((player) => player !== playerLeave));
+      dispatch(setPlayerLeave(null));
+    };
+  }, [playerLeave]);
+
 
   useEffect(  () => {
+
+    
 
     const getGame = async () => {
       const responseCode =  await createGame(userId, time, changeMission, 'Test');
@@ -103,6 +110,7 @@ const SalonScreen = ({navigation, route})=> {
     };
 
     if(isHost){
+      setListPlayer([]);
       getGame();
     }
     else{
@@ -123,6 +131,7 @@ const SalonScreen = ({navigation, route})=> {
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleHardwareBackPress);
+      setListPlayer([]);
     };
     
   
@@ -158,12 +167,14 @@ const SalonScreen = ({navigation, route})=> {
 
 
 
-  const onClickStart = () =>{
-    //startGame(gameCode);
-   /*  dispatch(setLoadingSalon(true));
-    socket.emit('hostStartGame', gameCode);
-    setIsButtonDisabled(true); */
-    startGame(gameCode);
+  const onClickStart = async () =>{
+    if(listPlayer.length < 3){
+      setErrorMessage('Il faut au moins 3 joueurs pour lancer la partie');
+      return;
+    }
+    setIsStartLoading(true);
+    await startGame(gameCode);
+    setIsStartLoading(false);
 
 
     
@@ -212,15 +223,20 @@ const SalonScreen = ({navigation, route})=> {
                 
               </View>
             )}
-            <View style={styles.buttonContainer}>
-
+          
             {isHost && (
-              <TouchableOpacity disabled={isButtonDisabled} style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
-                <Text style={styles.buttonText}>Lancer</Text>
+              <View style={styles.buttonContainer}>
+              <TouchableOpacity disabled={isStartLoading} style={styles.button} onPress={onClickStart} activeOpacity={0.5}>
+                {isStartLoading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Text style={styles.buttonText}>Lancer</Text>
+                        )}
+                
               </TouchableOpacity>
+              <Text style={styles.TextErreur}>{errorMessage}</Text>
+              </View>
             )}
-
-            </View>
         </View>
 
         )}
@@ -284,6 +300,13 @@ const styles = StyleSheet.create ({
     
     
   },
+  TextErreur: {
+    fontSize: 12,
+    fontFamily: 'Sen',
+    color: '#F0122D',
+    marginTop:4,
+    textAlign:'center',
+  },
   TextTitreJoueur: {
     fontSize: 28,
     fontFamily: 'LuckiestGuy',
@@ -301,8 +324,8 @@ const styles = StyleSheet.create ({
   button: {
     backgroundColor:'#F0122D',
     borderRadius: 50,
-    paddingHorizontal:40,
-    paddingVertical:10,
+    width: 160,
+    height: 60,
     justifyContent: 'center',
     shadowColor: "#000",
     shadowOffset: {
@@ -316,13 +339,14 @@ const styles = StyleSheet.create ({
   buttonContainer:{
     flex:1,
     justifyContent:'flex-end',
+    alignItems:'center',
     
     
   },
   buttonText: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 35,
+    fontSize: 28,
     fontFamily: 'LuckiestGuy',
     
   },
