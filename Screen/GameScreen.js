@@ -11,7 +11,7 @@ import { getGameInfo, sendKillAccept, getNewMission } from '../Hooks/hooks';
 import Timer from '../Components/Timer';
 import TargetAndMission from '../Components/TargetAndMission';
 import GameAnimation from '../Components/GameAnimation';
-import { setTargetResponse, setTimer, setConfirmKill } from '../Store/Reducer/gameSlice';
+import { setTargetResponse, setTimer, setConfirmKill, setGameFinish } from '../Store/Reducer/gameSlice';
 import { setTargetLeave, setIsWinner} from '../Store/Reducer/userSlice';
 import PopUpGame from '../Components/PopUpGame';
 
@@ -216,6 +216,7 @@ const GameScreen = ({navigation}) => {
         break;
       case 'leave':
         socket.emit("leave_game", userId);
+        dispatch(setGameFinish(false));
         navigation.navigate('Home');
         break;
       default:
