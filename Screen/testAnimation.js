@@ -1,8 +1,15 @@
 import React from 'react';
 import LottieView from 'lottie-react-native';
+import { View } from 'react-native';
 
 export default function Animation() {
   return (
-    <LottieView source={require('../assets/animations/sadFace.json')} autoPlay loop />
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+       <LottieView source={{ uri: 'https://assets8.lottiefiles.com/packages/lf20_wbeqyqgv.json' }} autoPlay loop />
+    </View>
+     
+    
+
+    
   );
 }

@@ -12,7 +12,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import SettingGameScreen from '../Screen/SettingGameScreen';
 import StatGenerale from '../Screen/StatGenarale';
 import StatPersoScreen from '../Screen/StatPersoScreen';
-import testAnimation from '../Screen/testAnimation';
+//import testAnimation from '../Screen/testAnimation';
+import { setExpoToken } from '../Store/Reducer/userSlice'
 
 const Stack = createNativeStackNavigator();
 
@@ -52,7 +53,7 @@ const Navigation = () => {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Test" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false,}}>
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Mode" component={ModeScreen} />
@@ -62,7 +63,7 @@ const Navigation = () => {
         <Stack.Screen name="Historique" component={HistoriqueScreen} />
         <Stack.Screen name="StatPerso" component={StatPersoScreen} />
         <Stack.Screen name="StatGenerale" component={StatGenerale} />
-        <Stack.Screen name="Test" component={testAnimation} />
+        {/* <Stack.Screen name="Test" component={testAnimation} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
