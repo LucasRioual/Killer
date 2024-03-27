@@ -32,7 +32,7 @@ const SettingGameScreen = ({navigation}) => {
       <View style={styles.ViewBody}>
         <ScrollView style={styles.ScrollView}>
             <View style={styles.ScrollViewContent}>
-                <TimeContainer />
+                {/* <TimeContainer /> */}
                 <MissionContainer selectedMissions={selectedMissions} setSelectedMissions={setSelectedMissions} />
                 <OptionContainer time={time} setTime={setTime} join={join} setJoin={setJoin} changeMission={changeMission} setChangeMission={setChangeMission}/>
                 <TouchableOpacity style={styles.button} onPress={MoveSalon}>

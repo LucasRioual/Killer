@@ -88,6 +88,13 @@ const styles = StyleSheet.create({
         width: '30%',
         
     },
+    LayerContainer: {
+        position: 'absolute',
+        backgroundColor: 'gray',
+        height: '100%',
+        width: '100%',
+        opacity: 0.5,
+    },
     TimeView: {
         backgroundColor: 'white',
         aspectRatio: 1,

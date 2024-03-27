@@ -10,7 +10,7 @@ import tagMission from '../Data/TagMission.json';
 const MissionContainer = (props) => {
 
 
-    const [isMissionVisible, setIsMissionVisible] = useState(false);
+    const [isMissionVisible, setIsMissionVisible] = useState(true);
     const [rotationAngle, setRotationAngle] = useState(0);
     const [listMission, setListMission] = useState(tagMission);
     

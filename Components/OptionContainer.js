@@ -35,20 +35,20 @@ const OptionContainer = (props) => {
         info="Un chronomètre sera lancé au début de la partie. Si la partie n'est pas terminée à la fin du temps imparti, le joueurs avec le plus de kill remportera la partie"
       />
 
-      <OptionSection
+      {/* <OptionSection
         title="Rejoindre en cours de partie :"
         options={[{ key: true, label: 'Oui' }, { key: false, label: 'Non' }]}
         selectedOption={props.join}
         onOptionSelect={(key) => handleOptionSelection(key, props.setJoin)}
         info="Si un joueurs souhaite rejoindre une partie en cours de route, tu recevras une demande d'intégration. Les missions et les cibles seront réarrangées pour le bon fonctionnement de la partie"
-      />
+      /> */}
 
       <OptionSection
         title="Possibilité de changer de missions :"
         options={changeMissionOptions}
         selectedOption={props.changeMission}
         onOptionSelect={(key) => handleOptionSelection(key, props.setChangeMission)}
-        info="Si tu ne souhaites pas changer de mission, tu pourras la refaire autant de fois que tu le souhaites"
+        info="Indique le nombre de fois qu'un joueur peut changer de mission au cours de la partie"
       />
     </View>
   );

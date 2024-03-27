@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SalonScreen = ({navigation, route})=> {
 
 
-  const { time, changeMission, listPlayerReceived } = route.params;
+  const { time, changeMission, listPlayerReceived, tagMission } = route.params;
 
   //const isRefuseNewPlayer = useSelector((state) => state.game.isRefuseNewPlayer);
   //const gameStatut = useSelector((state) => state.game.gameStatut);
@@ -103,7 +103,7 @@ const SalonScreen = ({navigation, route})=> {
     
 
     const getGame = async () => {
-      const responseCode =  await createGame(userId, time, changeMission, 'Test');
+      const responseCode =  await createGame(userId, time, changeMission, tagMission[0]);
       dispatch(setGameCode(responseCode));
       socket.emit('join_room', responseCode, userId);
       setIsLoading(false);
